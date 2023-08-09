@@ -97,7 +97,7 @@ public class DBData {
 			phoneNo = OtherInfo[0]; // TODO Validate phone number using regex
 			allegies = OtherInfo[1];
 			address = OtherInfo[2];
-			picture = "user.png";
+			picture = "normal.png";
 
 			InsertBYAccessSQL = "INSERT INTO normal (normal_id, normal_phoneNumber, normal_address, normal_profile, normal_allegies) VALUES ('%s', %s, '%s', '%s', '%s');";
 			InsertBYAccessSQL = String.format(InsertBYAccessSQL, user_id, phoneNo, address, picture, allegies);
