@@ -39,7 +39,7 @@ public class DBDataTest {
 
 	private static String[] allTables = new String[] { "admin", "child", "has_order", "item", "menu_item", "normal",
 			"school", "user", "vendor" };
-// Test DBData Strings
+
 	// Test DBData Final String
 	@Test
 	public void testDBDataCheckString() {
@@ -171,7 +171,7 @@ public class DBDataTest {
 	// SQL Injection (All boundaries)
 	// Check Email DB (All boundaries)
 	// Delete User (All boundaries)
-	// Last Login 
+	// Last Login
 	// Login user (All boundaries)
 	// ======================================
 
@@ -369,37 +369,37 @@ public class DBDataTest {
 		delete_User();
 		assertEquals("LastLogin normal failed", ExpectedTime, ActualTime);
 	}
-	
+
 	// LOGIN User
 	@Test
 	public void testLoginUser_Parameter_Null() {
 		String email = null;
 		String password = null;
-		
+
 		boolean Actual = DBData.LOGIN(email, password);
-		
+
 		assertFalse("LoginUser Parameter null failed", Actual);
 	}
-	
+
 	@Test
 	public void testLoginUser__Normal() {
 		add_User();
 		String email = "john@email.com";
 		String password = "Password123";
-		
+
 		boolean Actual = DBData.LOGIN(email, password);
-		
+
 		delete_User();
 		assertTrue("LoginUser Normal failed", Actual);
 	}
-	
+
 	@Test
 	public void testLoginUser__Outside() {
 		String email = "sssssss@email.com";
 		String password = "Password12311111111";
-		
+
 		boolean Actual = DBData.LOGIN(email, password);
-		
+
 		assertFalse("LoginUser Outside failed", Actual);
 	}
 
@@ -409,47 +409,47 @@ public class DBDataTest {
 	// Get access
 	// Get name
 	// ======================================
-	
+
 	@Test
 	public void testGetID() {
 		String expected = add_User();
-		
+
 		String email = "john@email.com";
 		String password = "Password123";
 		DBData temp = new DBData(email, password);
-		
+
 		String actual = temp.getUser_id();
-		
+
 		delete_User();
 		assertEquals("TestGetID failed", expected, actual);
 	}
-	
+
 	@Test
 	public void testGetAccess() {
 		add_User();
-		
+
 		String email = "john@email.com";
 		String password = "Password123";
 		DBData temp = new DBData(email, password);
-		
+
 		String expected = "normal";
 		String actual = temp.getUser_access();
-		
+
 		delete_User();
 		assertEquals("TestGetID failed", expected, actual);
 	}
-	
+
 	@Test
 	public void testGetName() {
 		add_User();
-		
+
 		String email = "john@email.com";
 		String password = "Password123";
 		DBData temp = new DBData(email, password);
-		
+
 		String expected = "john";
 		String actual = temp.getUser_name();
-		
+
 		delete_User();
 		assertEquals("TestGetID failed", expected, actual);
 	}
@@ -472,7 +472,7 @@ public class DBDataTest {
 		String[] OtherInfo = { "999", "Beef,Flour,Egg", "Street 123" };
 
 		// Unit testing
-		
+
 		// Check all Inputs
 		if (name == null || email == null || password == null || access == null || OtherInfo == null) {
 			assertTrue("testConstructorRegister StartValidation - parameter null", checkValidation);
@@ -481,14 +481,14 @@ public class DBDataTest {
 		name = DBData.SQLInjection(email);
 		email = DBData.SQLInjection(email);
 		password = DBData.SQLInjection(password);
-		
+
 		access = access.toLowerCase();
-		
+
 		// Check if email is in DB
 		if (DBData.CheckEmailDB(email) == true) {
 			assertTrue("testConstructorRegister StartValidation - Email found", checkValidation);
 		}
-		
+
 		// Check if access type input is valid
 		else if (access != "normal" && access != "vendor" && access != "admin") {
 			assertTrue("testConstructorRegister StartValidation - no Access type found", checkValidation);
@@ -530,14 +530,14 @@ public class DBDataTest {
 		String password = "Password123";
 		String access = "normal";
 		String[] OtherInfo = { "999", "Beef,Flour,Egg", "Street 123" };
-		
+
 		// Unit testing
 		DBData tempUser = new DBData(name, email, password, access, OtherInfo);
-		
+
 		// Check if tempUser is created in User table
 		checkValidation = DBData.LOGIN(email, password);
 		assertTrue("Regisration failed in User Table", checkValidation);
-		
+
 		String id = tempUser.getUser_id();
 		// Check if tempUser is created in Normal table
 		checkValidation = false;
@@ -557,28 +557,29 @@ public class DBDataTest {
 		}
 
 		DBUtil.close();
-		assertTrue("Registration elete User failed" ,tempUser.DELETE_USER());
-		assertTrue("Registration failed in Normal Table", checkValidation);;
+		assertTrue("Registration elete User failed", tempUser.DELETE_USER());
+		assertTrue("Registration failed in Normal Table", checkValidation);
+		;
 		tempUser.DELETE_USER();
 		tempUser = null;
 	}
-	
+
 	@Test
 	public void testConstructorRegister_InsertNormal_Fail() {
 		String name = "John";
 		String email = "John@email.com";
 		String password = "Password123";
 		String access = "normal";
-		String[] OtherInfo = {"999"};
-		
+		String[] OtherInfo = { "999" };
+
 		// Unit testing
 		DBData tempUser = new DBData(name, email, password, access, OtherInfo);
-		
+
 		// Check if tempUser failed in Normal
 		String Actual_id = tempUser.getUser_id();
 		String Expected_id = null;
 		assertEquals("Regisration failed - id", Expected_id, Actual_id);
-		
+
 		String Actual_access = tempUser.getUser_access();
 		String Expected_access = null;
 		assertEquals("Regisration failed - id", Expected_access, Actual_access);
@@ -598,11 +599,11 @@ public class DBDataTest {
 
 		// Unit testing
 		DBData tempUser = new DBData(name, email, password, access, OtherInfo);
-		
+
 		// Check if tempUser is created in User table
 		checkValidation = DBData.LOGIN(email, password);
 		assertTrue("Regisration failed in User Table", checkValidation);
-		
+
 		String id = tempUser.getUser_id();
 		// Check if tempUser is created in Normal table
 		checkValidation = false;
@@ -622,35 +623,36 @@ public class DBDataTest {
 		}
 
 		DBUtil.close();
-		assertTrue("Registration elete User failed" ,tempUser.DELETE_USER());
-		assertTrue("Registration failed in Vendor Table", checkValidation);;
+		assertTrue("Registration elete User failed", tempUser.DELETE_USER());
+		assertTrue("Registration failed in Vendor Table", checkValidation);
+		;
 		tempUser.DELETE_USER();
 		tempUser = null;
 	}
-	
+
 	@Test
 	public void testConstructorRegister_InsertVendor_Fail() {
 		String name = "John";
 		String email = "John@email.com";
 		String password = "Password123";
 		String access = "vendor";
-		String[] OtherInfo = {"Company 1"};
-		
+		String[] OtherInfo = { "Company 1" };
+
 		// Unit testing
 		DBData tempUser = new DBData(name, email, password, access, OtherInfo);
-		
+
 		// Check if tempUser failed in Normal
 		String Actual_id = tempUser.getUser_id();
 		String Expected_id = null;
 		assertEquals("Regisration failed - id", Expected_id, Actual_id);
-		
+
 		String Actual_access = tempUser.getUser_access();
 		String Expected_access = null;
 		assertEquals("Regisration failed - id", Expected_access, Actual_access);
 		tempUser.DELETE_USER();
 		tempUser = null;
 	}
-	
+
 	@Test
 	public void testConstructorRegister_InsertAdmin() {
 		boolean checkValidation = false;
@@ -663,11 +665,11 @@ public class DBDataTest {
 
 		// Unit testing
 		DBData tempUser = new DBData(name, email, password, access, OtherInfo);
-		
+
 		// Check if tempUser is created in User table
 		checkValidation = DBData.LOGIN(email, password);
 		assertTrue("Regisration failed in User Table", checkValidation);
-		
+
 		String id = tempUser.getUser_id();
 		// Check if tempUser is created in Admin table
 		checkValidation = false;
@@ -687,48 +689,49 @@ public class DBDataTest {
 		}
 
 		DBUtil.close();
-		assertTrue("Registration elete User failed" ,tempUser.DELETE_USER());
-		assertTrue("Registration failed in Vendor Table", checkValidation);;
+		assertTrue("Registration elete User failed", tempUser.DELETE_USER());
+		assertTrue("Registration failed in Vendor Table", checkValidation);
+		;
 		tempUser.DELETE_USER();
 		tempUser = null;
 	}
-	
+
 	@Test
 	public void testConstructorRegister_InsertAdmin_Fail() {
 		String name = "John";
 		String email = "John@email.com";
 		String password = "Password123";
 		String access = "admin";
-		String[] OtherInfo = {"1"};
-		
+		String[] OtherInfo = { "1" };
+
 		// Unit testing
 		DBData tempUser = new DBData(name, email, password, access, OtherInfo);
-		
+
 		// Check if tempUser failed in Normal
 		String Actual_id = tempUser.getUser_id();
 		String Expected_id = null;
 		assertEquals("Regisration failed - id", Expected_id, Actual_id);
-		
+
 		String Actual_access = tempUser.getUser_access();
 		String Expected_access = null;
 		assertEquals("Regisration failed - id", Expected_access, Actual_access);
 		tempUser.DELETE_USER();
 		tempUser = null;
 	}
-	
+
 	// DBData Constructor [Login]
 	@Test
 	public void testConstructorLogin() {
 		String id = add_User();
 		String email = "john@email.com";
 		String password = "Password123";
-		
+
 		DBData tempUser = new DBData(email, password);
-		
+
 		String tempUser_id = tempUser.getUser_id();
-		
+
 		delete_User();
-		assertEquals("Login failed - id", id, tempUser_id);		
+		assertEquals("Login failed - id", id, tempUser_id);
 		tempUser.DELETE_USER();
 		tempUser = null;
 	}

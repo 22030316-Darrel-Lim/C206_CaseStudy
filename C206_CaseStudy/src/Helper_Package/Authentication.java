@@ -1,7 +1,5 @@
 package Helper_Package;
 
-import java.util.regex.Pattern;
-
 public class Authentication {
 
 	public static DBData Login(String email, String password) {
