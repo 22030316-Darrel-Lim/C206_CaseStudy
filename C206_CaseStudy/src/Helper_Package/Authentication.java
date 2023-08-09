@@ -47,4 +47,5 @@ public class Authentication {
 		DBData CREDENTIAL = RegisterAccount(name, email, password, access, otherInfo);
 		return CREDENTIAL;
 	}
+	
 } // End of Class
