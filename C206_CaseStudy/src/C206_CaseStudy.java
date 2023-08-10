@@ -2,7 +2,7 @@ import javax.security.auth.login.CredentialException;
 
 import Helper_Package.Authentication;
 import Helper_Package.DBData;
-import Helper_Package.Helper;
+import Helper.Helper;
 	
 public class C206_CaseStudy {
 	private static DBData credentials;
