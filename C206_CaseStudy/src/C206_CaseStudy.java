@@ -96,12 +96,14 @@ public class C206_CaseStudy {
 			switch (CHOICE) {
 			case "1":
 				// Call method to see all menu
+				viewAllMenu();
 				break;
 			case "2":
-				// Create a new order + payment
+				// TODO Create a new order + payment
+
 				break;
 			case "3":
-				// View current order
+				// TODO View current order
 				break;
 			case "9":
 				thankYou();
@@ -122,18 +124,23 @@ public class C206_CaseStudy {
 			switch (CHOICE) {
 			case "1":
 				// Call method to see all menu
+				viewAllMenu();
 				break;
 			case "2":
 				// New Menu + add Items
+				createFoodMenu();
 				break;
 			case "3":
 				// Delete Menu
+				deleteFoodMenu();
 				break;
 			case "4":
-				// Add new Item to the menu
+				// Add new Item
+				addFoodItem();
 				break;
 			case "5":
 				// Delete Item
+				deleteFoodItem();
 				break;
 			case "9":
 				thankYou();
@@ -154,21 +161,27 @@ public class C206_CaseStudy {
 			switch (CHOICE) {
 			case "1":
 				// Call method to view all User
+				viewAllUser();
 				break;
 			case "2":
 				// View all School
+				viewAllSchool();
 				break;
 			case "3":
 				// View all Menu
+				viewAllMenu();
 				break;
 			case "4":
 				// View All Orders
+				viewAllOrder();
 				break;
 			case "5":
 				// Call Method to Create User
+				createUser();
 				break;
 			case "6":
 				// Delete User
+				deleteUser();
 				break;
 			case "9":
 				thankYou();
@@ -191,7 +204,7 @@ public class C206_CaseStudy {
 	}
 
 	private static void print(String str) {
-		System.out.println(str);
+		print(str);
 	}
 
 	private static void displayMenu(String menuType) {
@@ -250,6 +263,16 @@ public class C206_CaseStudy {
 		return str;
 	}
 
+	private static int readInt(String str) {
+		int i = Helper.readInt(str);
+		return i;
+	}
+
+	private static double readDouble(String str) {
+		double i = Helper.readInt(str);
+		return i;
+	}
+
 	private static void line(int count, String str) {
 		Helper.line(count, str);
 	}
@@ -271,7 +294,8 @@ public class C206_CaseStudy {
 	// Method for Vendor to create a new food Menu
 
 	private static void createFoodMenu() {
-		System.out.println("== CREATE NEW FOOD MENU ==");
+		line(40, "-");
+		print("== CREATE NEW FOOD MENU ==");
 		// TODO Create a new Food menu - SQL to Insert new Menu
 		addFoodItem();
 
@@ -280,38 +304,40 @@ public class C206_CaseStudy {
 	// Method for Vendor to delete the Food Menu
 
 	private static void deleteFoodMenu() {
-		System.out.println("== DELETE FOOD MENU ==");
+		line(40, "-");
+		print("== DELETE FOOD MENU ==");
 		// TODO Run SQL Statement to get Menu_id
 
-		int id = Helper.readInt("Select Menu_ID to delete: ");
+		int id = readInt("Select Menu_ID to delete: ");
 		// TODO Run SQL Statement to delete base on Menu_Id
 	}
 
 	// Method for Vendor to add new food
 
 	private static void addFoodItem() {
-		System.out.println("== ADD FOOD TO MENU ==");
+		line(40, "-");
+		print("== ADD FOOD TO MENU ==");
 
 		// Looping for input
-		int i = 0;
-		while (i != 9) {
-			System.out.println("1) Add exisitng food to menu \n2) Create food and add it to menu \n9) Exit");
-			i = Helper.readInt("Enter Option: ");
+		CHOICE = "";
+		while (CHOICE != "9") {
+			print("1) Add exisitng food to menu \n2) Create food and add it to menu \n9) Exit");
+			CHOICE = readString("Enter Option: ");
 
-			switch (i) {
+			switch (CHOICE) {
 			case "1":
 				// TODO Retrieve food from SQL and add it
 
 			case "2":
 				// Create new food and add it to SQL
 
-				String food = Helper.readString("Enter Food Name: ");
-				String description = Helper.readString("Enter Food Description: ");
-				String dietary = Helper.readString("Enter Food Dietary: ");
-				String ingredients = Helper.readString("Enter Food Ingredients: ");
-				Double price = Helper.readDouble("Enter Food Price: ");
-				int qty = Helper.readInt("Enter Food Quantity");
-				int menu_id = Helper.readInt("Enter Menu_id: ");
+				String food = readString("Enter Food Name: ");
+				String description = readString("Enter Food Description: ");
+				String dietary = readString("Enter Food Dietary: ");
+				String ingredients = readString("Enter Food Ingredients: ");
+				Double price = readDouble("Enter Food Price: ");
+				int qty = readInt("Enter Food Quantity");
+				int menu_id = readInt("Enter Menu_id: ");
 
 				// TODO Run insert SQL Statement to create new food and add it to menu
 
@@ -321,22 +347,23 @@ public class C206_CaseStudy {
 
 			default:
 				// Error message
-				System.out.println("Invalid choice. Please choose again.");
+				invalidChoice();
 			}
 		}
 	}
 
 	// Method for Vendor to delete Food
 	private static void deleteFoodItem() {
-		System.out.println("== DELETE FOOD ITEM ==");
+		line(40, "-");
+		print("== DELETE FOOD ITEM ==");
 		// Method to view the Food
 		// SQL
-		String food = Helper.readString("Enter Food Name: ");
-		String confirm = Helper.readString("Confirm Deletetion? (y/n): ");
+		String food = readString("Enter Food Name: ");
+		String confirm = readString("Confirm Deletetion? (y/n): ");
 		if (confirm.equalsIgnoreCase("y")) {
 			// TODO Run Delete SQL
 		} else {
-			System.out.println("Deletation Aborted");
+			print("Deletation Aborted");
 		}
 	}
 
@@ -345,36 +372,41 @@ public class C206_CaseStudy {
 	// ==========================
 
 	private static void viewAllUser() {
+		line(40, "-");
 		// TODO SQL Code to view all Users
 
 	}
 
 	private static void viewAllSchool() {
+		line(40, "-");
 		// TODO SQL Code to view all Schools
 
 	}
 
 	private static void viewAllOrder() {
+		line(40, "-");
 		// TODO SQL Code to view all Orders
 
 	}
 
 	private static void createUser() {
+		line(40, "-");
 		// TODO SQL Code to create any user
-		String email = Helper.readString("Enter Email: ");
-		String name = Helper.readString("Enter Name: ");
-		String password = Helper.readString("Enter Password: ");
-		String access = Helper.readString("Enter Access Type: ");
+		String email = readString("Enter Email: ");
+		String name = readString("Enter Name: ");
+		String password = readString("Enter Password: ");
+		String access = readString("Enter Access Type: ");
 	}
 
 	private static void deleteUser() {
+		line(40, "-");
 		// TODO SQL Code to delete Users + View All Users
-		String email = Helper.readString("Enter Email: ");
-		String confirm = Helper.readString("Confirm Deletetion? (y/n): ");
+		String email = readString("Enter Email: ");
+		String confirm = readString("Confirm Deletetion? (y/n): ");
 		if (confirm.equalsIgnoreCase("y")) {
 			// TODO Run Delete SQL
 		} else {
-			System.out.println("Deletation Aborted");
+			print("Deletation Aborted");
 		}
 	}
 

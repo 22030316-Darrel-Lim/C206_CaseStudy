@@ -219,10 +219,10 @@ public class Main {
 			i = Helper.readInt("Enter Option: ");
 
 			switch (i) {
-			case "1":
+			case 1:
 				// TODO Retrieve food from SQL and add it
 
-			case "2":
+			case 2:
 				// Create new food and add it to SQL
 
 				String food = Helper.readString("Enter Food Name: ");
@@ -235,7 +235,7 @@ public class Main {
 
 				// TODO Run insert SQL Statement to create new food and add it to menu
 
-			case "9":
+			case 9:
 				// Exit from Menu Option
 				break;
 
