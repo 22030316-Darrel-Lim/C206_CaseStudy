@@ -193,7 +193,7 @@ public class C206_CaseStudy {
 	private static void print(String str) {
 		System.out.println(str);
 	}
-	
+
 	private static void displayMenu(String menuType) {
 		switch (menuType) {
 		case "main":
@@ -253,4 +253,129 @@ public class C206_CaseStudy {
 	private static void line(int count, String str) {
 		Helper.line(count, str);
 	}
+
+	// NOT REFACTORED
+	// TODO
+	// ==========================
+	// Methods For USER
+	// ==========================
+
+	private static void viewAllMenu() {
+		// TODO SQL to view all Menu
+	}
+
+	// ==========================
+	// Methods For VENDOR
+	// ==========================
+
+	// Method for Vendor to create a new food Menu
+
+	private static void createFoodMenu() {
+		System.out.println("== CREATE NEW FOOD MENU ==");
+		// TODO Create a new Food menu - SQL to Insert new Menu
+		addFoodItem();
+
+	}
+
+	// Method for Vendor to delete the Food Menu
+
+	private static void deleteFoodMenu() {
+		System.out.println("== DELETE FOOD MENU ==");
+		// TODO Run SQL Statement to get Menu_id
+
+		int id = Helper.readInt("Select Menu_ID to delete: ");
+		// TODO Run SQL Statement to delete base on Menu_Id
+	}
+
+	// Method for Vendor to add new food
+
+	private static void addFoodItem() {
+		System.out.println("== ADD FOOD TO MENU ==");
+
+		// Looping for input
+		CHOICE = "";
+		while (CHOICE != "9") {
+			System.out.println("1) Add exisitng food to menu \n2) Create food and add it to menu \n9) Exit");
+			CHOICE = readString("Enter Option: ");
+
+			switch (CHOICE) {
+			case "1":
+				// TODO Retrieve food from SQL and add it
+
+			case "2":
+				// Create new food and add it to SQL
+
+				String food = Helper.readString("Enter Food Name: ");
+				String description = Helper.readString("Enter Food Description: ");
+				String dietary = Helper.readString("Enter Food Dietary: ");
+				String ingredients = Helper.readString("Enter Food Ingredients: ");
+				Double price = Helper.readDouble("Enter Food Price: ");
+				int qty = Helper.readInt("Enter Food Quantity");
+				int menu_id = Helper.readInt("Enter Menu_id: ");
+
+				// TODO Run insert SQL Statement to create new food and add it to menu
+
+			case "9":
+				// Exit from Menu Option
+				break;
+
+			default:
+				// Error message
+				System.out.println("Invalid choice. Please choose again.");
+			}
+		}
+	}
+
+	// Method for Vendor to delete Food
+	private static void deleteFoodItem() {
+		System.out.println("== DELETE FOOD ITEM ==");
+		// Method to view the Food
+		// SQL
+		String food = Helper.readString("Enter Food Name: ");
+		String confirm = Helper.readString("Confirm Deletetion? (y/n): ");
+		if (confirm.equalsIgnoreCase("y")) {
+			// TODO Run Delete SQL
+		} else {
+			System.out.println("Deletation Aborted");
+		}
+	}
+
+	// ==========================
+	// Methods For ADMIN
+	// ==========================
+
+	private static void viewAllUser() {
+		// TODO SQL Code to view all Users
+
+	}
+
+	private static void viewAllSchool() {
+		// TODO SQL Code to view all Schools
+
+	}
+
+	private static void viewAllOrder() {
+		// TODO SQL Code to view all Orders
+
+	}
+
+	private static void createUser() {
+		// TODO SQL Code to create any user
+		String email = Helper.readString("Enter Email: ");
+		String name = Helper.readString("Enter Name: ");
+		String password = Helper.readString("Enter Password: ");
+		String access = Helper.readString("Enter Access Type: ");
+	}
+
+	private static void deleteUser() {
+		// TODO SQL Code to delete Users + View All Users
+		String email = Helper.readString("Enter Email: ");
+		String confirm = Helper.readString("Confirm Deletetion? (y/n): ");
+		if (confirm.equalsIgnoreCase("y")) {
+			// TODO Run Delete SQL
+		} else {
+			System.out.println("Deletation Aborted");
+		}
+	}
+
 }
