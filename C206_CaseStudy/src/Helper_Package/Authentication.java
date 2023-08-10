@@ -3,6 +3,8 @@ package Helper_Package;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import Helper.DBUtil;
+
 public class Authentication {
   
 	public static DBData Login(String email, String password) {
@@ -33,7 +35,6 @@ public class Authentication {
 
 	    return CREDENTIAL;
 	}
-
 	
 	public static DBData RegisterAccountNormal(String name, String email, String password, String[] otherInfo) {
 		String access = "normal";
@@ -52,14 +53,17 @@ public class Authentication {
 		DBData CREDENTIAL = RegisterAccount(name, email, password, access, otherInfo);
 		return CREDENTIAL;
 	}
-	public static boolean CheckEmailDB(String email) {
-        boolean exists = false;
+	
+	public static Boolean CheckEmailDB(String email) {
+        Boolean exists = null;
 
         // Check if empty
         if (email == null || email.isEmpty()) {
             return exists;
         }
-
+        
+        exists = false;
+        
         try {
             DBUtil.init(DBData.JDBCURL, DBData.DBUSERNAME, DBData.DBPASSWORD);
 
@@ -80,14 +84,7 @@ public class Authentication {
 
         return exists;
     }
-	public static String getUserAccessType(String email, String password) {
-        DBData credentials = Login(email, password);
+	
 
-        if (credentials != null) {
-            return credentials.getUser_access();
-        } else {
-            return null;
-        }
-    }
 	
 } // End of Class
