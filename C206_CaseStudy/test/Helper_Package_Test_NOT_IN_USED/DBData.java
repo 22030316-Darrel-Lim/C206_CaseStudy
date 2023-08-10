@@ -3,7 +3,7 @@ package Helper_Package_Test_NOT_IN_USED;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import Helper_Package.DBUtil;
+import Helper.DBUtil;
 
 public class DBData {
 
