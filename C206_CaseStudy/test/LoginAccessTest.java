@@ -43,4 +43,4 @@ public class LoginAccessTest {
         String actualAccessType = Authentication.getUserAccessType(email, password);
         assertNull(actualAccessType);
     }
-}
+} 

@@ -4,7 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class Authentication {
-
+  
 	public static DBData Login(String email, String password) {
 		DBData CREDENTIAL = new DBData(email, password);
 		

@@ -86,7 +86,7 @@ public class C206_CaseStudy {
             System.out.println("Login failed.");
         }
     }
-
+ 
     private static void normalMenu() {
         int choice = 0;
         while (choice != 9) {

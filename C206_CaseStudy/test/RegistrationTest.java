@@ -21,7 +21,7 @@ public class RegistrationTest {
 	    DBData credentials = Authentication.RegisterAccountNormal(name, email, password, otherInfo);
 	    assertNotNull(credentials); // The registration should succeed
 	}
-
+ 
 
 
     @Test
