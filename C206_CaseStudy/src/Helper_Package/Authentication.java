@@ -3,11 +3,14 @@ package Helper_Package;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import Helper.DBUtil;
+
 public class Authentication {
   
-	public static DBData Login(String email, String password) {
-		DBData CREDENTIAL = new DBData(email, password);
-		
+	private static DBData CREDENTIAL;
+	
+	private static void checkCREDENTIAL() {
+		// Initialize the access and id after creating the DBData object
 		String CREDENTIAL_access = CREDENTIAL.getUser_access();
 		String CREDENTIAL_id = CREDENTIAL.getUser_id();
 		
@@ -15,51 +18,58 @@ public class Authentication {
 		if (CREDENTIAL == null || CREDENTIAL_id == null || CREDENTIAL_access == null || CREDENTIAL_id.isEmpty() || CREDENTIAL_access.isEmpty()) {
 			CREDENTIAL = null;
 		}
+	}
+	
+	public static DBData Login(String email, String password) {
+		CREDENTIAL = new DBData(email, password);
+		
+		checkCREDENTIAL();
 		
 		return CREDENTIAL;
 	}
 
 	private static DBData RegisterAccount(String name, String email, String password, String access, String[] otherInfo) {
-	    DBData CREDENTIAL = new DBData(name, email, password, access, otherInfo);
+		CREDENTIAL = new DBData(name, email, password, access, otherInfo);
 
-	    // Initialize the access and id after creating the DBData object
-	    String CREDENTIAL_access = CREDENTIAL.getUser_access();
-	    String CREDENTIAL_id = CREDENTIAL.getUser_id();
-
-	    // Return null if any of the 5 has error
-	    if (CREDENTIAL == null || CREDENTIAL_id == null || CREDENTIAL_access == null || CREDENTIAL_id.isEmpty() || CREDENTIAL_access.isEmpty()) {
-	        CREDENTIAL = null;
-	    }
+		checkCREDENTIAL();
 
 	    return CREDENTIAL;
 	}
-
 	
 	public static DBData RegisterAccountNormal(String name, String email, String password, String[] otherInfo) {
 		String access = "normal";
-		DBData CREDENTIAL = RegisterAccount(name, email, password, access, otherInfo);
+		
+		CREDENTIAL= RegisterAccount(name, email, password, access, otherInfo);
+		
 		return CREDENTIAL;
 	}
 	
 	public static DBData RegisterAccountVendor(String name, String email, String password, String[] otherInfo) {
 		String access = "vendor";
-		DBData CREDENTIAL = RegisterAccount(name, email, password, access, otherInfo);
+		
+		CREDENTIAL = RegisterAccount(name, email, password, access, otherInfo);
+		
 		return CREDENTIAL;
 	}
 	
 	public static DBData RegisterAccountAdmin(String name, String email, String password, String[] otherInfo) {
 		String access = "admin";
-		DBData CREDENTIAL = RegisterAccount(name, email, password, access, otherInfo);
+		
+		CREDENTIAL = RegisterAccount(name, email, password, access, otherInfo);
+		
 		return CREDENTIAL;
 	}
-	public static boolean CheckEmailDB(String email) {
-        boolean exists = false;
+	
+	public static Boolean CheckEmailDB(String email) {
+        Boolean exists = null;
 
         // Check if empty
         if (email == null || email.isEmpty()) {
             return exists;
         }
-
+        
+        exists = false;
+        
         try {
             DBUtil.init(DBData.JDBCURL, DBData.DBUSERNAME, DBData.DBPASSWORD);
 
@@ -80,14 +90,7 @@ public class Authentication {
 
         return exists;
     }
-	public static String getUserAccessType(String email, String password) {
-        DBData credentials = Login(email, password);
+	
 
-        if (credentials != null) {
-            return credentials.getUser_access();
-        } else {
-            return null;
-        }
-    }
 	
 } // End of Class
