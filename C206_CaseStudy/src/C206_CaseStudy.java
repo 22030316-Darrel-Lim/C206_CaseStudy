@@ -348,6 +348,7 @@ public class C206_CaseStudy {
 			default:
 				// Error message
 				invalidChoice();
+
 			}
 		}
 	}
