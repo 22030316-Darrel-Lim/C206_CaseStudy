@@ -10,6 +10,8 @@ import java.sql.Statement;
 
 import org.junit.Test;
 
+import Helper.DBUtil;
+
 public class DBDataTest {
 
 	// ===============================================================

@@ -4,8 +4,11 @@ import java.util.ArrayList;
 import java.util.regex.Pattern;
 
 import Helper.Helper;
+import Helper_Package.Authentication;
+import Helper_Package.DBData;
 
 public class Main {
+	private static DBData CREDENTIAL;
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
@@ -19,12 +22,35 @@ public class Main {
 			Helper.line(40, "-");
 			System.out.println("== SCHOOL LUNCH BOX MAIN MENU");
 			System.out.println("1) Login\n2) Register\n9)Exit");
-			i = Helper_Package.Helper.readInt("Enter Option: ");
+			i = Helper.readInt("Enter Option: ");
 
+			// Option 1 to Login
 			switch (i) {
 			case 1:
-			}
+				String email = Helper.readString("Enter email: ");
+				String pass = Helper.readString("Enter Password: ");
+				CREDENTIAL = Authentication.Login(email, pass);
+				if (CREDENTIAL == null) {
+					System.out.println("Invalid Email or Password");
+				} else {
+					String access = CREDENTIAL.getUser_access();
+					switch(access) {
+					case "normal":
+					case "admin":
+					}
+				}
 
+			// Option 2 to Register
+			case 2:
+				email = Helper.readString("Enter email: ");
+				pass = Helper.readString("Enter Password: ");
+				CREDENTIAL = Authentication.Login(email, pass);
+				if (CREDENTIAL == null) {
+					System.out.println("Invalid Email or Password");
+				} else {
+
+				}
+			}
 		}
 	}
 }

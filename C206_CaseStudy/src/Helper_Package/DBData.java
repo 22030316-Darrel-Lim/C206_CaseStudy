@@ -3,6 +3,8 @@ package Helper_Package;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import Helper.DBUtil;
+
 public class DBData {
 
 	// NOTE: URL may be different depending on the name of the database
