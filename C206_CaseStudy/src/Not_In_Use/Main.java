@@ -76,6 +76,7 @@ public class Main {
 			switch (i) {
 			case 1:
 				// Call method to see all menu
+				
 
 			case 2:
 				// Create a new order + payment
@@ -182,6 +183,10 @@ public class Main {
 
 	private static void viewAllMenu() {
 		// TODO SQL to view all Menu
+		System.out.println("== VIEW ALL MENU ==");
+		
+		
+		
 	}
 
 	// ==========================
