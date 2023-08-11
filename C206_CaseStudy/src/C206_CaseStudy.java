@@ -1,3 +1,4 @@
+import Helper_Package.AdvanceFunction;
 import Helper_Package.Authentication;
 import Helper_Package.DBData;
 import Helper.Helper;
@@ -5,24 +6,25 @@ import Helper.Helper;
 public class C206_CaseStudy {
 
 	private static DBData CREDENTIAL;
-	private static String CHOICE;
+	private static int CHOICE;
 
 	public static void main(String[] args) {
-		CHOICE = "";
+		CHOICE = -1;
 
-		while (CHOICE != "9") {
+		while (CHOICE != 9) {
 
 			displayMenu("main");
-			CHOICE = readString("Enter choice: ");
+			CHOICE = readInt("Enter choice: ");
+			line(20, "-");
 
 			switch (CHOICE) {
-			case "1":
+			case 1:
 				login();
 				break;
-			case "2":
+			case 2:
 				register();
 				break;
-			case "9":
+			case 9:
 				thankYou();
 				break;
 			default:
@@ -45,10 +47,10 @@ public class C206_CaseStudy {
 		CREDENTIAL = Authentication.RegisterAccountNormal(name, email, password, otherInfo);
 
 		if (CREDENTIAL != null) {
-			print("Registration successful!");
+			print("\nRegistration successful!\n");
 
 		} else {
-			print("Registration failed.");
+			print("\nRegistration failed.\n");
 			main(null); // Return back to main if fail
 		}
 	}
@@ -59,11 +61,11 @@ public class C206_CaseStudy {
 
 		CREDENTIAL = Authentication.Login(email, password);
 
-		if (CREDENTIAL != null) {
-			print("Login successful!");
+		if (CREDENTIAL != null && CREDENTIAL.getUser_access() != null) {
+			print("\nLogin successful!");
 
 		} else {
-			print("Login failed.");
+			print("\nLogin failed. Email or Password Incorrect!!");
 			main(null); // Return back to main if fail
 		}
 
@@ -80,33 +82,34 @@ public class C206_CaseStudy {
 			adminMenu();
 			break;
 		default:
-			print("Login Failed - Unknown access type.");
+			print("\nLogin Failed - Unknown access type.");
 			main(null); // Return back to main if fail
 		}
 	}
 
 	private static void normalMenu() {
 
-		CHOICE = "";
+		CHOICE = -1;
 
-		while (CHOICE != "9") {
+		while (CHOICE != 9) {
 
 			displayMenu("normal");
-			CHOICE = readString("Enter Option: ");
-			
+			CHOICE = readInt("Enter Option: ");
+			line(20, "-");
+
 			switch (CHOICE) {
-			case "1":
+			case 1:
 				// Call method to see all menu
 				viewAllMenu();
 				break;
-			case "2":
+			case 2:
 				// TODO Create a new order + payment
 
 				break;
-			case "3":
+			case 3:
 				// TODO View current order
 				break;
-			case "9":
+			case 9:
 				thankYou();
 				break;
 			default:
@@ -116,35 +119,35 @@ public class C206_CaseStudy {
 	}
 
 	private static void vendorMenu() {
-		CHOICE = "";
+		CHOICE = -1;
 
-		while (CHOICE != "9") {
+		while (CHOICE != 9) {
 
 			displayMenu("vendor");
-			CHOICE = readString("Enter Option: ");
-			
+			CHOICE = readInt("Enter Option: ");
+
 			switch (CHOICE) {
-			case "1":
+			case 1:
 				// Call method to see all menu
 				viewAllMenu();
 				break;
-			case "2":
+			case 2:
 				// New Menu + add Items
 				createFoodMenu();
 				break;
-			case "3":
+			case 3:
 				// Delete Menu
 				deleteFoodMenu();
 				break;
-			case "4":
+			case 4:
 				// Add new Item
 				addFoodItem();
 				break;
-			case "5":
+			case 5:
 				// Delete Item
 				deleteFoodItem();
 				break;
-			case "9":
+			case 9:
 				thankYou();
 				break;
 			default:
@@ -154,39 +157,40 @@ public class C206_CaseStudy {
 	}
 
 	private static void adminMenu() {
-		CHOICE = "";
+		CHOICE = -1;
 
-		while (CHOICE != "9") {
+		while (CHOICE != 9) {
 
 			displayMenu("admin");
-			CHOICE = readString("Enter Option: ");
-			
+			CHOICE = readInt("Enter Option: ");
+			line(20, "-");
+
 			switch (CHOICE) {
-			case "1":
+			case 1:
 				// Call method to view all User
 				viewAllUser();
 				break;
-			case "2":
+			case 2:
 				// View all School
 				viewAllSchool();
 				break;
-			case "3":
+			case 3:
 				// View all Menu
 				viewAllMenu();
 				break;
-			case "4":
+			case 4:
 				// View All Orders
 				viewAllOrder();
 				break;
-			case "5":
+			case 5:
 				// Call Method to Create User
 				createUser();
 				break;
-			case "6":
+			case 6:
 				// Delete User
 				deleteUser();
 				break;
-			case "9":
+			case 9:
 				thankYou();
 				break;
 			default:
@@ -213,16 +217,18 @@ public class C206_CaseStudy {
 	private static void displayMenu(String menuType) {
 		switch (menuType) {
 		case "main":
+			print("");
 			line(40, "-");
 			print("====== SCHOOL LUNCH BOX MAIN MENU ======");
 			line(40, "-");
-			print("======= Menu =======");
+			print("\n======= Menu =======");
 			print("1. Login");
 			print("2. Register");
 			print("9. Quit");
 			line(20, "-");
 			break;
 		case "normal":
+			print("");
 			line(40, "-");
 			print("=== NORMAL MENU ====");
 			print("1) View All Menu");
@@ -232,6 +238,7 @@ public class C206_CaseStudy {
 			line(20, "-");
 			break;
 		case "vendor":
+			print("");
 			line(40, "-");
 			print("==== VENDOR MENU ===");
 			print("1) View All Menu");
@@ -243,6 +250,7 @@ public class C206_CaseStudy {
 			line(20, "-");
 			break;
 		case "admin":
+			print("");
 			line(40, "-");
 			print("==== ADMIN MENU ====");
 			print("1) View All Users");
@@ -255,7 +263,7 @@ public class C206_CaseStudy {
 			line(20, "-");
 			break;
 		default:
-			print("=== MENU FAILED ====");
+			print("\n=== MENU FAILED ====");
 			return;
 		}
 
@@ -322,19 +330,19 @@ public class C206_CaseStudy {
 		print("=== ADD FOOD TO MENU ===");
 
 		// Looping for input
-		CHOICE = "";
-		
-		while (CHOICE != "9") {
+		CHOICE = -1;
+
+		while (CHOICE != 9) {
 			print("1) Add exisitng food to men");
 			print("2) Create food and add it to menu");
 			print("9) Exit");
-			CHOICE = readString("Enter Option: ");
+			CHOICE = readInt("Enter Option: ");
 
 			switch (CHOICE) {
-			case "1":
+			case 1:
 				// TODO Retrieve food from SQL and add it
 
-			case "2":
+			case 2:
 				// Create new food and add it to SQL
 
 				String food = readString("Enter Food Name: ");
@@ -347,7 +355,7 @@ public class C206_CaseStudy {
 
 				// TODO Run insert SQL Statement to create new food and add it to menu
 
-			case "9":
+			case 9:
 				// Exit from Menu Option
 				break;
 
@@ -380,20 +388,27 @@ public class C206_CaseStudy {
 
 	private static void viewAllUser() {
 		line(40, "-");
-		// TODO SQL Code to view all Users
+		// TODO (DONE) SQL Code to view all Users
+		String[][] table = CREDENTIAL.viewAllUser();
+
+		System.out.println(AdvanceFunction.tableFormatter(table));
 
 	}
 
 	private static void viewAllSchool() {
 		line(40, "-");
-		// TODO SQL Code to view all Schools
+		// TODO (DONE) SQL Code to view all Schools
+		String[][] table = CREDENTIAL.viewAllSchool();
 
+		System.out.println(AdvanceFunction.tableFormatter(table));
 	}
 
 	private static void viewAllOrder() {
 		line(40, "-");
 		// TODO SQL Code to view all Orders
+		String[][] table = CREDENTIAL.viewAllOrder();
 
+		System.out.println(AdvanceFunction.tableFormatter(table));
 	}
 
 	private static void createUser() {

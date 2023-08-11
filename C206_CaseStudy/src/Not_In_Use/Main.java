@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.regex.Pattern;
 
 import Helper.Helper;
+import Helper_Package.AdvanceFunction;
 import Helper_Package.Authentication;
 import Helper_Package.DBData;
 
@@ -11,8 +12,14 @@ public class Main {
 	private static DBData CREDENTIAL;
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		mainMenu();
+		
+		DBData pp = new DBData("admin2@admin2", "admin2");
+		System.out.println(pp.getUser_access()+" "+pp.getUser_name());
+		String[][] table = pp.viewAllOrder();
+
+		
+		System.out.println(AdvanceFunction.tableFormatter(table));
+		//mainMenu();
 	}
 
 	// NOT IN USE - USE THE DEFAULT PACKAGE

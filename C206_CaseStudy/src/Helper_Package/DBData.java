@@ -32,12 +32,12 @@ public class DBData {
 
 		// Check if email is in DB
 		Boolean isEmailDB = CheckEmailDB(email);
-		if ( isEmailDB == null || isEmailDB == true) {
+		if (isEmailDB == null || isEmailDB == true) {
 			return;
 		}
 
 		// Check if access type input is valid
-		else if (access != "normal" && access != "vendor" && access != "admin") {
+		else if ((access.equals("normal") || access.equals("vendor") || access.equals("admin")) == false) {
 			return;
 		}
 
@@ -47,7 +47,7 @@ public class DBData {
 		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
 
 		// Create and format SQL insert Statement
-		String InsertSQL = "INSERT INTO user (user_name, user_email, user_password, ACCESS_TYPE, LAST_LOGIN) VALUES ('%s' , SHA1('%s'), SHA1('%s'), '%s', NOW());";
+		String InsertSQL = "INSERT INTO user (user_name, user_email, user_password, ACCESS_TYPE, LAST_LOGIN) VALUES ('%s' , '%s', SHA1('%s'), '%s', NOW());";
 		InsertSQL = String.format(InsertSQL, name, email, password, access);
 
 		int rowsAffectedUser = DBUtil.execSQL(InsertSQL);
@@ -143,7 +143,7 @@ public class DBData {
 																														// ID
 
 			RowAffectByAccess = DBUtil.execSQL(InsertBYAccessSQL);
-			
+
 			// Delete user if Inserts Fails
 			if (RowAffectByAccess != 1) {
 				if (DELETE_USER() == false) {
@@ -225,7 +225,7 @@ public class DBData {
 			email = SQLInjection(email);
 			password = SQLInjection(password);
 
-			String sql = "SELECT ACCESS_TYPE, user_id FROM user WHERE user_email = SHA1('%s') AND user_password = SHA1('%s');";
+			String sql = "SELECT ACCESS_TYPE, user_id FROM user WHERE user_email = '%s' AND user_password = SHA1('%s');";
 
 			sql = String.format(sql, email, password);
 
@@ -262,7 +262,7 @@ public class DBData {
 		try {
 			DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
 
-			String SelectSQL = "SELECT user_email FROM user WHERE user_email = SHA1('%s');";
+			String SelectSQL = "SELECT user_email FROM user WHERE user_email = '%s';";
 			SelectSQL = String.format(SelectSQL, email);
 
 			ResultSet rs = DBUtil.getTable(SelectSQL);
@@ -300,6 +300,7 @@ public class DBData {
 		}
 
 		DBUtil.close();
+
 		return isUpdated;
 	}
 
@@ -340,9 +341,272 @@ public class DBData {
 		return name;
 	}
 
+	public String[][] viewAllUser() {
+
+		if (user_access.equals("admin") == false) {
+			return null;
+		}
+
+		int column = getUserCount() + 1;
+		String[] header = { "user_id", "user_name", "user_email", "ACCESS_TYPE", "LAST_LOGIN" };
+		int row = header.length;
+
+		String table[][] = new String[column][row];
+
+		String selectSQL = "Select %s FROM user;";
+		selectSQL = String.format(selectSQL, String.join(", ", header));
+
+		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
+
+		// Set first index of data to header
+		table[0] = header;
+
+		// Assigning values into data
+		ResultSet rs = DBUtil.getTable(selectSQL);
+		int count = 0;
+		try {
+			while (rs.next()) {
+				// Assign values based on header info
+				String id = rs.getString(header[0]);
+				String name = rs.getString(header[1]);
+				String email = rs.getString(header[2]);
+				String access = rs.getString(header[3]);
+				String login = rs.getString(header[4]);
+
+				// Add (You) based on user id
+				if (id.equals(user_id))
+					name += " [YOU]";
+
+				table[count + 1][0] = id;
+				table[count + 1][1] = name;
+				table[count + 1][2] = email;
+				table[count + 1][3] = access;
+				table[count + 1][4] = login;
+				count++;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		DBUtil.close();
+
+		return table;
+	}
+
+	public String[][] viewAllSchool() {
+		
+		if (user_access.equals("admin") == false) {
+			return null;
+		}
+
+		int column = getSchoolCount() + 1;
+		String[] header = { "school_id", "school_name", "school_address" };
+		int row = header.length;
+
+		String table[][] = new String[column][row];
+
+		String selectSQL = "Select %s FROM school;";
+		selectSQL = String.format(selectSQL, String.join(", ", header));
+
+		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
+
+		// Set first index of data to header
+		table[0] = header;
+
+		// Assigning values into data
+		ResultSet rs = DBUtil.getTable(selectSQL);
+		int count = 0;
+		try {
+			while (rs.next()) {
+				// Assign values based on header info
+				String id = rs.getString(header[0]);
+				String name = rs.getString(header[1]);
+				String address = rs.getString(header[2]);
+
+				table[count + 1][0] = id;
+				table[count + 1][1] = name;
+				table[count + 1][2] = address;
+				count++;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		DBUtil.close();
+
+		return table;
+	}
+
+	public String[][] viewAllOrder() {
+		
+		if (user_access.equals("admin") == false) {
+			return null;
+		}
+
+		int column = getOrderCount() + 1;
+		String[] header = { "order_id", "order_status", "child_id", "school_has_vendor_id", "payment_id", "normal_id" };
+		int row = header.length;
+
+		String table[][] = new String[column][row];
+
+		String selectSQL = "Select %s FROM has_order;";
+		selectSQL = String.format(selectSQL, String.join(", ", header));
+
+		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
+
+		// Set first index of data to header
+		table[0] = header;
+
+		// Assigning values into data
+		ResultSet rs = DBUtil.getTable(selectSQL);
+		int count = 0;
+		try {
+			while (rs.next()) {
+				// Assign values based on header info
+				String order_id = rs.getString(header[0]);
+				String status = rs.getString(header[1]);
+				String child_id = rs.getString(header[2]);
+				String school_has_vendor_id = rs.getString(header[3]);
+				String payment_id = rs.getString(header[4]);
+				String normal_id = rs.getString(header[5]);
+
+				table[count + 1][0] = order_id;
+				table[count + 1][1] = status;
+				table[count + 1][2] = child_id;
+				table[count + 1][3] = school_has_vendor_id;
+				table[count + 1][4] = payment_id;
+				table[count + 1][5] = normal_id;
+				count++;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		DBUtil.close();
+
+		return table;
+	}
+
 	// ======================================
 	// Extra methods
 	// ======================================
+
+	public static int getMenuCount() {
+		int count = 0;
+		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
+		String select = "SELECT menu_id FROM menu_item;";
+
+		ResultSet rs = DBUtil.getTable(select);
+		try {
+			while (rs.next()) {
+				count++;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		DBUtil.close();
+		return count;
+	}
+	
+	public static int getSchoolCount() {
+		int count = 0;
+		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
+		String select = "SELECT school_id FROM school;";
+
+		ResultSet rs = DBUtil.getTable(select);
+		try {
+			while (rs.next()) {
+				count++;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		DBUtil.close();
+		return count;
+	}
+
+	public static int getNormalCount() {
+		int count = 0;
+		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
+		String select = "SELECT normal_id FROM normal;";
+
+		ResultSet rs = DBUtil.getTable(select);
+		try {
+			while (rs.next()) {
+				count++;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		DBUtil.close();
+		return count;
+	}
+
+	public static int getUserCount() {
+		int count = 0;
+		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
+		String select = "SELECT user_id FROM user;";
+
+		ResultSet rs = DBUtil.getTable(select);
+		try {
+			while (rs.next()) {
+				count++;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		DBUtil.close();
+
+		return count;
+	}
+
+	public static int getVendorCount() {
+		int count = 0;
+		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
+		String select = "SELECT vendor_id FROM vendor;";
+
+		ResultSet rs = DBUtil.getTable(select);
+		try {
+			while (rs.next()) {
+				count++;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		DBUtil.close();
+		return count;
+	}
+
+	public static int getItemCount() {
+		int count = 0;
+		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
+		String select = "SELECT item_id FROM item;";
+
+		ResultSet rs = DBUtil.getTable(select);
+		try {
+			while (rs.next()) {
+				count++;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		DBUtil.close();
+		return count;
+	}
+
+	public static int getOrderCount() {
+		int count = 0;
+		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
+		String select = "SELECT order_id FROM has_order;";
+
+		ResultSet rs = DBUtil.getTable(select);
+		try {
+			while (rs.next()) {
+				count++;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		DBUtil.close();
+		return count;
+	}
 
 	// (DONE - TESTING)
 	protected static String SQLInjection(String str) {
