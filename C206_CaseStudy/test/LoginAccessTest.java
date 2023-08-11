@@ -55,8 +55,6 @@ public class LoginAccessTest {
         
         CREDENTIAL = Authentication.Login(email, password);
         
-        String actualAccessType = CREDENTIAL.getUser_access();
-        
-        assertNull(actualAccessType);
+        assertNull(CREDENTIAL);
     }
 } 
