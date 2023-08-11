@@ -5,6 +5,7 @@ import Helper_Package.Authentication;
 
 public class LoginAccessTest {
 
+	// TODO DONT USE EXSITING EMAIL - CREATE YOUR OWN ACCOUNT THEN TEST IT
     @Test
     public void testLoginNormalUser() {
         String email = "normal1@normal1";

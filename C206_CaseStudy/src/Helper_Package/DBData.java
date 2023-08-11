@@ -19,10 +19,6 @@ public class DBData {
 	// Register Account (DONE - TESTING)
 	public DBData(String name, String email, String password, String access, String[] OtherInfo) {
 
-		// Set Default FIELD to null
-		user_access = null;
-		user_id = null;
-
 		// Check all Inputs
 		if (name == null || email == null || password == null || access == null || OtherInfo == null) {
 			return;
@@ -35,7 +31,8 @@ public class DBData {
 		access = access.toLowerCase();
 
 		// Check if email is in DB
-		if (CheckEmailDB(email) == true) {
+		Boolean isEmailDB = CheckEmailDB(email);
+		if ( isEmailDB == null || isEmailDB == true) {
 			return;
 		}
 
