@@ -42,7 +42,7 @@ public class DBDataTest {
 	// Check all columns name in table
 	// ======================================
 
-	private static String[] allTables = new String[] { "admin", "child", "has_order", "item", "menu_item", "normal",
+	private static String[] allTables = new String[] { "admin", "child", "has_order", "item", "menu", "menu_item", "normal",
 			"payment", "school", "school_has_vendor", "user", "vendor" };
 
 	
@@ -123,6 +123,7 @@ public class DBDataTest {
 				"payment_id", "normal_id" };
 		String[] item = { "item_id", "item_name", "item_qty", "item_description", "item_dietary", "item_ingredients",
 				"item_price" };
+		String[] menu = {"menu_id"};
 		String[] menu_item = { "menu_item_id", "item_id", "menu_id" };
 		String[] normal = { "normal_id", "normal_phoneNumber", "normal_address", "normal_profile", "normal_allegies" };
 		String[] payment = { "payment_id", "payment_name" };
@@ -133,7 +134,7 @@ public class DBDataTest {
 				"menu_id" };
 
 		// Assign Tables Columns into nested array
-		String[][] TablesColumns = { admin, child, has_order, item, menu_item, normal, payment, school,
+		String[][] TablesColumns = { admin, child, has_order, item, menu, menu_item, normal, payment, school,
 				school_has_vendor, user, vendor };
 
 		String SelectTableSQL;
@@ -625,11 +626,11 @@ public class DBDataTest {
 				checkValidation = true;
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			fail("testConstructorRegister_InsertVendor failed" + e.getMessage());
 		}
 
 		DBUtil.close();
-		assertTrue("Registration elete User failed", CREDENTIAL.DELETE_USER());
+		assertTrue("Registration delete User failed", CREDENTIAL.DELETE_USER());
 		assertTrue("Registration failed in Vendor Table", checkValidation);
 
 		CREDENTIAL.DELETE_USER();
@@ -692,7 +693,7 @@ public class DBDataTest {
 				checkValidation = true;
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			fail("testConstructorRegister_InsertAdmin failed" + e.getMessage());
 		}
 
 		DBUtil.close();
@@ -825,7 +826,7 @@ public class DBDataTest {
 		int id = 99999;
 
 		// Insert Temp User
-		String addSQL = "INSERT INTO user (user_id, user_name, user_email, user_password, ACCESS_TYPE, LAST_LOGIN) VALUES (%d, '%s' , SHA1('%s'), SHA1('%s'), '%s', '%s');";
+		String addSQL = "INSERT INTO user (user_id, user_name, user_email, user_password, ACCESS_TYPE, LAST_LOGIN) VALUES (%d, '%s' , '%s', SHA1('%s'), '%s', '%s');";
 		addSQL = String.format(addSQL, id, name, email, password, access, login);
 		DBUtil.execSQL(addSQL);
 

@@ -12,6 +12,7 @@ public class Authentication {
 		// Return null if any of the 5 has error
 		if (CREDENTIAL == null || CREDENTIAL_id == null || CREDENTIAL_access == null || CREDENTIAL_id.isEmpty() || CREDENTIAL_access.isEmpty()) {
 			CREDENTIAL = null;
+		//System.out.println(CREDENTIAL);
 		}
 	}
 	
