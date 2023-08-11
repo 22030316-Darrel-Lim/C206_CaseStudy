@@ -1,10 +1,5 @@
 package Helper_Package;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
-import Helper.DBUtil;
-
 public class Authentication {
   
 	private static DBData CREDENTIAL;
@@ -39,7 +34,7 @@ public class Authentication {
 	public static DBData RegisterAccountNormal(String name, String email, String password, String[] otherInfo) {
 		String access = "normal";
 		
-		CREDENTIAL= RegisterAccount(name, email, password, access, otherInfo);
+		CREDENTIAL = RegisterAccount(name, email, password, access, otherInfo);
 		
 		return CREDENTIAL;
 	}
@@ -59,38 +54,5 @@ public class Authentication {
 		
 		return CREDENTIAL;
 	}
-	
-	public static Boolean CheckEmailDB(String email) {
-        Boolean exists = null;
-
-        // Check if empty
-        if (email == null || email.isEmpty()) {
-            return exists;
-        }
-        
-        exists = false;
-        
-        try {
-            DBUtil.init(DBData.JDBCURL, DBData.DBUSERNAME, DBData.DBPASSWORD);
-
-            String SelectSQL = "SELECT user_email FROM user WHERE user_email = SHA1('%s');";
-            SelectSQL = String.format(SelectSQL, email);
-
-            ResultSet rs = DBUtil.getTable(SelectSQL);
-
-            // Check if the email exists in the SQL database
-            if (rs.next()) {
-                exists = true;
-            }
-
-            DBUtil.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return exists;
-    }
-	
-
 	
 } // End of Class

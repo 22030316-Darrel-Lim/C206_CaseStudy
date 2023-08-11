@@ -93,6 +93,7 @@ public class C206_CaseStudy {
 
 			displayMenu("normal");
 			CHOICE = readString("Enter Option: ");
+			
 			switch (CHOICE) {
 			case "1":
 				// Call method to see all menu
@@ -121,6 +122,7 @@ public class C206_CaseStudy {
 
 			displayMenu("vendor");
 			CHOICE = readString("Enter Option: ");
+			
 			switch (CHOICE) {
 			case "1":
 				// Call method to see all menu
@@ -158,6 +160,7 @@ public class C206_CaseStudy {
 
 			displayMenu("admin");
 			CHOICE = readString("Enter Option: ");
+			
 			switch (CHOICE) {
 			case "1":
 				// Call method to view all User
@@ -204,7 +207,7 @@ public class C206_CaseStudy {
 	}
 
 	private static void print(String str) {
-		print(str);
+		System.out.println(str);
 	}
 
 	private static void displayMenu(String menuType) {
@@ -269,8 +272,8 @@ public class C206_CaseStudy {
 	}
 
 	private static double readDouble(String str) {
-		double i = Helper.readInt(str);
-		return i;
+		double d = Helper.readDouble(str);
+		return d;
 	}
 
 	private static void line(int count, String str) {
@@ -295,7 +298,7 @@ public class C206_CaseStudy {
 
 	private static void createFoodMenu() {
 		line(40, "-");
-		print("== CREATE NEW FOOD MENU ==");
+		print("=== CREATE NEW FOOD MENU ===");
 		// TODO Create a new Food menu - SQL to Insert new Menu
 		addFoodItem();
 
@@ -305,7 +308,7 @@ public class C206_CaseStudy {
 
 	private static void deleteFoodMenu() {
 		line(40, "-");
-		print("== DELETE FOOD MENU ==");
+		print("=== DELETE FOOD MENU ===");
 		// TODO Run SQL Statement to get Menu_id
 
 		int id = readInt("Select Menu_ID to delete: ");
@@ -316,12 +319,15 @@ public class C206_CaseStudy {
 
 	private static void addFoodItem() {
 		line(40, "-");
-		print("== ADD FOOD TO MENU ==");
+		print("=== ADD FOOD TO MENU ===");
 
 		// Looping for input
 		CHOICE = "";
+		
 		while (CHOICE != "9") {
-			print("1) Add exisitng food to menu \n2) Create food and add it to menu \n9) Exit");
+			print("1) Add exisitng food to men");
+			print("2) Create food and add it to menu");
+			print("9) Exit");
 			CHOICE = readString("Enter Option: ");
 
 			switch (CHOICE) {
