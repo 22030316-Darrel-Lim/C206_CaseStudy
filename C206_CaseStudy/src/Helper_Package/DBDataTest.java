@@ -460,7 +460,7 @@ public class DBDataTest {
 	// ======================================
 	// Stage 4: Test DBData main constructors
 	// Register Account (Normal, Vendor, Admin)
-	// Login User (Normal, Vendor, Admin) 
+	// Login User (Normal, Vendor, Admin)
 	// ======================================
 	
 	private static DBData CREDENTIAL;
