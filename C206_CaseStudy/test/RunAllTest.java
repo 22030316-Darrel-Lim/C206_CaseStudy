@@ -21,7 +21,8 @@ public class RunAllTest {
 	       }
 	      
 	      // Print number of test ran
-	      //System.out.println(result.getRunCount());
+	      System.out.println(result.getRunCount());
+	      System.out.println(result.getFailureCount());
 	      
 	      boolean isSuccessful = result.wasSuccessful();
 	      return isSuccessful;
