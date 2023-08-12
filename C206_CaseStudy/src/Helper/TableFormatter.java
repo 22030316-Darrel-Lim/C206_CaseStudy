@@ -16,7 +16,7 @@ public class TableFormatter {
 	 * @param str         the string to center
 	 * @return the string centered within the column width
 	 */
-	private static String centerStr(int columnWidth, String str) {
+	protected static String centerStr(int columnWidth, String str) {
 
 		// Prevent null operation
 		if (str == null) {
@@ -42,7 +42,7 @@ public class TableFormatter {
 	 * @param columnsWidth the widths of the columns in the table
 	 * @return the separator row
 	 */
-	private static String createSeparator(int[] columnsWidth) {
+	protected static String createSeparator(int[] columnsWidth) {
 		String seperator = "";
 
 		// Create a separator for each columns in table

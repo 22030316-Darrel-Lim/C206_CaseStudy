@@ -1,9 +1,15 @@
 package Temp_Holding;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Test;
+
+import Helper.TableFormatter;
 
 public class ItemTest {
 
 	@Test
+	
 	public void testSuccessAddItem() {
 		// Simulate Add Item success
 		String name = "Bread";
@@ -13,6 +19,7 @@ public class ItemTest {
 		String ingredeints = "yeast, flour, salt";
 		String price = "2.6";
 		// TODO SQL To add Food
+
 	}
 
 	@Test
@@ -25,6 +32,7 @@ public class ItemTest {
 		String ingredeints = "yeast, flour, salt";
 		String price = "2.6";
 		// TODO SQL To add Food
+		assertTrue(true);
 	}
 
 }

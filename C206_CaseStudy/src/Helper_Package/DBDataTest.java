@@ -9,12 +9,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import org.junit.Test;
-import org.junit.runner.JUnitCore;
-import org.junit.runner.Result;
-import org.junit.runner.notification.Failure;
-
 import Helper.DBUtil;
-import Helper.TableFormatter;
 
 public class DBDataTest {
 	
@@ -124,7 +119,7 @@ public class DBDataTest {
 				"payment_id", "normal_id" };
 		String[] item = { "item_id", "item_name", "item_qty", "item_description", "item_dietary", "item_ingredients",
 				"item_price" };
-		String[] menu = {"menu_id"};
+		String[] menu = {"menu_id", "menu_name"};
 		String[] menu_item = { "menu_item_id", "item_id", "menu_id" };
 		String[] normal = { "normal_id", "normal_phoneNumber", "normal_address", "normal_profile", "normal_allegies" };
 		String[] payment = { "payment_id", "payment_name" };
@@ -472,8 +467,8 @@ public class DBDataTest {
 	public void testConstructorRegister_StartValidation() {
 		boolean checkValidation = false;
 
-		String name = "John";
-		String email = "John@email.com";
+		String name = "John[StartValidation]";
+		String email = "John@email.com[StartValidation]";
 		String password = "Password123";
 		String access = "normal";
 		String[] OtherInfo = { "999", "Beef,Flour,Egg", "Street 123" };
@@ -532,8 +527,8 @@ public class DBDataTest {
 	public void testConstructorRegister_InsertNormal() {
 		boolean checkValidation = false;
 
-		String name = "John";
-		String email = "John@email.com";
+		String name = "John[InsertNormal]";
+		String email = "John@email.com[InsertNormal]";
 		String password = "Password123";
 		String access = "normal";
 		String[] OtherInfo = { "999", "Beef,Flour,Egg", "Street 123" };
@@ -573,8 +568,8 @@ public class DBDataTest {
 
 	@Test
 	public void testConstructorRegister_InsertNormal_Fail() {
-		String name = "John";
-		String email = "John@email.com";
+		String name = "John[InsertNormal_Fail]";
+		String email = "John@email.com[InsertNormal_Fail]";
 		String password = "Password123";
 		String access = "normal";
 		String[] OtherInfo = { "999" };
@@ -599,8 +594,8 @@ public class DBDataTest {
 	public void testConstructorRegister_InsertVendor() {
 		boolean checkValidation = false;
 
-		String name = "John";
-		String email = "John@email.com";
+		String name = "John[InsertVendor]";
+		String email = "John@email.com[InsertVendor]";
 		String password = "Password123";
 		String access = "vendor";
 		String[] OtherInfo = { "Company 1", "999", "Street 123" };
@@ -610,6 +605,7 @@ public class DBDataTest {
 
 		// Check if tempUser is created in User table
 		checkValidation = DBData.LOGIN(email, password);
+
 		assertTrue("Regisration failed in User Table", checkValidation);
 
 		String id = CREDENTIAL.getUser_id();
@@ -640,8 +636,8 @@ public class DBDataTest {
 
 	@Test
 	public void testConstructorRegister_InsertVendor_Fail() {
-		String name = "John";
-		String email = "John@email.com";
+		String name = "John[InsertVendor_Fail]";
+		String email = "John@email.com[InsertVendor_Fail]";
 		String password = "Password123";
 		String access = "vendor";
 		String[] OtherInfo = { "Company 1" };
@@ -666,8 +662,8 @@ public class DBDataTest {
 	public void testConstructorRegister_InsertAdmin() {
 		boolean checkValidation = false;
 
-		String name = "John";
-		String email = "John@email.com";
+		String name = "John[InsertAdmin]";
+		String email = "John@email.com[InsertAdmin]";
 		String password = "Password123";
 		String access = "admin";
 		String[] OtherInfo = {};
@@ -707,8 +703,8 @@ public class DBDataTest {
 
 	@Test
 	public void testConstructorRegister_InsertAdmin_Fail() {
-		String name = "John";
-		String email = "John@email.com";
+		String name = "John[InsertAdmin_Fail]";
+		String email = "John@email.com[InsertAdmin_Fail]";
 		String password = "Password123";
 		String access = "admin";
 		String[] OtherInfo = { "1" };
@@ -732,8 +728,8 @@ public class DBDataTest {
 	// DBData Constructor [Login]
 	@Test
 	public void testConstructorLogin() {
-		String id = DBDataTest.add_User();
-		String email = "john@email.com";
+		String id = add_User();
+		String email = "john@email.com[ADD_USER]";
 		String password = "Password123";
 
 		CREDENTIAL = new DBData(email, password);
@@ -819,8 +815,8 @@ public class DBDataTest {
 
 	protected static String add_User() {
 		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
-		String name = "john";
-		String email = "john@email.com";
+		String name = "john[ADD_USER]";
+		String email = "john@email.com[ADD_USER]";
 		String password = "Password123";
 		String access = "normal";
 		String login = "2000-01-01 12:00:01.0000";

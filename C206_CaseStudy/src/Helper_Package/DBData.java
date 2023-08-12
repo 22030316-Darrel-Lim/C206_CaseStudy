@@ -2,6 +2,8 @@ package Helper_Package;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.stream.Stream;
 
 import Helper.DBUtil;
 
@@ -11,6 +13,13 @@ public class DBData {
 	protected static final String JDBCURL = "jdbc:mysql://localhost/c206_ga";
 	protected static final String DBUSERNAME = "root";
 	protected static final String DBPASSWORD = "";
+
+	protected static String InsertSQL;
+	protected static String DeleteSQL;
+	protected static String UpdateSQL;
+	protected static String SelectSQL;
+
+	protected static ResultSet rs;
 
 	private static String user_access;
 	private static String user_id;
@@ -23,8 +32,8 @@ public class DBData {
 		if (name == null || email == null || password == null || access == null || OtherInfo == null) {
 			return;
 		}
-
-		name = SQLInjection(email);
+		
+		name = SQLInjection(name);
 		email = SQLInjection(email);
 		password = SQLInjection(password);
 
@@ -47,7 +56,7 @@ public class DBData {
 		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
 
 		// Create and format SQL insert Statement
-		String InsertSQL = "INSERT INTO user (user_name, user_email, user_password, ACCESS_TYPE, LAST_LOGIN) VALUES ('%s' , '%s', SHA1('%s'), '%s', NOW());";
+		InsertSQL = "INSERT INTO user (user_name, user_email, user_password, ACCESS_TYPE, LAST_LOGIN) VALUES ('%s' , '%s', SHA1('%s'), '%s', NOW());";
 		InsertSQL = String.format(InsertSQL, name, email, password, access);
 
 		int rowsAffectedUser = DBUtil.execSQL(InsertSQL);
@@ -64,15 +73,14 @@ public class DBData {
 			return;
 		}
 
-		String InsertBYAccessSQL;
 		int RowAffectByAccess;
 		String phoneNo;
 		String address;
 		String picture;
 		String company;
 		String allegies;
-		String menu_id = "1";
-
+		String menu_id;
+		
 		main: switch (access) {
 		case "normal":
 			if (OtherInfo.length != 3) {
@@ -98,10 +106,10 @@ public class DBData {
 			address = OtherInfo[2];
 			picture = "normal.png";
 
-			InsertBYAccessSQL = "INSERT INTO normal (normal_id, normal_phoneNumber, normal_address, normal_profile, normal_allegies) VALUES ('%s', %s, '%s', '%s', '%s');";
-			InsertBYAccessSQL = String.format(InsertBYAccessSQL, user_id, phoneNo, address, picture, allegies);
+			InsertSQL = "INSERT INTO normal (normal_id, normal_phoneNumber, normal_address, normal_profile, normal_allegies) VALUES ('%s', %s, '%s', '%s', '%s');";
+			InsertSQL = String.format(InsertSQL, user_id, phoneNo, address, picture, allegies);
 
-			RowAffectByAccess = DBUtil.execSQL(InsertBYAccessSQL);
+			RowAffectByAccess = DBUtil.execSQL(InsertSQL);
 
 			// Delete user if Inserts Fails
 			if (RowAffectByAccess != 1) {
@@ -135,14 +143,27 @@ public class DBData {
 			phoneNo = OtherInfo[1];
 			address = OtherInfo[2];
 			picture = "vendor.png";
+			String menu_name = getUser_name() + "_menu";
+			
+			InsertSQL = "INSERT INTO menu (menu_name) VALUES ('%s');";
+			InsertSQL = String.format(InsertSQL, menu_name);
+			
+			RowAffectByAccess = DBUtil.execSQL(InsertSQL);
 
-			InsertBYAccessSQL = "INSERT INTO vendor (vendor_id, vendor_phoneNumber, vendor_companyName, vendor_profile, vendor_address, menu_id) VALUES ('%s' , '%s', '%s', '%s','%s', '%s');";
-			InsertBYAccessSQL = String.format(InsertBYAccessSQL, user_id, phoneNo, company, picture, address, menu_id); // TODO
-																														// Check
-																														// menu
-																														// ID
+			// Delete user if Inserts Fails
+			if (RowAffectByAccess != 1) {
+				if (DELETE_USER() == false) {
+					user_access = null;
+					user_id = null;
+				}
+			}
 
-			RowAffectByAccess = DBUtil.execSQL(InsertBYAccessSQL);
+			menu_id = getMenuID(menu_name);
+			
+			InsertSQL = "INSERT INTO vendor (vendor_id, vendor_phoneNumber, vendor_companyName, vendor_profile, vendor_address, menu_id) VALUES ('%s' , '%s', '%s', '%s', '%s', '%s');";
+			InsertSQL = String.format(InsertSQL, user_id, phoneNo, company, picture, address, menu_id);
+
+			RowAffectByAccess = DBUtil.execSQL(InsertSQL);
 
 			// Delete user if Inserts Fails
 			if (RowAffectByAccess != 1) {
@@ -160,10 +181,10 @@ public class DBData {
 			}
 			picture = "admin.png";
 
-			InsertBYAccessSQL = "INSERT INTO admin (admin_id, admin_profile) VALUES ('%s','%s');";
-			InsertBYAccessSQL = String.format(InsertBYAccessSQL, user_id, picture);
+			InsertSQL = "INSERT INTO admin (admin_id, admin_profile) VALUES ('%s','%s');";
+			InsertSQL = String.format(InsertSQL, user_id, picture);
 
-			RowAffectByAccess = DBUtil.execSQL(InsertBYAccessSQL);
+			RowAffectByAccess = DBUtil.execSQL(InsertSQL);
 
 			// Delete user if Inserts Fails
 			if (RowAffectByAccess != 1) {
@@ -194,12 +215,27 @@ public class DBData {
 	// Delete user - Error in creating will delete user (DONE - TESTING)
 	protected boolean DELETE_USER() {
 		boolean isDeleted = false;
+		
+		if (user_access.equals("vendor") == true) {
+			String menu_name = getUser_name() + "_menu";
+			
+			DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
+			
+			DeleteSQL = "DELETE FROM menu WHERE menu_name = '%s';";
+			DeleteSQL = String.format(DeleteSQL, menu_name);
+
+			DBUtil.close();
+		}
+		
 		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
-		String DeleteSQL = "DELETE FROM user WHERE user_id ='%s';";
+		
+		DeleteSQL = "DELETE FROM user WHERE user_id = '%s';";
 		DeleteSQL = String.format(DeleteSQL, user_id);
 
 		int rowsAffected = DBUtil.execSQL(DeleteSQL);
+		
 		DBUtil.close();
+		
 		if (rowsAffected == 1) {
 			isDeleted = true;
 		}
@@ -218,7 +254,7 @@ public class DBData {
 		if (email == null || password == null) {
 			return isLogged;
 		}
-
+		
 		try {
 			DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
 
@@ -319,28 +355,42 @@ public class DBData {
 	// (DONE - TESTING)
 	public String getUser_name() {
 		String name = "";
-		try {
-			DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
 
-			String sql = "SELECT user_name FROM user WHERE user_id = %s;";
-
-			sql = String.format(sql, user_id);
-
-			ResultSet rs = DBUtil.getTable(sql);
-			if (rs.next()) {
-				name = rs.getString("user_name");
-			}
-
-			DBUtil.close();
-
-		} catch (SQLException e) {
-			name = null;
-			System.out.println("SQL Error: " + e.getMessage());
-		}
+		name = getUserInfo()[0];
 
 		return name;
 	}
 
+	public static String[] getUserInfo() {
+		String[] userInfo = new String[3];
+
+		SelectSQL = "SELECT `user_name`, `user_email`, `LAST_LOGIN` FROM `user` WHERE user_id = '%s';";
+		SelectSQL = String.format(SelectSQL, user_id);
+
+		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
+
+		rs = DBUtil.getTable(SelectSQL);
+
+		try {
+			while (rs.next()) {
+				
+				String user_name = rs.getString("user_name");
+				String user_email = rs.getString("user_email");
+				String last_login = rs.getString("LAST_LOGIN");
+
+				userInfo[0] = user_name;
+				userInfo[1] = user_email;
+				userInfo[2] = last_login;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		DBUtil.close();
+		return userInfo;
+	}
+
+	// Admin ONLY
 	public String[][] viewAllUser() {
 
 		if (user_access.equals("admin") == false) {
@@ -353,8 +403,8 @@ public class DBData {
 
 		String table[][] = new String[column][row];
 
-		String selectSQL = "Select %s FROM user;";
-		selectSQL = String.format(selectSQL, String.join(", ", header));
+		SelectSQL = "Select %s FROM user;";
+		SelectSQL = String.format(SelectSQL, String.join(", ", header));
 
 		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
 
@@ -362,7 +412,7 @@ public class DBData {
 		table[0] = header;
 
 		// Assigning values into data
-		ResultSet rs = DBUtil.getTable(selectSQL);
+		ResultSet rs = DBUtil.getTable(SelectSQL);
 		int count = 0;
 		try {
 			while (rs.next()) {
@@ -516,7 +566,7 @@ public class DBData {
 				String item_qty = rs.getString(header[3]);
 				String item_description = rs.getString(header[4]);
 				double item_price = rs.getDouble(header[5]);
-				
+
 				String price = String.format("$%.2f", item_price);
 
 				table[count + 1][0] = menu_id;
@@ -535,16 +585,161 @@ public class DBData {
 		return table;
 	}
 
+	// Vendor ONLY
+	public String[] getVendorInfo() {
+		String[] vendorInfo = new String[5];
+
+		String[] userInfo = DBData.getUserInfo();
+
+		SelectSQL = "SELECT `vendor_phoneNumber`, `vendor_companyName`, `vendor_profile`, `vendor_address`, `menu_id` FROM `vendor` WHERE vendor_id = '%s';";
+		SelectSQL = String.format(SelectSQL, user_id);
+
+		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
+
+		rs = DBUtil.getTable(SelectSQL);
+
+		try {
+			while (rs.next()) {
+
+				String vendor_phoneNumber = rs.getString("vendor_phoneNumber");
+				String vendor_companyName = rs.getString("vendor_companyName");
+				String vendor_profile = rs.getString("vendor_profile");
+				String vendor_address = rs.getString("vendor_address");
+				String menu_id = rs.getString("menu_id");
+
+				vendorInfo[0] = vendor_phoneNumber;
+				vendorInfo[1] = vendor_companyName;
+				vendorInfo[2] = vendor_profile;
+				vendorInfo[3] = vendor_address;
+				vendorInfo[4] = menu_id;
+			}
+
+			// Join arrays together
+			vendorInfo = Stream.concat(Arrays.stream(userInfo), Arrays.stream(vendorInfo)).toArray(String[]::new);
+
+		} catch (SQLException e) {
+			vendorInfo = null;
+			e.printStackTrace();
+		}
+
+		DBUtil.close();
+		return vendorInfo;
+	}
+
+	public String[][] viewAllFood() {
+
+		if (user_access.equals("vendor") == false) {
+			return null;
+		}
+
+		int column = getItemCount() + 1;
+		String[] header = { "item_id", "item_name", "item_qty", "item_description", "item_dietary", "item_ingredients",
+				"item_price" };
+		int row = header.length;
+
+		String table[][] = new String[column][row];
+
+		SelectSQL = "Select %s FROM item;";
+		SelectSQL = String.format(SelectSQL, String.join(", ", header));
+
+		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
+
+		// Set first index of data to header
+		table[0] = header;
+
+		// Assigning values into data
+		rs = DBUtil.getTable(SelectSQL);
+		int count = 0;
+		try {
+			while (rs.next()) {
+				// Assign values based on header info
+				String item_id = rs.getString(header[0]);
+				String item_name = rs.getString(header[1]);
+				String item_qty = rs.getString(header[2]);
+				String item_description = rs.getString(header[3]);
+				String item_dietary = rs.getString(header[4]);
+				String item_ingredients = rs.getString(header[5]);
+				double item_price = rs.getDouble(header[6]);
+
+				String price = String.format("$%.2f", item_price);
+
+				table[count + 1][0] = item_id;
+				table[count + 1][1] = item_name;
+				table[count + 1][2] = item_qty;
+				table[count + 1][3] = item_description;
+				table[count + 1][4] = item_dietary;
+				table[count + 1][5] = item_ingredients;
+				table[count + 1][6] = price;
+				count++;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		DBUtil.close();
+
+		return table;
+	}
+
+	public Boolean addItemToMenu(int item_id) {
+
+		if (user_access.equals("vendor") == false) {
+			return null;
+		}
+		String menu_id = getVendorInfo()[7];
+
+		Boolean isAdded = false;
+
+		InsertSQL = "INSERT INTO `menu_item` (`item_id`, `menu_id`) VALUES ('%d', '%s');";
+		InsertSQL = String.format(InsertSQL, item_id, menu_id);
+
+		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
+
+		int rowsAdded = DBUtil.execSQL(InsertSQL);
+
+		if (rowsAdded == 1) {
+			isAdded = true;
+		} else {
+			isAdded = null;
+		}
+
+		DBUtil.close();
+		return isAdded;
+	}
+
+	public String getMenuID(String menu_name) {
+		String menu_id = null;
+
+		SelectSQL = "SELECT `menu_id` FROM `menu` WHERE menu_name = '%s';";
+		SelectSQL = String.format(SelectSQL, user_id);
+
+		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
+
+		rs = DBUtil.getTable(SelectSQL);
+
+		try {
+			while (rs.next()) {
+
+				menu_id = rs.getString("menu_id");
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		DBUtil.close();
+		return menu_id;
+	}
+	
 	// ======================================
 	// Extra methods
 	// ======================================
 
-	public static int getMenuCount() {
+	public int getMenuCount() {
 		int count = 0;
 		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
-		String select = "SELECT menu_id FROM menu_item;";
+		SelectSQL = "SELECT menu_id FROM menu_item;";
 
-		ResultSet rs = DBUtil.getTable(select);
+		rs = DBUtil.getTable(SelectSQL);
 		try {
 			while (rs.next()) {
 				count++;
@@ -556,12 +751,12 @@ public class DBData {
 		return count;
 	}
 
-	public static int getSchoolCount() {
+	public int getSchoolCount() {
 		int count = 0;
 		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
-		String select = "SELECT school_id FROM school;";
+		SelectSQL = "SELECT school_id FROM school;";
 
-		ResultSet rs = DBUtil.getTable(select);
+		rs = DBUtil.getTable(SelectSQL);
 		try {
 			while (rs.next()) {
 				count++;
@@ -573,12 +768,12 @@ public class DBData {
 		return count;
 	}
 
-	public static int getNormalCount() {
+	public int getNormalCount() {
 		int count = 0;
 		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
-		String select = "SELECT normal_id FROM normal;";
+		SelectSQL = "SELECT normal_id FROM normal;";
 
-		ResultSet rs = DBUtil.getTable(select);
+		rs = DBUtil.getTable(SelectSQL);
 		try {
 			while (rs.next()) {
 				count++;
@@ -590,12 +785,12 @@ public class DBData {
 		return count;
 	}
 
-	public static int getUserCount() {
+	public int getUserCount() {
 		int count = 0;
 		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
-		String select = "SELECT user_id FROM user;";
+		SelectSQL = "SELECT user_id FROM user;";
 
-		ResultSet rs = DBUtil.getTable(select);
+		rs = DBUtil.getTable(SelectSQL);
 		try {
 			while (rs.next()) {
 				count++;
@@ -608,12 +803,12 @@ public class DBData {
 		return count;
 	}
 
-	public static int getVendorCount() {
+	public int getVendorCount() {
 		int count = 0;
 		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
-		String select = "SELECT vendor_id FROM vendor;";
+		SelectSQL = "SELECT vendor_id FROM vendor;";
 
-		ResultSet rs = DBUtil.getTable(select);
+		rs = DBUtil.getTable(SelectSQL);
 		try {
 			while (rs.next()) {
 				count++;
@@ -625,12 +820,12 @@ public class DBData {
 		return count;
 	}
 
-	public static int getItemCount() {
+	public int getItemCount() {
 		int count = 0;
 		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
-		String select = "SELECT item_id FROM item;";
+		SelectSQL = "SELECT item_id FROM item;";
 
-		ResultSet rs = DBUtil.getTable(select);
+		rs = DBUtil.getTable(SelectSQL);
 		try {
 			while (rs.next()) {
 				count++;
@@ -642,12 +837,12 @@ public class DBData {
 		return count;
 	}
 
-	public static int getOrderCount() {
+	public int getOrderCount() {
 		int count = 0;
 		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
-		String select = "SELECT order_id FROM has_order;";
+		SelectSQL = "SELECT order_id FROM has_order;";
 
-		ResultSet rs = DBUtil.getTable(select);
+		rs = DBUtil.getTable(SelectSQL);
 		try {
 			while (rs.next()) {
 				count++;

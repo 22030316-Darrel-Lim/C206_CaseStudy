@@ -1,5 +1,8 @@
 package Not_In_Use;
 
+import java.util.Arrays;
+import java.util.stream.Stream;
+
 import Helper.Helper;
 import Helper.TableFormatter;
 import Helper_Package.Authentication;
@@ -7,19 +10,77 @@ import Helper_Package.DBData;
 
 public class Main {
 	private static DBData CREDENTIAL;
+	private static int CHOICE;
 
 	public static void main(String[] args) {
-		
-		DBData pp = new DBData("admin2@admin2", "admin2");
-		System.out.println(pp.getUser_access()+" "+pp.getUser_name());
-		String[][] table = pp.viewAllOrder();
 
-		
-		System.out.println(TableFormatter.tableFormatter(table));
-		
-		//mainMenu();
+		DBData CREDENTIAL = new DBData("vendor1@vendor1", "vendor1");
+		System.out.println(CREDENTIAL.getUser_access() + " " + CREDENTIAL.getUser_name());
+
+		String[][] table = CREDENTIAL.viewAllFood();
+
+		print(TableFormatter.tableFormatter(table));
+
+		int countItem = CREDENTIAL.getItemCount();
+
+		if (countItem == 0) {
+			print("There are currently no items in the DB");
+			return;
+		}
+
+		CHOICE = readInt("Enter item_id to add into menu: ") + 1;
+
+		if (CHOICE > countItem || CHOICE <= 0) {
+			print("\nWrong item ID entered - Returning back to [ADD FOOD TO MENU]\n");
+			return;
+		}
+
+		String item_id = table[CHOICE][0];
+		String item_name = table[CHOICE][1];
+		String item_qty = table[CHOICE][2];
+		String item_description = table[CHOICE][3];
+		String item_dietary = table[CHOICE][4];
+		String item_ingredients = table[CHOICE][5];
+		String item_price = table[CHOICE][6];
+
+		String row = "" + "\n======= Food =======\n" + "Item ID: %s\n" + "Item name: %s\n" + "Item quantity: %s\n"
+				+ "Item description: %s\n" + "Item dietary: %s\n" + "Item ingredients: %s\n" + "Item price: %s\n";
+
+		row = String.format(row, item_id, item_name, item_qty, item_description, item_dietary, item_ingredients,
+				item_price);
+		print(row);
+
+		char YESNO = readChar("Add item to menu? (Y/N) ");
+
+		if (YESNO != 'y') {
+			print("Returning back to [ADD FOOD TO MENU]");
+			return;
+		}
+
+		print("Adding Item to Menu...");
+		CREDENTIAL.addItemToMenu(CHOICE);
+
 	}
 
+	private static void print(String str) {
+		System.out.println(str);
+	}
+
+	private static int readInt(String str) {
+		int i = Helper.readInt(str);
+		return i;
+	}
+
+	private static double readDouble(String str) {
+		double d = Helper.readDouble(str);
+		return d;
+	}
+
+	private static char readChar(String str) {
+		char c = Helper.readChar(str);
+		c = Character.toLowerCase(c);
+		return c;
+	}
 	// NOT IN USE - USE THE DEFAULT PACKAGE
 	// THIS SERVERS AS A WORKSTATION TO AVOID CONFLICT WITH THE DEFAULT CLASS
 
