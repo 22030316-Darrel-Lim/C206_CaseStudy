@@ -510,10 +510,6 @@ public class DBData {
 
 	public String[][] viewAllMenu() {
 
-		if (user_access.equals("admin") == false) {
-			return null;
-		}
-
 		int column = getMenuCount() + 1;
 		String[] header = { "menu_id", "menu_item.item_id", "item_name", "item_qty", "item_description", "item_price" };
 		int row = header.length;
@@ -714,6 +710,62 @@ public class DBData {
 		}
 
 		DBUtil.close();
+		return isAdded;
+	}
+
+	public Boolean addItemToMenu(String[] item, String menu_id) {
+
+		if (user_access.equals("vendor") == false || item.length != 6) {
+			return null;
+		}
+
+		Boolean isAdded = null;
+		
+		String item_name = item[0];
+		String item_qty = item[1];
+		String item_description = item[2];
+		String item_dietary = item[3];
+		String item_ingredients = item[4];
+		String item_price = item[5];
+
+		InsertSQL = "INSERT INTO `item`(`item_name`, `item_qty`, `item_description`, `item_dietary`, `item_ingredients`, `item_price`) "
+				+ "VALUES ('%s', '%s', '%s', '%s', '%s', '%s');";
+		InsertSQL = String.format(InsertSQL, item_name, item_qty, item_description, item_dietary, item_ingredients,
+				item_price);
+
+		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
+
+		int rowsAdded = DBUtil.execSQL(InsertSQL);
+
+		if (rowsAdded == 1) {
+			isAdded = true;
+		} else {
+			return isAdded;
+		}
+
+		//
+		// Find Newly Created Item ID
+		//
+		int item_id = 0;
+		
+		SelectSQL = "SELECT item_id FROM `item` WHERE item_name = '%s' AND item_qty = '%s' AND item_description = '%s' AND item_dietary = '%s' AND item_ingredients = '%s' AND item_price = '%s';";
+		SelectSQL = String.format(SelectSQL, item_name, item_qty, item_description, item_dietary, item_ingredients,
+				item_price);
+		
+		rs = DBUtil.getTable(SelectSQL);
+		
+		try {
+			while (rs.next()) {
+				item_id = rs.getInt("item_id");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return isAdded;
+		}
+		
+		DBUtil.close();
+		
+		isAdded = addItemToMenu(item_id, menu_id);
 		return isAdded;
 	}
 
