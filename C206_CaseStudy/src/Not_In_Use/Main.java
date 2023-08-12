@@ -17,6 +17,14 @@ public class Main {
 		DBData CREDENTIAL = new DBData("vendor1@vendor1", "vendor1");
 		System.out.println(CREDENTIAL.getUser_access() + " " + CREDENTIAL.getUser_name());
 
+		String[] vendorInfo = CREDENTIAL.getVendorInfo();
+
+		if (vendorInfo.length != 8) {
+			print("[Add exisitng food to menu] Cant be choosen as currently there is no menu to your account");
+			return;
+		}
+		String[] menu = vendorInfo[7].split(",");
+
 		String[][] table = CREDENTIAL.viewAllFood();
 
 		print(TableFormatter.tableFormatter(table));
@@ -50,15 +58,37 @@ public class Main {
 				item_price);
 		print(row);
 
+		//
+		// Check for vendor available menu
+		//
+		print("----- Avaible Menu -----");
+		table = new String[menu.length + 1][1];
+		table[0][0] = "Menu_ID";
+
+		for (int i = 0; i < menu.length; i++) {
+			table[i + 1][0] = menu[i];
+		}
+
+		print(TableFormatter.tableFormatter(table));
+
+		String menuChoice = readString("Enter menu ID to add item in: ");
+		boolean contains = Arrays.asList(menu).contains(menuChoice);
+		
+		if (contains != true) {
+			print("\nWrong Menu ID entered - Returning back to [ADD FOOD TO MENU]\n");
+			return;
+		}
+
 		char YESNO = readChar("Add item to menu? (Y/N) ");
 
 		if (YESNO != 'y') {
 			print("Returning back to [ADD FOOD TO MENU]");
 			return;
 		}
-		
+
 		print("Adding Item to Menu...");
-		CREDENTIAL.addItemToMenu(CHOICE);
+		CREDENTIAL.addItemToMenu(CHOICE - 1, menuChoice);
+		print("Added Item to Menu Successful");
 
 	}
 
@@ -66,9 +96,18 @@ public class Main {
 		System.out.println(str);
 	}
 
+	private static void line(int count, String str) {
+		Helper.line(count, str);
+	}
+
 	private static int readInt(String str) {
 		int i = Helper.readInt(str);
 		return i;
+	}
+
+	private static String readString(String str) {
+		String d = Helper.readString(str);
+		return d;
 	}
 
 	private static double readDouble(String str) {
@@ -158,6 +197,10 @@ public class Main {
 
 			}
 		}
+	}
+
+	private static void print(int str) {
+		System.out.println(str);
 	}
 
 	private static void vendorMenu() {
