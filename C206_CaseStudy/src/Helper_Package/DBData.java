@@ -25,7 +25,7 @@ public class DBData {
 	private static String user_id;
 
 	// NOTE: IF any error were to occur, user_access, user_id is to return null
-	// Register Account (DONE - TESTING)
+	// Register Account (DONE - TESTED)
 	public DBData(String name, String email, String password, String access, String[] OtherInfo) {
 
 		// Check all Inputs
@@ -187,7 +187,7 @@ public class DBData {
 		DBUtil.close();
 	}
 
-	// (DONE - TESTING)
+	// Login to account (DONE - TESTED)
 	public DBData(String email, String password) {
 		if (LOGIN(email, password) == false) {
 			user_access = null;
@@ -195,7 +195,7 @@ public class DBData {
 		}
 	}
 
-	// Delete user - Error in creating will delete user (DONE - TESTING)
+	// Delete user - Error in creating will delete user (DONE - TESTED)
 	protected boolean DELETE_USER() {
 		boolean isDeleted = false;
 
@@ -218,7 +218,7 @@ public class DBData {
 		return isDeleted;
 	}
 
-	// Login (DONE - TESTING)
+	// Login (DONE - TESTED)
 	protected static boolean LOGIN(String email, String password) {
 		boolean isLogged = false;
 
@@ -256,7 +256,7 @@ public class DBData {
 		return isLogged;
 	}
 
-	// (DONE - TESTING)
+	// Check email in DB (DONE - TESTED)
 	protected static Boolean CheckEmailDB(String email) {
 		Boolean check = false;
 
@@ -289,7 +289,7 @@ public class DBData {
 		return check;
 	} // End of CheckEmailDB
 
-	// (DONE - TESTING)
+	// Updated last login (DONE - TESTED)
 	protected static boolean LAST_LOGIN() {
 		boolean isUpdated = false;
 
@@ -324,7 +324,7 @@ public class DBData {
 		return user_id;
 	}
 
-	// (DONE - TESTING)
+	// (DONE - Tested)
 	public String getUser_name() {
 		String name = "";
 
@@ -333,7 +333,8 @@ public class DBData {
 		return name;
 	}
 
-	public static String[] getUserInfo() {
+	// (DONE - Tested)
+	protected String[] getUserInfo() {
 		String[] userInfo = new String[3];
 
 		SelectSQL = "SELECT `user_name`, `user_email`, `LAST_LOGIN` FROM `user` WHERE user_id = '%s';";
@@ -558,10 +559,10 @@ public class DBData {
 	}
 
 	// Vendor ONLY
-	public String[] getVendorInfo() {
+	private String[] getVendorInfo() {
 		String[] vendorInfo = new String[5];
 
-		String[] userInfo = DBData.getUserInfo();
+		String[] userInfo = getUserInfo();
 
 		SelectSQL = "SELECT `vendor_phoneNumber`, `vendor_companyName`, `vendor_profile`, `vendor_address` FROM `vendor` WHERE vendor_id = '%s';";
 		SelectSQL = String.format(SelectSQL, user_id);
