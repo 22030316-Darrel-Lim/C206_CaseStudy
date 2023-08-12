@@ -32,7 +32,7 @@ public class DBData {
 		if (name == null || email == null || password == null || access == null || OtherInfo == null) {
 			return;
 		}
-		
+
 		name = SQLInjection(name);
 		email = SQLInjection(email);
 		password = SQLInjection(password);
@@ -79,8 +79,7 @@ public class DBData {
 		String picture;
 		String company;
 		String allegies;
-		String menu_id;
-		
+
 		main: switch (access) {
 		case "normal":
 			if (OtherInfo.length != 3) {
@@ -101,7 +100,7 @@ public class DBData {
 				}
 			}
 
-			phoneNo = OtherInfo[0]; // TODO Validate phone number using regex
+			phoneNo = OtherInfo[0];
 			allegies = OtherInfo[1];
 			address = OtherInfo[2];
 			picture = "normal.png";
@@ -199,16 +198,16 @@ public class DBData {
 	// Delete user - Error in creating will delete user (DONE - TESTING)
 	protected boolean DELETE_USER() {
 		boolean isDeleted = false;
-		
+
 		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
-		
+
 		DeleteSQL = "DELETE FROM user WHERE user_id = '%s';";
 		DeleteSQL = String.format(DeleteSQL, user_id);
 
 		int rowsAffected = DBUtil.execSQL(DeleteSQL);
-		
+
 		DBUtil.close();
-		
+
 		if (rowsAffected == 1) {
 			isDeleted = true;
 		}
@@ -227,18 +226,18 @@ public class DBData {
 		if (email == null || password == null) {
 			return isLogged;
 		}
-		
+
 		try {
 			DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
 
 			email = SQLInjection(email);
 			password = SQLInjection(password);
 
-			String sql = "SELECT ACCESS_TYPE, user_id FROM user WHERE user_email = '%s' AND user_password = SHA1('%s');";
+			SelectSQL = "SELECT ACCESS_TYPE, user_id FROM user WHERE user_email = '%s' AND user_password = SHA1('%s');";
 
-			sql = String.format(sql, email, password);
+			SelectSQL = String.format(SelectSQL, email, password);
 
-			ResultSet rs = DBUtil.getTable(sql);
+			rs = DBUtil.getTable(SelectSQL);
 			if (rs.next()) {
 				user_access = rs.getString("ACCESS_TYPE");
 				user_id = String.valueOf(rs.getInt("user_id"));
@@ -271,10 +270,10 @@ public class DBData {
 		try {
 			DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
 
-			String SelectSQL = "SELECT user_email FROM user WHERE user_email = '%s';";
+			SelectSQL = "SELECT user_email FROM user WHERE user_email = '%s';";
 			SelectSQL = String.format(SelectSQL, email);
 
-			ResultSet rs = DBUtil.getTable(SelectSQL);
+			rs = DBUtil.getTable(SelectSQL);
 
 			// Getting all the email from the SQL database and comparing it to the input
 			// if rs = null - no result
@@ -296,7 +295,7 @@ public class DBData {
 
 		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
 
-		String UpdateSQL = "UPDATE user SET LAST_LOGIN = NOW() WHERE user_id = '%s';";
+		UpdateSQL = "UPDATE user SET LAST_LOGIN = NOW() WHERE user_id = '%s';";
 
 		UpdateSQL = String.format(UpdateSQL, user_id);
 
@@ -346,7 +345,7 @@ public class DBData {
 
 		try {
 			while (rs.next()) {
-				
+
 				String user_name = rs.getString("user_name");
 				String user_email = rs.getString("user_email");
 				String last_login = rs.getString("LAST_LOGIN");
@@ -385,7 +384,7 @@ public class DBData {
 		table[0] = header;
 
 		// Assigning values into data
-		ResultSet rs = DBUtil.getTable(SelectSQL);
+		rs = DBUtil.getTable(SelectSQL);
 		int count = 0;
 		try {
 			while (rs.next()) {
@@ -427,8 +426,8 @@ public class DBData {
 
 		String table[][] = new String[column][row];
 
-		String selectSQL = "Select %s FROM school;";
-		selectSQL = String.format(selectSQL, String.join(", ", header));
+		SelectSQL = "Select %s FROM school;";
+		SelectSQL = String.format(SelectSQL, String.join(", ", header));
 
 		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
 
@@ -436,7 +435,7 @@ public class DBData {
 		table[0] = header;
 
 		// Assigning values into data
-		ResultSet rs = DBUtil.getTable(selectSQL);
+		rs = DBUtil.getTable(SelectSQL);
 		int count = 0;
 		try {
 			while (rs.next()) {
@@ -470,8 +469,8 @@ public class DBData {
 
 		String table[][] = new String[column][row];
 
-		String selectSQL = "Select %s FROM has_order;";
-		selectSQL = String.format(selectSQL, String.join(", ", header));
+		SelectSQL = "Select %s FROM has_order;";
+		SelectSQL = String.format(SelectSQL, String.join(", ", header));
 
 		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
 
@@ -479,7 +478,7 @@ public class DBData {
 		table[0] = header;
 
 		// Assigning values into data
-		ResultSet rs = DBUtil.getTable(selectSQL);
+		rs = DBUtil.getTable(SelectSQL);
 		int count = 0;
 		try {
 			while (rs.next()) {
@@ -519,8 +518,8 @@ public class DBData {
 
 		String table[][] = new String[column][row];
 
-		String selectSQL = "Select %s FROM menu_item INNER JOIN item ON item.item_id = menu_item.item_id;";
-		selectSQL = String.format(selectSQL, String.join(", ", header));
+		SelectSQL = "Select %s FROM menu_item INNER JOIN item ON item.item_id = menu_item.item_id;";
+		SelectSQL = String.format(SelectSQL, String.join(", ", header));
 
 		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
 
@@ -528,7 +527,7 @@ public class DBData {
 		table[0] = header;
 
 		// Assigning values into data
-		ResultSet rs = DBUtil.getTable(selectSQL);
+		rs = DBUtil.getTable(SelectSQL);
 		int count = 0;
 		try {
 			while (rs.next()) {
@@ -677,30 +676,6 @@ public class DBData {
 		return isAdded;
 	}
 
-//	public String getMenuID(String menu_name) {
-//		String menu_id = null;
-//
-//		SelectSQL = "SELECT `menu_id` FROM `menu` WHERE menu_name = '%s';";
-//		SelectSQL = String.format(SelectSQL, user_id);
-//
-//		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
-//
-//		rs = DBUtil.getTable(SelectSQL);
-//
-//		try {
-//			while (rs.next()) {
-//
-//				menu_id = rs.getString("menu_id");
-//			}
-//
-//		} catch (SQLException e) {
-//			e.printStackTrace();
-//		}
-//
-//		DBUtil.close();
-//		return menu_id;
-//	}
-	
 	// ======================================
 	// Extra methods
 	// ======================================
