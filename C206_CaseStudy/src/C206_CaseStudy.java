@@ -430,7 +430,6 @@ public class C206_CaseStudy {
 	}
 
 	// Method for Vendor to delete the Food Menu
-
 	private static void deleteFoodMenu() {
 		line(40, "-");
 		print("=== DELETE FOOD MENU ===");
@@ -443,7 +442,6 @@ public class C206_CaseStudy {
 	}
 
 	// Method for Vendor to add new food
-
 	private static void addFoodItem() {
 		line(40, "-");
 		print("=== ADD FOOD TO MENU ===");

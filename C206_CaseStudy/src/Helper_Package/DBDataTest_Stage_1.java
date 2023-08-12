@@ -12,9 +12,9 @@ import Helper.DBUtil;
 
 public class DBDataTest_Stage_1 {
 
-	private static final String JDBCURL = "jdbc:mysql://localhost/c206_ga";
-	private static final String DBUSERNAME = "root";
-	private static final String DBPASSWORD = "";
+	private static final String JDBCURL = DBDataTest.getJdbcurl();
+	private static final String DBUSERNAME = DBDataTest.getDbusername();
+	private static final String DBPASSWORD = DBDataTest.getDbpassword();
 
 	private static Connection conn;
 	private static Statement statement;
