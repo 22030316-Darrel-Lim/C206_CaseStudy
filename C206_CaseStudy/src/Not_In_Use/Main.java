@@ -1,10 +1,7 @@
 package Not_In_Use;
 
-import java.util.ArrayList;
-import java.util.regex.Pattern;
-
 import Helper.Helper;
-import Helper_Package.AdvanceFunction;
+import Helper.TableFormatter;
 import Helper_Package.Authentication;
 import Helper_Package.DBData;
 
@@ -18,7 +15,8 @@ public class Main {
 		String[][] table = pp.viewAllOrder();
 
 		
-		System.out.println(AdvanceFunction.tableFormatter(table));
+		System.out.println(TableFormatter.tableFormatter(table));
+		
 		//mainMenu();
 	}
 

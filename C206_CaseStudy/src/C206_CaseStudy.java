@@ -1,7 +1,7 @@
-import Helper_Package.AdvanceFunction;
 import Helper_Package.Authentication;
 import Helper_Package.DBData;
 import Helper.Helper;
+import Helper.TableFormatter;
 
 public class C206_CaseStudy {
 
@@ -293,9 +293,16 @@ public class C206_CaseStudy {
 	// ==========================
 	// Methods For USER
 	// ==========================
-
+	
+	// TODO (DONE) SQL to view all Menu
 	private static void viewAllMenu() {
-		// TODO SQL to view all Menu
+		line(40, "-");
+		
+		String[][] table = CREDENTIAL.viewAllMenu();
+
+		System.out.println(TableFormatter.tableFormatter(table));
+		
+		
 	}
 
 	// ==========================
@@ -385,30 +392,33 @@ public class C206_CaseStudy {
 	// ==========================
 	// Methods For ADMIN
 	// ==========================
-
+	
+	// TODO (DONE) SQL Code to view all Users
 	private static void viewAllUser() {
 		line(40, "-");
-		// TODO (DONE) SQL Code to view all Users
+		
 		String[][] table = CREDENTIAL.viewAllUser();
 
-		System.out.println(AdvanceFunction.tableFormatter(table));
+		System.out.println(TableFormatter.tableFormatter(table));
 
 	}
-
+	
+	// TODO (DONE) SQL Code to view all Schools
 	private static void viewAllSchool() {
 		line(40, "-");
-		// TODO (DONE) SQL Code to view all Schools
+		
 		String[][] table = CREDENTIAL.viewAllSchool();
 
-		System.out.println(AdvanceFunction.tableFormatter(table));
+		System.out.println(TableFormatter.tableFormatter(table));
 	}
 
+	// TODO (DONE) SQL Code to view all Orders
 	private static void viewAllOrder() {
 		line(40, "-");
-		// TODO SQL Code to view all Orders
+		
 		String[][] table = CREDENTIAL.viewAllOrder();
 
-		System.out.println(AdvanceFunction.tableFormatter(table));
+		System.out.println(TableFormatter.tableFormatter(table));
 	}
 
 	private static void createUser() {

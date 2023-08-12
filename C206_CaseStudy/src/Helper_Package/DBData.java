@@ -393,7 +393,7 @@ public class DBData {
 	}
 
 	public String[][] viewAllSchool() {
-		
+
 		if (user_access.equals("admin") == false) {
 			return null;
 		}
@@ -436,7 +436,7 @@ public class DBData {
 	}
 
 	public String[][] viewAllOrder() {
-		
+
 		if (user_access.equals("admin") == false) {
 			return null;
 		}
@@ -484,6 +484,57 @@ public class DBData {
 		return table;
 	}
 
+	public String[][] viewAllMenu() {
+
+		if (user_access.equals("admin") == false) {
+			return null;
+		}
+
+		int column = getMenuCount() + 1;
+		String[] header = { "menu_id", "menu_item.item_id", "item_name", "item_qty", "item_description", "item_price" };
+		int row = header.length;
+
+		String table[][] = new String[column][row];
+
+		String selectSQL = "Select %s FROM menu_item INNER JOIN item ON item.item_id = menu_item.item_id;";
+		selectSQL = String.format(selectSQL, String.join(", ", header));
+
+		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
+
+		// Set first index of data to header
+		table[0] = header;
+
+		// Assigning values into data
+		ResultSet rs = DBUtil.getTable(selectSQL);
+		int count = 0;
+		try {
+			while (rs.next()) {
+				// Assign values based on header info
+				String menu_id = rs.getString(header[0]);
+				String item_id = rs.getString(header[1]);
+				String item_name = rs.getString(header[2]);
+				String item_qty = rs.getString(header[3]);
+				String item_description = rs.getString(header[4]);
+				double item_price = rs.getDouble(header[5]);
+				
+				String price = String.format("$%.2f", item_price);
+
+				table[count + 1][0] = menu_id;
+				table[count + 1][1] = item_id;
+				table[count + 1][2] = item_name;
+				table[count + 1][3] = item_qty;
+				table[count + 1][4] = item_description;
+				table[count + 1][5] = price;
+				count++;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		DBUtil.close();
+
+		return table;
+	}
+
 	// ======================================
 	// Extra methods
 	// ======================================
@@ -504,7 +555,7 @@ public class DBData {
 		DBUtil.close();
 		return count;
 	}
-	
+
 	public static int getSchoolCount() {
 		int count = 0;
 		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);

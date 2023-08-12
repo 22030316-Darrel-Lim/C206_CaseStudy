@@ -14,6 +14,7 @@ import org.junit.runner.Result;
 import org.junit.runner.notification.Failure;
 
 import Helper.DBUtil;
+import Helper.TableFormatter;
 
 public class DBDataTest {
 	
@@ -423,7 +424,7 @@ public class DBDataTest {
 		DBData temp = new DBData(email, password);
 
 		String actual = temp.getUser_id();
-
+		
 		delete_User();
 		assertEquals("TestGetID failed", expected, actual);
 	}

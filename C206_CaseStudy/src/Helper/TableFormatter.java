@@ -1,29 +1,14 @@
-package Helper_Package;
+package Helper;
 
-/*
- * I declare that this code was written by me. 
- * I do not copy or allow others to copy my code. 
- * I understand that copying code is considered as plagiarism.
- * 
- * Student Name: Siew meng fong
- * Student ID: 22000694
- * Class: E65F
- * Date/Time created: Saturday 24-12-2022 12:05
- */
-
-/**
- * @author 22000694
- *
- */
-
-// AdvanceFunction is to be used only within the WardManagement System, there won't be much/any error checking
-// If used in other application, do edit AdvanceFunction
-public class AdvanceFunction {
+public class TableFormatter {
 
 	// -------------------------------------------------------
 	// Advance Function 1 - Table Formatter
 	// -------------------------------------------------------
-
+	
+	// Add additional padding for anesthetics in tableFormatter Method
+	private static final int CELLPADDING = 6;
+	
 	/**
 	 * Centers the given string within the given column width.
 	 * 
@@ -79,9 +64,6 @@ public class AdvanceFunction {
 	 */
 	public static String tableFormatter(String[][] data) {
 
-		// Add additional padding for anesthetics
-		int cellPadding = 6;
-
 		// Calculate the widths of the columns based on the maximum length of the
 		// strings in each column
 
@@ -95,11 +77,11 @@ public class AdvanceFunction {
 			for (int i = 0; i < info.length; i++) {
 				// Check for null
 				if (info[i] == null) {
-					columnsWidth[i] = Math.max(columnsWidth[i], cellPadding);
+					columnsWidth[i] = Math.max(columnsWidth[i], CELLPADDING);
 					continue;
 				}
 
-				columnsWidth[i] = Math.max(columnsWidth[i], info[i].length() + cellPadding);
+				columnsWidth[i] = Math.max(columnsWidth[i], info[i].length() + CELLPADDING);
 			}
 		}
 

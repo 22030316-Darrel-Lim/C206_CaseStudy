@@ -15,6 +15,7 @@ public class ItemTest {
 		// TODO SQL To add Food
 	}
 
+	@Test
 	public void testFailAddItem() {
 		// Simulate Add Item Failure
 		String name = "";
