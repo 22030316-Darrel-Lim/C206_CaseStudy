@@ -310,6 +310,14 @@ public class C206_CaseStudy {
 			print("9) Exit");
 			line(20, "-");
 			break;
+		case "addFoodItem":
+			line(40, "-");
+			print("=== ADD FOOD TO MENU ===");
+			line(40, "-");
+			print("1) Add exisitng food to menu");
+			print("2) Create food and add it to menu");
+			print("9) Exit");
+			break;
 		default:
 			print("\n=== MENU FAILED TO LOAD ====");
 			return;
@@ -449,24 +457,20 @@ public class C206_CaseStudy {
 
 	// Method for Vendor to add new food
 	private static void addFoodItem() {
-		line(40, "-");
-		print("=== ADD FOOD TO MENU ===");
-		line(40, "-");
 
 		// Looping for input
 		CHOICE = -1;
-
+		String menuChoice;
+		char YESNO;
+		
 		while (CHOICE != 9) {
-			print("1) Add exisitng food to menu");
-			print("2) Create food and add it to menu");
-			print("9) Exit");
+			displayMenu("addFoodItem");
+			
 			CHOICE = readInt("Enter Option: ");
 
 			switch (CHOICE) {
 			case 1:
 				// TODO (DONE) Retrieve food from SQL and add it
-				DBData CREDENTIAL = new DBData("vendor1@vendor1", "vendor1");
-				System.out.println(CREDENTIAL.getUser_access() + " " + CREDENTIAL.getUser_name());
 
 				String[] vendorInfo = CREDENTIAL.getVendorInfo();
 
@@ -474,7 +478,6 @@ public class C206_CaseStudy {
 					print("[Add exisitng food to menu] Cant be choosen as currently there is no menu to your account");
 					return;
 				}
-				String[] menu = vendorInfo[7].split(",");
 
 				String[][] table = CREDENTIAL.viewAllFood();
 
@@ -513,25 +516,9 @@ public class C206_CaseStudy {
 				//
 				// Check for vendor available menu
 				//
-				print("----- Avaible Menu -----");
-				table = new String[menu.length + 1][1];
-				table[0][0] = "Menu_ID";
+				menuChoice = getVendorMenu();
 
-				for (int i = 0; i < menu.length; i++) {
-					table[i + 1][0] = menu[i];
-				}
-
-				print(TableFormatter.tableFormatter(table));
-
-				String menuChoice = readString("Enter menu ID to add item in: ");
-				boolean contains = Arrays.asList(menu).contains(menuChoice);
-
-				if (contains != true) {
-					print("\nWrong Menu ID entered - Returning back to [ADD FOOD TO MENU]\n");
-					break;
-				}
-
-				char YESNO = readChar("Add item to menu? (Y/N) ");
+				YESNO = readChar("Add item to menu? (Y/N) ");
 
 				if (YESNO != 'y') {
 					print("Returning back to [ADD FOOD TO MENU]");
@@ -550,11 +537,24 @@ public class C206_CaseStudy {
 				String description = readString("Enter Food Description: ");
 				String dietary = readString("Enter Food Dietary: ");
 				String ingredients = readString("Enter Food Ingredients: ");
-				Double price = readDouble("Enter Food Price: ");
-				int qty = readInt("Enter Food Quantity");
-				int menu_id = readInt("Enter Menu_id: ");
+				Double price = readDouble("Enter Food Price: $");
+				int qty = readInt("Enter Food Quantity: ");
 
 				// TODO Run insert SQL Statement to create new food and add it to menu
+				menuChoice = getVendorMenu();
+				
+				YESNO = readChar("Add item to menu? (Y/N) ");
+
+				if (YESNO != 'y') {
+					print("Returning back to [ADD FOOD TO MENU]");
+					break;
+				}
+				
+				print("Adding new Item to Menu...");
+				String[] item = {food, String.valueOf(qty), description, dietary, ingredients, String.valueOf(price)};
+				CREDENTIAL.addItemToMenu(item, menuChoice);
+				print("Added new Item to Menu Successful");
+				break;
 
 			case 9:
 				// Exit from Menu Option
@@ -583,6 +583,30 @@ public class C206_CaseStudy {
 		}
 	}
 
+	private static String getVendorMenu() {
+		String[] vendorInfo = CREDENTIAL.getVendorInfo();
+
+		String[] menu = vendorInfo[7].split(",");
+
+		print("----- Avaible Menu -----");
+		String[][] table = new String[menu.length + 1][1];
+		table[0][0] = "Menu_ID";
+
+		for (int i = 0; i < menu.length; i++) {
+			table[i + 1][0] = menu[i];
+		}
+
+		print(TableFormatter.tableFormatter(table));
+
+		String menuChoice = readString("Enter menu ID to add item in: ");
+		boolean contains = Arrays.asList(menu).contains(menuChoice);
+
+		if (contains != true) {
+			print("\nWrong Menu ID entered - Returning back to [ADD FOOD TO MENU]\n");
+			menuChoice = null;
+		}
+		return menuChoice;
+	}
 	// ==========================
 	// Methods For ADMIN
 	// ==========================

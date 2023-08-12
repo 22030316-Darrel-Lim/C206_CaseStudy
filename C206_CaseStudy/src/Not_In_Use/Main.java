@@ -17,78 +17,7 @@ public class Main {
 		DBData CREDENTIAL = new DBData("vendor1@vendor1", "vendor1");
 		System.out.println(CREDENTIAL.getUser_access() + " " + CREDENTIAL.getUser_name());
 
-		String[] vendorInfo = CREDENTIAL.getVendorInfo();
-
-		if (vendorInfo.length != 8) {
-			print("[Add exisitng food to menu] Cant be choosen as currently there is no menu to your account");
-			return;
-		}
-		String[] menu = vendorInfo[7].split(",");
-
-		String[][] table = CREDENTIAL.viewAllFood();
-
-		print(TableFormatter.tableFormatter(table));
-
-		int countItem = CREDENTIAL.getItemCount();
-
-		if (countItem == 0) {
-			print("There are currently no items in the DB");
-			return;
-		}
-
-		CHOICE = readInt("Enter item_id to add into menu: ") + 1;
-
-		if (CHOICE > countItem || CHOICE <= 0) {
-			print("\nWrong item ID entered - Returning back to [ADD FOOD TO MENU]\n");
-			return;
-		}
-
-		String item_id = table[CHOICE][0];
-		String item_name = table[CHOICE][1];
-		String item_qty = table[CHOICE][2];
-		String item_description = table[CHOICE][3];
-		String item_dietary = table[CHOICE][4];
-		String item_ingredients = table[CHOICE][5];
-		String item_price = table[CHOICE][6];
-
-		String row = "" + "\n======= Food =======\n" + "Item ID: %s\n" + "Item name: %s\n" + "Item quantity: %s\n"
-				+ "Item description: %s\n" + "Item dietary: %s\n" + "Item ingredients: %s\n" + "Item price: %s\n";
-
-		row = String.format(row, item_id, item_name, item_qty, item_description, item_dietary, item_ingredients,
-				item_price);
-		print(row);
-
-		//
-		// Check for vendor available menu
-		//
-		print("----- Avaible Menu -----");
-		table = new String[menu.length + 1][1];
-		table[0][0] = "Menu_ID";
-
-		for (int i = 0; i < menu.length; i++) {
-			table[i + 1][0] = menu[i];
-		}
-
-		print(TableFormatter.tableFormatter(table));
-
-		String menuChoice = readString("Enter menu ID to add item in: ");
-		boolean contains = Arrays.asList(menu).contains(menuChoice);
-		
-		if (contains != true) {
-			print("\nWrong Menu ID entered - Returning back to [ADD FOOD TO MENU]\n");
-			return;
-		}
-
-		char YESNO = readChar("Add item to menu? (Y/N) ");
-
-		if (YESNO != 'y') {
-			print("Returning back to [ADD FOOD TO MENU]");
-			return;
-		}
-
-		print("Adding Item to Menu...");
-		CREDENTIAL.addItemToMenu(CHOICE - 1, menuChoice);
-		print("Added Item to Menu Successful");
+		print(TableFormatter.tableFormatter(CREDENTIAL.viewAllMenu()));
 
 	}
 
