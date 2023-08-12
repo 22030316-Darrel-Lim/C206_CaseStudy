@@ -219,6 +219,33 @@ public class DBData {
 		return isDeleted;
 	}
 
+	// Delete user - Error in creating will delete user (DONE - TESTED)
+	public boolean DELETE_USER(String user_id) {
+		boolean isDeleted = false;
+
+		if (user_access.equals("admin") == false) {
+			return isDeleted;
+		}
+
+		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
+
+		DeleteSQL = "DELETE FROM user WHERE user_id = '%s';";
+		DeleteSQL = String.format(DeleteSQL, user_id);
+
+		int rowsAffected = DBUtil.execSQL(DeleteSQL);
+
+		DBUtil.close();
+
+		if (rowsAffected == 1) {
+			isDeleted = true;
+		}
+
+		user_access = null;
+		user_id = null;
+
+		return isDeleted;
+	}
+
 	// Login (DONE - TESTED)
 	protected static boolean LOGIN(String email, String password) {
 		boolean isLogged = false;
@@ -258,7 +285,7 @@ public class DBData {
 	}
 
 	// Check email in DB (DONE - TESTED)
-	protected static Boolean CheckEmailDB(String email) {
+	public static Boolean CheckEmailDB(String email) {
 		Boolean check = false;
 
 		email = SQLInjection(email);
@@ -322,6 +349,38 @@ public class DBData {
 	}
 
 	public String getUser_id() {
+		return user_id;
+	}
+
+	// TODO TEST needy
+	public String getUser_id(String email) {
+		String user_id = null;
+
+		if (user_access.equals("admin") == false) {
+			return user_id;
+		}
+
+		else if (CheckEmailDB(email) != true) {
+			return user_id;
+		}
+
+		try {
+			DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
+
+			SelectSQL = "SELECT user_id FROM user WHERE user_email = '%s';";
+			SelectSQL = String.format(SelectSQL, email);
+
+			rs = DBUtil.getTable(SelectSQL);
+
+			while (rs.next()) {
+				user_id = rs.getString("user_id");
+			}
+
+			DBUtil.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
 		return user_id;
 	}
 
@@ -720,7 +779,7 @@ public class DBData {
 		}
 
 		Boolean isAdded = null;
-		
+
 		String item_name = item[0];
 		String item_qty = item[1];
 		String item_description = item[2];
@@ -747,13 +806,13 @@ public class DBData {
 		// Find Newly Created Item ID
 		//
 		int item_id = 0;
-		
+
 		SelectSQL = "SELECT item_id FROM `item` WHERE item_name = '%s' AND item_qty = '%s' AND item_description = '%s' AND item_dietary = '%s' AND item_ingredients = '%s' AND item_price = '%s';";
 		SelectSQL = String.format(SelectSQL, item_name, item_qty, item_description, item_dietary, item_ingredients,
 				item_price);
-		
+
 		rs = DBUtil.getTable(SelectSQL);
-		
+
 		try {
 			while (rs.next()) {
 				item_id = rs.getInt("item_id");
@@ -762,9 +821,9 @@ public class DBData {
 			e.printStackTrace();
 			return isAdded;
 		}
-		
+
 		DBUtil.close();
-		
+
 		isAdded = addItemToMenu(item_id, menu_id);
 		return isAdded;
 	}

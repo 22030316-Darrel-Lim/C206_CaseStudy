@@ -417,7 +417,7 @@ public class C206_CaseStudy {
 	// Methods For USER
 	// ==========================
 
-	// TODO (DONE) SQL to view all Menu
+	// (DONE) SQL to view all Menu
 	private static void viewAllMenu() {
 		line(40, "-");
 
@@ -431,8 +431,7 @@ public class C206_CaseStudy {
 	// Methods For VENDOR
 	// ==========================
 
-	// Method for Vendor to create a new food Menu
-
+	// (DONE ???) Method for Vendor to create a new food Menu
 	private static void createFoodMenu() {
 		line(40, "-");
 		print("=== CREATE NEW FOOD MENU ===");
@@ -443,7 +442,7 @@ public class C206_CaseStudy {
 
 	}
 
-	// Method for Vendor to delete the Food Menu
+	// TODO Method for Vendor to delete the Food Menu
 	private static void deleteFoodMenu() {
 		line(40, "-");
 		print("=== DELETE FOOD MENU ===");
@@ -568,7 +567,7 @@ public class C206_CaseStudy {
 		}
 	}
 
-	// Method for Vendor to delete Food
+	// TODO Method for Vendor to delete Food
 	private static void deleteFoodItem() {
 		line(40, "-");
 		print("== DELETE FOOD ITEM ==");
@@ -613,7 +612,7 @@ public class C206_CaseStudy {
 	// Methods For ADMIN
 	// ==========================
 
-	// TODO (DONE) SQL Code to view all Users
+	// (DONE) SQL Code to view all Users
 	private static void viewAllUser() {
 		line(40, "-");
 
@@ -623,7 +622,7 @@ public class C206_CaseStudy {
 
 	}
 
-	// TODO (DONE) SQL Code to view all Schools
+	// (DONE) SQL Code to view all Schools
 	private static void viewAllSchool() {
 		line(40, "-");
 
@@ -632,7 +631,7 @@ public class C206_CaseStudy {
 		System.out.println(TableFormatter.tableFormatter(table));
 	}
 
-	// TODO (DONE) SQL Code to view all Orders
+	// (DONE) SQL Code to view all Orders
 	private static void viewAllOrder() {
 		line(40, "-");
 
@@ -641,25 +640,43 @@ public class C206_CaseStudy {
 		System.out.println(TableFormatter.tableFormatter(table));
 	}
 
+	// TODO SQL Code to create any user
 	private static void createUser() {
 		line(40, "-");
-		// TODO SQL Code to create any user
+		
 		String email = readString("Enter Email: ");
 		String name = readString("Enter Name: ");
 		String password = readString("Enter Password: ");
 		String access = readString("Enter Access Type: ");
 	}
 
+	// (DONE NEEDED TEST) SQL Code to delete Users + View All Users
 	private static void deleteUser() {
 		line(40, "-");
-		// TODO SQL Code to delete Users + View All Users
+		
 		String email = readString("Enter Email: ");
 		String confirm = readString("Confirm Deletetion? (y/n): ");
-		if (confirm.equalsIgnoreCase("y")) {
-			// TODO Run Delete SQL
-		} else {
+		
+		if (confirm.equalsIgnoreCase("y") == false) {
 			print("Deletation Aborted");
+			adminMenu();
 		}
+		
+		String user_id = CREDENTIAL.getUser_id(email);
+		
+		if (user_id == null) {
+			print("Delete User Error - user id NULL");
+			adminMenu();
+		}
+		
+		boolean isSuccessful = CREDENTIAL.DELETE_USER(user_id);
+		
+		if (isSuccessful == false) {
+			print("Delete User Error - Deletion unsuccessful");
+		} else {
+			print("Delete User Successful");
+		}
+		adminMenu();
 	}
 
 }
