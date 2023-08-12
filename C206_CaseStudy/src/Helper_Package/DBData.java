@@ -2,6 +2,7 @@ package Helper_Package;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
@@ -559,11 +560,51 @@ public class DBData {
 	}
 
 	// Vendor ONLY
-	private String[] getVendorInfo() {
+	// (DONE - Tested)
+	public String[] getVendorInfo() {
 		String[] vendorInfo = new String[5];
 
 		String[] userInfo = getUserInfo();
 
+		//
+		// Get Vendor Menu Info
+		//
+		ArrayList<String> menufoundList = new ArrayList<String>();
+
+		SelectSQL = "SELECT `menu_id` FROM `menu` INNER JOIN vendor ON vendor.vendor_id = menu.vendor_id WHERE vendor.vendor_id = '%s';";
+		SelectSQL = String.format(SelectSQL, user_id);
+
+		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
+
+		rs = DBUtil.getTable(SelectSQL);
+
+		try {
+			while (rs.next()) {
+
+				String menu_id = rs.getString("menu_id");
+
+				menufoundList.add(menu_id);
+			}
+
+			// Convert ArrayList to Array
+
+			String menufound = String.join(",", menufoundList);
+
+			vendorInfo[4] = menufound;
+
+		} catch (SQLException e) {
+			vendorInfo = null;
+			e.printStackTrace();
+		}
+
+		// Reset max length to 4 if no menufound
+		if (menufoundList.size() == 0) {
+			vendorInfo = new String[4];
+		}
+
+		//
+		// Get Vender Table info
+		//
 		SelectSQL = "SELECT `vendor_phoneNumber`, `vendor_companyName`, `vendor_profile`, `vendor_address` FROM `vendor` WHERE vendor_id = '%s';";
 		SelectSQL = String.format(SelectSQL, user_id);
 
