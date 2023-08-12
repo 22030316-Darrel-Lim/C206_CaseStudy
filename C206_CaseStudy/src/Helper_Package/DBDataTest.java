@@ -7,6 +7,8 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import org.junit.Test;
 import Helper.DBUtil;
@@ -29,6 +31,8 @@ public class DBDataTest {
 	private static Connection conn;
 	private static Statement statement;
 	private static ResultSet resultSet;
+	
+	private static DBData CREDENTIAL;
 
 	// ======================================
 	// Stage 1: Test SQL Server
@@ -415,9 +419,9 @@ public class DBDataTest {
 
 		String email = "john@email.com[ADD_USER]";
 		String password = "Password123";
-		DBData temp = new DBData(email, password);
+		CREDENTIAL = new DBData(email, password);
 
-		String actual = temp.getUser_id();
+		String actual = CREDENTIAL.getUser_id();
 		
 		delete_User();
 		assertEquals("TestGetID failed", expected, actual);
@@ -429,10 +433,10 @@ public class DBDataTest {
 
 		String email = "john@email.com[ADD_USER]";
 		String password = "Password123";
-		DBData temp = new DBData(email, password);
+		CREDENTIAL = new DBData(email, password);
 
 		String expected = "normal";
-		String actual = temp.getUser_access();
+		String actual = CREDENTIAL.getUser_access();
 
 		delete_User();
 		assertEquals("TestGetID failed", expected, actual);
@@ -444,22 +448,60 @@ public class DBDataTest {
 
 		String email = "john@email.com[ADD_USER]";
 		String password = "Password123";
-		DBData temp = new DBData(email, password);
+		CREDENTIAL = new DBData(email, password);
 
 		String expected = "john[ADD_USER]";
-		String actual = temp.getUser_name();
+		String actual = CREDENTIAL.getUser_name();
 
 		delete_User();
 		assertEquals("TestGetID failed", expected, actual);
 	}
+	
+	@Test
+	public void testGetName_All() {
+		String[][] loginCredential = {{"admin2@admin2", "admin2"}, {"normal1@normal1", "normal1"}, {"vendor1@vendor1", "vendor1"}};
+		
+		String[] expectedName = {"admin2", "normal1", "vendor1"};
+		
+		String password;
+		String email;
+		
+		for (int i = 0; i < loginCredential.length; i++) {
+			 password = loginCredential[i][1];
+			 email = loginCredential[i][0];
+			
+			 CREDENTIAL = new DBData(email, password);
+			
+			String Actualname = CREDENTIAL.getUser_name();
+			
+			assertEquals("GetName_All failed", expectedName[i], Actualname);
+		}
+	}
 
+	@Test
+	public void testGetUserInfo() {
+		String email = "admin2@admin2";
+		String password = "admin2";
+		CREDENTIAL = new DBData(email, password);
+		
+		String today = String.valueOf(LocalDate.now());
+		
+		String[] expectedInfo = {"admin2", "admin2@admin2", today};
+		String[] actualInfo = CREDENTIAL.getUserInfo();
+		
+		for (int i = 0; i < expectedInfo.length; i++) {
+			if (i == 2) {
+				actualInfo[i] = actualInfo[i].split(" ")[0];
+			}
+			assertEquals("GetUserInfo failed: ", expectedInfo[i], actualInfo[i]);
+		}
+	}
+	
 	// ======================================
 	// Stage 4: Test DBData main constructors
 	// Register Account (Normal, Vendor, Admin)
 	// Login User (Normal, Vendor, Admin)
 	// ======================================
-	
-	private static DBData CREDENTIAL;
 	
 	// DBData Constructor [Register] (Unit testing included)
 	@Test
