@@ -692,12 +692,11 @@ public class DBData {
 		return table;
 	}
 
-	public Boolean addItemToMenu(int item_id) {
+	public Boolean addItemToMenu(int item_id, String menu_id) {
 
 		if (user_access.equals("vendor") == false) {
 			return null;
 		}
-		String menu_id = getVendorInfo()[7];
 
 		Boolean isAdded = false;
 

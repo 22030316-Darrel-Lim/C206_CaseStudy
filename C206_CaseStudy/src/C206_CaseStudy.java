@@ -2,6 +2,7 @@ import Helper_Package.Authentication;
 import Helper_Package.DBData;
 import Temp_Holding.RunAllTest;
 
+import java.util.Arrays;
 import java.util.regex.Pattern;
 
 import Helper.Helper;
@@ -18,7 +19,7 @@ public class C206_CaseStudy {
 		} else {
 			System.out.println("Loading Completed");
 		}
-		
+
 		CHOICE = -1;
 
 		while (CHOICE != 9) {
@@ -47,7 +48,7 @@ public class C206_CaseStudy {
 	private static void register() {
 
 		boolean validation = false;
-		
+
 		String name = null;
 		String email = null;
 		String password = null;
@@ -60,21 +61,21 @@ public class C206_CaseStudy {
 			if (isName(name) == false) {
 				continue;
 			}
-			
+
 			email = readString("Enter email: ");
 			if (isEmail(email) == false) {
 				continue;
 			}
-			
+
 			password = readString("Enter password: ");
 			if (isPassword(password) == false) {
 				continue;
 			}
-			
+
 			phoneNo = String.valueOf(readInt("Enter phone number: "));
 			allergies = readString("Enter allergies: ");
 			address = readString("Enter address: ");
-			
+
 			validation = true;
 		}
 
@@ -251,6 +252,10 @@ public class C206_CaseStudy {
 		System.out.println(str);
 	}
 
+	private static void print(int str) {
+		System.out.println(str);
+	}
+
 	private static void displayMenu(String menuType) {
 		switch (menuType) {
 		case "main":
@@ -268,7 +273,7 @@ public class C206_CaseStudy {
 			print("");
 			line(40, "-");
 			print("============== NORMAL MENU =============");
-			print("Welcome "+ CREDENTIAL.getUser_name());
+			print("Welcome " + CREDENTIAL.getUser_name());
 			line(40, "-");
 			print("1) View All Menu");
 			print("2) Add a New Order");
@@ -280,7 +285,7 @@ public class C206_CaseStudy {
 			print("");
 			line(40, "-");
 			print("============== VENDOR MENU =============");
-			print("Welcome "+ CREDENTIAL.getUser_name());
+			print("Welcome " + CREDENTIAL.getUser_name());
 			line(40, "-");
 			print("1) View All Menu");
 			print("2) Add new Menu");
@@ -294,7 +299,7 @@ public class C206_CaseStudy {
 			print("");
 			line(40, "-");
 			print("============== ADMIN MENU ==============");
-			print("Welcome "+ CREDENTIAL.getUser_name());
+			print("Welcome " + CREDENTIAL.getUser_name());
 			line(40, "-");
 			print("1) View All Users");
 			print("2) View All Schools");
@@ -332,7 +337,7 @@ public class C206_CaseStudy {
 		c = Character.toLowerCase(c);
 		return c;
 	}
-	
+
 	private static void line(int count, String str) {
 		Helper.line(count, str);
 	}
@@ -353,7 +358,7 @@ public class C206_CaseStudy {
 		String pattern = "[a-zA-Z]+";
 
 		boolean matched = Pattern.matches(pattern, name);
-		
+
 		if (matched != true) {
 			System.out.println("\nError - Name is not all in alphabet\n");
 		}
@@ -372,7 +377,7 @@ public class C206_CaseStudy {
 		String pattern = "[a-zA-Z0-9]+@[a-zA-Z]+.[a-zA-Z]+";
 
 		boolean matched = Pattern.matches(pattern, email);
-		
+
 		if (matched != true) {
 			System.out.println("\nError - Email should contains @ and . [Name@email.com]\n");
 		}
@@ -392,9 +397,10 @@ public class C206_CaseStudy {
 		String pattern = "^(?=.*[A-Z]).{8,}$";
 
 		boolean matched = Pattern.matches(pattern, password);
-		
+
 		if (matched != true) {
-			System.out.println("\nError - Password contain at least one capital letter and at least 8 characters long\n");
+			System.out
+					.println("\nError - Password contain at least one capital letter and at least 8 characters long\n");
 		}
 		return matched;
 	} // End of isPassword
@@ -423,7 +429,7 @@ public class C206_CaseStudy {
 		line(40, "-");
 		print("=== CREATE NEW FOOD MENU ===");
 		line(40, "-");
-		
+
 		// TODO Create a new Food menu - SQL to Insert new Menu
 		addFoodItem();
 
@@ -434,7 +440,7 @@ public class C206_CaseStudy {
 		line(40, "-");
 		print("=== DELETE FOOD MENU ===");
 		line(40, "-");
-		
+
 		// TODO Run SQL Statement to get Menu_id
 
 		int id = readInt("Select Menu_ID to delete: ");
@@ -446,7 +452,7 @@ public class C206_CaseStudy {
 		line(40, "-");
 		print("=== ADD FOOD TO MENU ===");
 		line(40, "-");
-		
+
 		// Looping for input
 		CHOICE = -1;
 
@@ -458,7 +464,18 @@ public class C206_CaseStudy {
 
 			switch (CHOICE) {
 			case 1:
-				// TODO Retrieve food from SQL and add it
+				// TODO (DONE) Retrieve food from SQL and add it
+				DBData CREDENTIAL = new DBData("vendor1@vendor1", "vendor1");
+				System.out.println(CREDENTIAL.getUser_access() + " " + CREDENTIAL.getUser_name());
+
+				String[] vendorInfo = CREDENTIAL.getVendorInfo();
+
+				if (vendorInfo.length != 8) {
+					print("[Add exisitng food to menu] Cant be choosen as currently there is no menu to your account");
+					return;
+				}
+				String[] menu = vendorInfo[7].split(",");
+
 				String[][] table = CREDENTIAL.viewAllFood();
 
 				print(TableFormatter.tableFormatter(table));
@@ -467,14 +484,14 @@ public class C206_CaseStudy {
 
 				if (countItem == 0) {
 					print("There are currently no items in the DB");
-					return;
+					break;
 				}
 
 				CHOICE = readInt("Enter item_id to add into menu: ") + 1;
 
 				if (CHOICE > countItem || CHOICE <= 0) {
 					print("\nWrong item ID entered - Returning back to [ADD FOOD TO MENU]\n");
-					return;
+					break;
 				}
 
 				String item_id = table[CHOICE][0];
@@ -485,23 +502,47 @@ public class C206_CaseStudy {
 				String item_ingredients = table[CHOICE][5];
 				String item_price = table[CHOICE][6];
 
-				String row = "" + "\n======= Food =======\n" + "Item ID: %s\n" + "Item name: %s\n" + "Item quantity: %s\n"
-						+ "Item description: %s\n" + "Item dietary: %s\n" + "Item ingredients: %s\n" + "Item price: %s\n";
+				String row = "" + "\n======= Food =======\n" + "Item ID: %s\n" + "Item name: %s\n"
+						+ "Item quantity: %s\n" + "Item description: %s\n" + "Item dietary: %s\n"
+						+ "Item ingredients: %s\n" + "Item price: %s\n";
 
 				row = String.format(row, item_id, item_name, item_qty, item_description, item_dietary, item_ingredients,
 						item_price);
 				print(row);
 
+				//
+				// Check for vendor available menu
+				//
+				print("----- Avaible Menu -----");
+				table = new String[menu.length + 1][1];
+				table[0][0] = "Menu_ID";
+
+				for (int i = 0; i < menu.length; i++) {
+					table[i + 1][0] = menu[i];
+				}
+
+				print(TableFormatter.tableFormatter(table));
+
+				String menuChoice = readString("Enter menu ID to add item in: ");
+				boolean contains = Arrays.asList(menu).contains(menuChoice);
+
+				if (contains != true) {
+					print("\nWrong Menu ID entered - Returning back to [ADD FOOD TO MENU]\n");
+					break;
+				}
+
 				char YESNO = readChar("Add item to menu? (Y/N) ");
 
 				if (YESNO != 'y') {
 					print("Returning back to [ADD FOOD TO MENU]");
-					return;
+					break;
 				}
-				
+
 				print("Adding Item to Menu...");
-				CREDENTIAL.addItemToMenu(CHOICE);
-				
+				CREDENTIAL.addItemToMenu(CHOICE - 1, menuChoice);
+				print("Added Item to Menu Successful");
+				break;
+
 			case 2:
 				// Create new food and add it to SQL
 
