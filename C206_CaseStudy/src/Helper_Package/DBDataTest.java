@@ -2,19 +2,17 @@ package Helper_Package;
 
 import static org.junit.Assert.*;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-
 import org.junit.Test;
+import org.junit.runner.JUnitCore;
+import org.junit.runner.Result;
+
 import Helper.DBUtil;
 
 public class DBDataTest {
-	
+
 	// ===============================================================
 	// Test comes in 4 Stages
 	// Stage 1: Test SQL Server
@@ -28,10 +26,6 @@ public class DBDataTest {
 	private static final String DBUSERNAME = "root";
 	private static final String DBPASSWORD = "";
 
-	private static Connection conn;
-	private static Statement statement;
-	private static ResultSet resultSet;
-	
 	private static DBData CREDENTIAL;
 
 	// ======================================
@@ -42,133 +36,15 @@ public class DBDataTest {
 	// Check all columns name in table
 	// ======================================
 
-	private static String[] allTables = new String[] { "admin", "child", "has_order", "item", "menu", "menu_item", "normal",
-			"payment", "school", "school_has_vendor", "user", "vendor" };
+	@Test
+	public void runDBDataTest_Stage_1() {
+		Result result = JUnitCore.runClasses(DBDataTest_Stage_1.class);
 
+		boolean isSuccessful = result.wasSuccessful();
+		
+		assertTrue("Stage 1 failed", isSuccessful);
+	}
 	
-	// Test DBData Final String
-	@Test
-	public  void testDBDataCheckString() {
-		assertEquals("JDBC failed", JDBCURL, DBData.JDBCURL);
-		assertEquals("DB username failed", DBUSERNAME, DBData.DBUSERNAME);
-		assertEquals("DB password failed", DBPASSWORD, DBData.DBPASSWORD);
-	}
-
-	// Test Connection to DB server
-	@Test
-	public void testDBLinkTODB() {
-		boolean connected = false;
-		try {
-			conn = DriverManager.getConnection(JDBCURL, DBUSERNAME, DBPASSWORD);
-			close();
-			connected = true;
-		} catch (SQLException se) {
-			fail("Connection to SQL server failed: " + se.getMessage());
-		}
-
-		assertTrue("Connection to SQL server failed", connected);
-	}
-
-	// Test calling DBUtil
-	@Test
-	public  void testDBUtilConnection() {
-		boolean connected = false;
-		try {
-			DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
-			DBUtil.close();
-			connected = true;
-		} catch (Exception e) {
-			fail("Connection to DBUtil failed" + e.getMessage());
-		}
-		assertTrue("Connection to DBUtil failed", connected);
-	}
-
-	// Test checking all Tables in DB
-	@Test
-	public  void testAllTables() {
-		String SelectTableSQL;
-
-		boolean TablesFound = false;
-
-		for (String table : allTables) {
-
-			SelectTableSQL = "SELECT * FROM %s;";
-
-			// Format SelectTableSQL with the table in allTables
-			SelectTableSQL = String.format(SelectTableSQL, table);
-
-			try {
-				conn = DriverManager.getConnection(JDBCURL, DBUSERNAME, DBPASSWORD);
-				statement = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
-				resultSet = statement.executeQuery(SelectTableSQL);
-
-				close();
-
-			} catch (SQLException se) {
-				fail("Table not found: " + se.getMessage());
-			}
-		}
-		TablesFound = true;
-		assertTrue(TablesFound);
-	}
-
-	// Test checking all Tables in DB
-	@Test
-	public  void testAllTablesColumns() {
-
-		// Columns in each table
-		String[] admin = { "admin_id", "admin_profile" };
-		String[] child = { "child_id", "child_name", "child_allegies", "normal_id" };
-		String[] has_order = { "order_id", "order_status", "preference", "child_id", "school_has_vendor_id", "item_id",
-				"payment_id", "normal_id" };
-		String[] item = { "item_id", "item_name", "item_qty", "item_description", "item_dietary", "item_ingredients",
-				"item_price" };
-		String[] menu = {"menu_id", "vendor_id"};
-		String[] menu_item = { "menu_item_id", "item_id", "menu_id" };
-		String[] normal = { "normal_id", "normal_phoneNumber", "normal_address", "normal_profile", "normal_allegies" };
-		String[] payment = { "payment_id", "payment_name" };
-		String[] school = { "school_id", "school_name", "school_address" };
-		String[] school_has_vendor = { "school_has_vendor_id", "vendor_id", "school_id" };
-		String[] user = { "user_id", "user_name", "user_email", "user_password", "ACCESS_TYPE", "LAST_LOGIN" };
-		String[] vendor = { "vendor_id", "vendor_phoneNumber", "vendor_companyName", "vendor_profile", "vendor_address" };
-
-		// Assign Tables Columns into nested array
-		String[][] TablesColumns = { admin, child, has_order, item, menu, menu_item, normal, payment, school,
-				school_has_vendor, user, vendor };
-
-		String SelectTableSQL;
-		boolean TablesFound = false;
-		int CurrentTable = 0;
-
-		for (String table : allTables) {
-
-			SelectTableSQL = "SELECT * FROM %s;";
-
-			// Format SelectTableSQL with the table in allTables
-			SelectTableSQL = String.format(SelectTableSQL, table);
-
-			// Get the Current Table number of columns
-			String joinArray = String.join(", ", TablesColumns[CurrentTable]);
-
-			// Replace '*' with joinArray
-			SelectTableSQL = SelectTableSQL.replace("*", joinArray);
-
-			try {
-				conn = DriverManager.getConnection(JDBCURL, DBUSERNAME, DBPASSWORD);
-				statement = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
-				resultSet = statement.executeQuery(SelectTableSQL);
-
-				close();
-
-			} catch (SQLException se) {
-				fail("Table with cloumn not found: [" + table + "] " + se.getMessage());
-			}
-			CurrentTable++;
-		}
-		TablesFound = true;
-		assertTrue(TablesFound);
-	}
-
 	// ======================================
 	// Stage 2: Test DBData methods
 	// SQL Injection (All boundaries)
@@ -422,7 +298,7 @@ public class DBDataTest {
 		CREDENTIAL = new DBData(email, password);
 
 		String actual = CREDENTIAL.getUser_id();
-		
+
 		delete_User();
 		assertEquals("TestGetID failed", expected, actual);
 	}
@@ -456,24 +332,25 @@ public class DBDataTest {
 		delete_User();
 		assertEquals("TestGetID failed", expected, actual);
 	}
-	
+
 	@Test
 	public void testGetName_All() {
-		String[][] loginCredential = {{"admin2@admin2", "admin2"}, {"normal1@normal1", "normal1"}, {"vendor1@vendor1", "vendor1"}};
-		
-		String[] expectedName = {"admin2", "normal1", "vendor1"};
-		
+		String[][] loginCredential = { { "admin2@admin2", "admin2" }, { "normal1@normal1", "normal1" },
+				{ "vendor1@vendor1", "vendor1" } };
+
+		String[] expectedName = { "admin2", "normal1", "vendor1" };
+
 		String password;
 		String email;
-		
+
 		for (int i = 0; i < loginCredential.length; i++) {
-			 password = loginCredential[i][1];
-			 email = loginCredential[i][0];
-			
-			 CREDENTIAL = new DBData(email, password);
-			
+			password = loginCredential[i][1];
+			email = loginCredential[i][0];
+
+			CREDENTIAL = new DBData(email, password);
+
 			String Actualname = CREDENTIAL.getUser_name();
-			
+
 			assertEquals("GetName_All failed", expectedName[i], Actualname);
 		}
 	}
@@ -483,12 +360,12 @@ public class DBDataTest {
 		String email = "admin2@admin2";
 		String password = "admin2";
 		CREDENTIAL = new DBData(email, password);
-		
+
 		String today = String.valueOf(LocalDate.now());
-		
-		String[] expectedInfo = {"admin2", "admin2@admin2", today};
+
+		String[] expectedInfo = { "admin2", "admin2@admin2", today };
 		String[] actualInfo = CREDENTIAL.getUserInfo();
-		
+
 		for (int i = 0; i < expectedInfo.length; i++) {
 			if (i == 2) {
 				actualInfo[i] = actualInfo[i].split(" ")[0];
@@ -496,13 +373,42 @@ public class DBDataTest {
 			assertEquals("GetUserInfo failed: ", expectedInfo[i], actualInfo[i]);
 		}
 	}
-	
+
+	@Test
+	public void testGetUserInfo_All() {
+		String[][] loginCredential = { { "admin2@admin2", "admin2" }, { "normal1@normal1", "normal1" },
+				{ "vendor1@vendor1", "vendor1" } };
+
+		String today = String.valueOf(LocalDate.now());
+
+		String[][] expectedInfo = { { "admin2", "admin2@admin2", today }, { "normal1", "normal1@normal1", today },
+				{ "vendor1", "vendor1@vendor1", today } };
+
+		String password;
+		String email;
+
+		for (int i = 0; i < loginCredential.length; i++) {
+			password = loginCredential[i][1];
+			email = loginCredential[i][0];
+
+			CREDENTIAL = new DBData(email, password);
+			String[] actualInfo = CREDENTIAL.getUserInfo();
+
+			for (int x = 0; x < expectedInfo.length; x++) {
+				if (x == 2) {
+					actualInfo[x] = actualInfo[x].split(" ")[0];
+				}
+				assertEquals("GetUserInfo failed: ", expectedInfo[i][x], actualInfo[x]);
+			}
+		}
+	}
+
 	// ======================================
 	// Stage 4: Test DBData main constructors
 	// Register Account (Normal, Vendor, Admin)
 	// Login User (Normal, Vendor, Admin)
 	// ======================================
-	
+
 	// DBData Constructor [Register] (Unit testing included)
 	@Test
 	public void testConstructorRegister_StartValidation() {
@@ -602,7 +508,7 @@ public class DBDataTest {
 		DBUtil.close();
 		assertTrue("Registration elete User failed", CREDENTIAL.DELETE_USER());
 		assertTrue("Registration failed in Normal Table", checkValidation);
-		
+
 		CREDENTIAL.DELETE_USER();
 		CREDENTIAL = null;
 	}
@@ -626,7 +532,7 @@ public class DBDataTest {
 		String Actual_access = CREDENTIAL.getUser_access();
 		String Expected_access = null;
 		assertEquals("Regisration failed - id", Expected_access, Actual_access);
-		
+
 		CREDENTIAL.DELETE_USER();
 		CREDENTIAL = null;
 	}
@@ -694,7 +600,7 @@ public class DBDataTest {
 		String Actual_access = CREDENTIAL.getUser_access();
 		String Expected_access = null;
 		assertEquals("Regisration failed - id", Expected_access, Actual_access);
-		
+
 		CREDENTIAL.DELETE_USER();
 		CREDENTIAL = null;
 	}
@@ -737,7 +643,7 @@ public class DBDataTest {
 		DBUtil.close();
 		assertTrue("Registration elete User failed", CREDENTIAL.DELETE_USER());
 		assertTrue("Registration failed in Vendor Table", checkValidation);
-		
+
 		CREDENTIAL.DELETE_USER();
 		CREDENTIAL = null;
 	}
@@ -761,7 +667,7 @@ public class DBDataTest {
 		String Actual_access = CREDENTIAL.getUser_access();
 		String Expected_access = null;
 		assertEquals("Regisration failed - id", Expected_access, Actual_access);
-		
+
 		CREDENTIAL.DELETE_USER();
 		CREDENTIAL = null;
 	}
@@ -782,77 +688,59 @@ public class DBDataTest {
 		CREDENTIAL.DELETE_USER();
 		CREDENTIAL = null;
 	}
-	
-    @Test
-    public void testLoginNormalUser() {
-        String email = "normal1@normal1";
-        String password = "normal1";
-        String expectedAccessType = "normal";
-        
-        CREDENTIAL = Authentication.Login(email, password);
-        
-        String actualAccessType = CREDENTIAL.getUser_access();
-        
-        assertEquals(expectedAccessType, actualAccessType);
-    }
 
-    @Test
-    public void testLoginVendor() {
-        String email = "vendor1@vendor1";
-        String password = "vendor1";
-        String expectedAccessType = "vendor";
-        
-        CREDENTIAL = Authentication.Login(email, password);
-        
-        String actualAccessType = CREDENTIAL.getUser_access();
-        
-        assertEquals(expectedAccessType, actualAccessType);
-    }
+	@Test
+	public void testLoginNormalUser() {
+		String email = "normal1@normal1";
+		String password = "normal1";
+		String expectedAccessType = "normal";
 
-    @Test
-    public void testLoginAdmin() {
-        String email = "admin2@admin2";
-        String password = "admin2";
-        String expectedAccessType = "admin";
-        
-        CREDENTIAL = Authentication.Login(email, password);
-        
-        String actualAccessType = CREDENTIAL.getUser_access();
-        
-        assertEquals(expectedAccessType, actualAccessType);
-    }
+		CREDENTIAL = Authentication.Login(email, password);
 
-    @Test
-    public void testFailedLogin() {
-        String email = "invalid@example.com";
-        String password = "invalid";
-        
-        CREDENTIAL = Authentication.Login(email, password);
-        
-        assertNull(CREDENTIAL);
-    }
+		String actualAccessType = CREDENTIAL.getUser_access();
+
+		assertEquals(expectedAccessType, actualAccessType);
+	}
+
+	@Test
+	public void testLoginVendor() {
+		String email = "vendor1@vendor1";
+		String password = "vendor1";
+		String expectedAccessType = "vendor";
+
+		CREDENTIAL = Authentication.Login(email, password);
+
+		String actualAccessType = CREDENTIAL.getUser_access();
+
+		assertEquals(expectedAccessType, actualAccessType);
+	}
+
+	@Test
+	public void testLoginAdmin() {
+		String email = "admin2@admin2";
+		String password = "admin2";
+		String expectedAccessType = "admin";
+
+		CREDENTIAL = Authentication.Login(email, password);
+
+		String actualAccessType = CREDENTIAL.getUser_access();
+
+		assertEquals(expectedAccessType, actualAccessType);
+	}
+
+	@Test
+	public void testFailedLogin() {
+		String email = "invalid@example.com";
+		String password = "invalid";
+
+		CREDENTIAL = Authentication.Login(email, password);
+
+		assertNull(CREDENTIAL);
+	}
 
 	// ======================================
 	// Extra Methods needed for testing
 	// ======================================
-
-	private static void close() {
-		try {
-			if (resultSet != null) {
-				resultSet.close();
-			}
-
-			if (statement != null) {
-				statement.close();
-			}
-
-			if (conn != null) {
-				conn.close();
-			}
-		} catch (Exception e) {
-
-		}
-	}
 
 	protected static String add_User() {
 		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);

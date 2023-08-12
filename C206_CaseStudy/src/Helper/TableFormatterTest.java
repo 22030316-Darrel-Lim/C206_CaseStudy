@@ -3,8 +3,6 @@ package Helper;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
-import Helper.TableFormatter;
-
 public class TableFormatterTest {
 	
 	@Test

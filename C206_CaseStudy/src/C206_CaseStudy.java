@@ -1,5 +1,6 @@
 import Helper_Package.Authentication;
 import Helper_Package.DBData;
+import Temp_Holding.RunAllTest;
 
 import java.util.regex.Pattern;
 
@@ -12,6 +13,12 @@ public class C206_CaseStudy {
 	private static int CHOICE;
 
 	public static void main(String[] args) {
+		if (RunAllTest.runDBDataTest() == false) {
+			return;
+		} else {
+			System.out.println("Loading Completed");
+		}
+		
 		CHOICE = -1;
 
 		while (CHOICE != 9) {
