@@ -143,25 +143,9 @@ public class DBData {
 			phoneNo = OtherInfo[1];
 			address = OtherInfo[2];
 			picture = "vendor.png";
-			String menu_name = getUser_name() + "_menu";
-			
-			InsertSQL = "INSERT INTO menu (menu_name) VALUES ('%s');";
-			InsertSQL = String.format(InsertSQL, menu_name);
-			
-			RowAffectByAccess = DBUtil.execSQL(InsertSQL);
 
-			// Delete user if Inserts Fails
-			if (RowAffectByAccess != 1) {
-				if (DELETE_USER() == false) {
-					user_access = null;
-					user_id = null;
-				}
-			}
-
-			menu_id = getMenuID(menu_name);
-			
-			InsertSQL = "INSERT INTO vendor (vendor_id, vendor_phoneNumber, vendor_companyName, vendor_profile, vendor_address, menu_id) VALUES ('%s' , '%s', '%s', '%s', '%s', '%s');";
-			InsertSQL = String.format(InsertSQL, user_id, phoneNo, company, picture, address, menu_id);
+			InsertSQL = "INSERT INTO vendor (vendor_id, vendor_phoneNumber, vendor_companyName, vendor_profile, vendor_address) VALUES ('%s' , '%s', '%s', '%s', '%s');";
+			InsertSQL = String.format(InsertSQL, user_id, phoneNo, company, picture, address);
 
 			RowAffectByAccess = DBUtil.execSQL(InsertSQL);
 
@@ -215,17 +199,6 @@ public class DBData {
 	// Delete user - Error in creating will delete user (DONE - TESTING)
 	protected boolean DELETE_USER() {
 		boolean isDeleted = false;
-		
-		if (user_access.equals("vendor") == true) {
-			String menu_name = getUser_name() + "_menu";
-			
-			DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
-			
-			DeleteSQL = "DELETE FROM menu WHERE menu_name = '%s';";
-			DeleteSQL = String.format(DeleteSQL, menu_name);
-
-			DBUtil.close();
-		}
 		
 		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
 		
@@ -591,7 +564,7 @@ public class DBData {
 
 		String[] userInfo = DBData.getUserInfo();
 
-		SelectSQL = "SELECT `vendor_phoneNumber`, `vendor_companyName`, `vendor_profile`, `vendor_address`, `menu_id` FROM `vendor` WHERE vendor_id = '%s';";
+		SelectSQL = "SELECT `vendor_phoneNumber`, `vendor_companyName`, `vendor_profile`, `vendor_address` FROM `vendor` WHERE vendor_id = '%s';";
 		SelectSQL = String.format(SelectSQL, user_id);
 
 		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
@@ -605,13 +578,11 @@ public class DBData {
 				String vendor_companyName = rs.getString("vendor_companyName");
 				String vendor_profile = rs.getString("vendor_profile");
 				String vendor_address = rs.getString("vendor_address");
-				String menu_id = rs.getString("menu_id");
 
 				vendorInfo[0] = vendor_phoneNumber;
 				vendorInfo[1] = vendor_companyName;
 				vendorInfo[2] = vendor_profile;
 				vendorInfo[3] = vendor_address;
-				vendorInfo[4] = menu_id;
 			}
 
 			// Join arrays together
@@ -706,29 +677,29 @@ public class DBData {
 		return isAdded;
 	}
 
-	public String getMenuID(String menu_name) {
-		String menu_id = null;
-
-		SelectSQL = "SELECT `menu_id` FROM `menu` WHERE menu_name = '%s';";
-		SelectSQL = String.format(SelectSQL, user_id);
-
-		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
-
-		rs = DBUtil.getTable(SelectSQL);
-
-		try {
-			while (rs.next()) {
-
-				menu_id = rs.getString("menu_id");
-			}
-
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-
-		DBUtil.close();
-		return menu_id;
-	}
+//	public String getMenuID(String menu_name) {
+//		String menu_id = null;
+//
+//		SelectSQL = "SELECT `menu_id` FROM `menu` WHERE menu_name = '%s';";
+//		SelectSQL = String.format(SelectSQL, user_id);
+//
+//		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
+//
+//		rs = DBUtil.getTable(SelectSQL);
+//
+//		try {
+//			while (rs.next()) {
+//
+//				menu_id = rs.getString("menu_id");
+//			}
+//
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//		}
+//
+//		DBUtil.close();
+//		return menu_id;
+//	}
 	
 	// ======================================
 	// Extra methods

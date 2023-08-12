@@ -119,15 +119,14 @@ public class DBDataTest {
 				"payment_id", "normal_id" };
 		String[] item = { "item_id", "item_name", "item_qty", "item_description", "item_dietary", "item_ingredients",
 				"item_price" };
-		String[] menu = {"menu_id", "menu_name"};
+		String[] menu = {"menu_id", "vendor_id"};
 		String[] menu_item = { "menu_item_id", "item_id", "menu_id" };
 		String[] normal = { "normal_id", "normal_phoneNumber", "normal_address", "normal_profile", "normal_allegies" };
 		String[] payment = { "payment_id", "payment_name" };
 		String[] school = { "school_id", "school_name", "school_address" };
 		String[] school_has_vendor = { "school_has_vendor_id", "vendor_id", "school_id" };
 		String[] user = { "user_id", "user_name", "user_email", "user_password", "ACCESS_TYPE", "LAST_LOGIN" };
-		String[] vendor = { "vendor_id", "vendor_phoneNumber", "vendor_companyName", "vendor_profile", "vendor_address",
-				"menu_id" };
+		String[] vendor = { "vendor_id", "vendor_phoneNumber", "vendor_companyName", "vendor_profile", "vendor_address" };
 
 		// Assign Tables Columns into nested array
 		String[][] TablesColumns = { admin, child, has_order, item, menu, menu_item, normal, payment, school,
@@ -384,7 +383,7 @@ public class DBDataTest {
 	@Test
 	public void testLoginUser__Normal() {
 		add_User();
-		String email = "john@email.com";
+		String email = "john@email.com[ADD_USER]";
 		String password = "Password123";
 
 		boolean Actual = DBData.LOGIN(email, password);
@@ -414,7 +413,7 @@ public class DBDataTest {
 	public void testGetID() {
 		String expected = add_User();
 
-		String email = "john@email.com";
+		String email = "john@email.com[ADD_USER]";
 		String password = "Password123";
 		DBData temp = new DBData(email, password);
 
@@ -428,7 +427,7 @@ public class DBDataTest {
 	public void testGetAccess() {
 		add_User();
 
-		String email = "john@email.com";
+		String email = "john@email.com[ADD_USER]";
 		String password = "Password123";
 		DBData temp = new DBData(email, password);
 
@@ -443,11 +442,11 @@ public class DBDataTest {
 	public void testGetName() {
 		add_User();
 
-		String email = "john@email.com";
+		String email = "john@email.com[ADD_USER]";
 		String password = "Password123";
 		DBData temp = new DBData(email, password);
 
-		String expected = "john";
+		String expected = "john[ADD_USER]";
 		String actual = temp.getUser_name();
 
 		delete_User();
