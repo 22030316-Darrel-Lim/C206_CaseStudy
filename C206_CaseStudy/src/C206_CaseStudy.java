@@ -455,7 +455,7 @@ public class C206_CaseStudy {
 		// TODO Run SQL Statement to delete base on Menu_Id
 	}
 
-	// Method for Vendor to add new food
+	// (DONE - Testing NEEDED)Method for Vendor to add new food
 	private static void addFoodItem() {
 
 		// Looping for input
@@ -470,7 +470,6 @@ public class C206_CaseStudy {
 
 			switch (CHOICE) {
 			case 1:
-				// TODO (DONE) Retrieve food from SQL and add it
 
 				String[] vendorInfo = CREDENTIAL.getVendorInfo();
 
@@ -558,6 +557,7 @@ public class C206_CaseStudy {
 
 			case 9:
 				// Exit from Menu Option
+				vendorMenu();
 				break;
 
 			default:
@@ -583,6 +583,7 @@ public class C206_CaseStudy {
 		}
 	}
 
+	// (DONE - Testing)
 	private static String getVendorMenu() {
 		String[] vendorInfo = CREDENTIAL.getVendorInfo();
 
@@ -607,6 +608,7 @@ public class C206_CaseStudy {
 		}
 		return menuChoice;
 	}
+	
 	// ==========================
 	// Methods For ADMIN
 	// ==========================
