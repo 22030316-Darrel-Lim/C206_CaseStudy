@@ -1,10 +1,8 @@
 package Helper_Package;
 
 public class Authentication {
-  
-	private static DBData CREDENTIAL;
 	
-	private static void checkCREDENTIAL() {
+	private static DBData checkCREDENTIAL(DBData CREDENTIAL) {
 		// Initialize the access and id after creating the DBData object
 		String CREDENTIAL_access = CREDENTIAL.getUser_access();
 		String CREDENTIAL_id = CREDENTIAL.getUser_id();
@@ -13,20 +11,22 @@ public class Authentication {
 		if (CREDENTIAL == null || CREDENTIAL_id == null || CREDENTIAL_access == null || CREDENTIAL_id.isEmpty() || CREDENTIAL_access.isEmpty()) {
 			CREDENTIAL = null;
 		}
+		
+		return CREDENTIAL;
 	}
 	
 	public static DBData Login(String email, String password) {
-		CREDENTIAL = new DBData(email, password);
+		DBData CREDENTIAL = new DBData(email, password);
 		
-		checkCREDENTIAL();
+		CREDENTIAL = checkCREDENTIAL(CREDENTIAL);
 		
 		return CREDENTIAL;
 	}
 
 	private static DBData RegisterAccount(String name, String email, String password, String access, String[] otherInfo) {
-		CREDENTIAL = new DBData(name, email, password, access, otherInfo);
+		DBData CREDENTIAL = new DBData(name, email, password, access, otherInfo);
 
-		checkCREDENTIAL();
+		CREDENTIAL = checkCREDENTIAL(CREDENTIAL);
 
 	    return CREDENTIAL;
 	}
@@ -34,7 +34,7 @@ public class Authentication {
 	public static DBData RegisterAccountNormal(String name, String email, String password, String[] otherInfo) {
 		String access = "normal";
 		
-		CREDENTIAL = RegisterAccount(name, email, password, access, otherInfo);
+		DBData CREDENTIAL = RegisterAccount(name, email, password, access, otherInfo);
 		
 		return CREDENTIAL;
 	}
@@ -42,7 +42,7 @@ public class Authentication {
 	public static DBData RegisterAccountVendor(String name, String email, String password, String[] otherInfo) {
 		String access = "vendor";
 		
-		CREDENTIAL = RegisterAccount(name, email, password, access, otherInfo);
+		DBData CREDENTIAL = RegisterAccount(name, email, password, access, otherInfo);
 		
 		return CREDENTIAL;
 	}
@@ -50,9 +50,32 @@ public class Authentication {
 	public static DBData RegisterAccountAdmin(String name, String email, String password, String[] otherInfo) {
 		String access = "admin";
 		
-		CREDENTIAL = RegisterAccount(name, email, password, access, otherInfo);
+		DBData CREDENTIAL = RegisterAccount(name, email, password, access, otherInfo);
 		
 		return CREDENTIAL;
 	}
 	
+	public static Boolean CreateUser(String name, String email, String password, String access, String[] otherInfo) {
+		Boolean isCreated = null;
+		DBData newUser = null;
+		
+		switch (access) {
+		case "normal":
+			newUser = RegisterAccountNormal(name, email, password, otherInfo);
+			break;
+		case "vendor":
+			newUser = RegisterAccountVendor(name, email, password, otherInfo);
+			break;
+		case "admin":
+			newUser = RegisterAccountAdmin(name, email, password, otherInfo);
+			break;
+		}
+		
+		if (newUser != null) {
+			isCreated = true;
+		} else {
+			isCreated = false;
+		}
+		return isCreated;
+	}
 } // End of Class

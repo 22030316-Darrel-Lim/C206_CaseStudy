@@ -681,6 +681,7 @@ public class C206_CaseStudy {
 		String access = "";
 		String[] otherInfo = {};
 
+		
 		while (true) {
 			email = readString("Enter Email: ");
 			name = readString("Enter Name: ");
@@ -692,17 +693,15 @@ public class C206_CaseStudy {
 				break;
 			}
 		}
-
-		DBData createAccount = null;
+		
 		switch (access) {
 		case "normal":
 			otherInfo = new String[3]; // Changed size to 3
 			otherInfo[0] = String.valueOf(readInt("Enter Phone Number: "));
 			otherInfo[1] = readString("Enter Address: ");
 			otherInfo[2] = readString("Enter Allergies: ");
-
+			
 			print("Creeting normal account....");
-			createAccount = Authentication.RegisterAccountNormal(name, email, password, otherInfo);
 			break;
 		case "vendor":
 			otherInfo = new String[3]; // Changed size to 3
@@ -711,25 +710,25 @@ public class C206_CaseStudy {
 			otherInfo[2] = readString("Enter Vendor Address: ");
 
 			print("Creeting vender accout....");
-			createAccount = Authentication.RegisterAccountVendor(name, email, password, otherInfo);
 			break;
 		case "admin":
 			otherInfo = new String[]{};
 
 			print("Creeting admin accout....");
-			createAccount = Authentication.RegisterAccountAdmin(name, email, password, otherInfo);
 			break;
 		default:
 			print("\nInvalid access type.\n");
 			adminMenu(); // Bring user back to admin menu
 		}
-
-		if (createAccount != null) {
+		
+		boolean isCreated = Authentication.CreateUser(name, email, password, access, otherInfo);
+		
+		if (isCreated == true) {
 			print("\nUser created successfully!\n");
 		} else {
 			print("\nUser creation failed.\n");
 		}
-
+		
 		adminMenu(); // Bring user back to admin menu
 	}
 
@@ -792,7 +791,6 @@ public class C206_CaseStudy {
 		
 		ArrayList<String> schoolIDArray = new ArrayList<String>();
 		for(String[] row : table) {
-			print(row[0]);
 			schoolIDArray.add(row[0]);
 		}
 		schoolIDArray.remove(0);
@@ -815,11 +813,11 @@ public class C206_CaseStudy {
 		Boolean isDeleted = CREDENTIAL.deleteSchool(school);
 
 		if (isDeleted == false) {
-			print("Delete School Failed");
+			print("\nDelete School Failed");
 		} else if (isDeleted == null) {
-			print("Wrong access type");
+			print("\nWrong access type");
 		} else {
-			print("Delete School Successful");
+			print("\nDelete School Successful");
 		}
 		adminMenu();
 	}

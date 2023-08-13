@@ -5,6 +5,8 @@ import static org.junit.Assert.*;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
+
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
@@ -607,5 +609,13 @@ public class DBDataTest {
 		DBUtil.execSQL(deleteSQL);
 
 		DBUtil.close();
+	}
+	
+	@After
+	public void closeAll() {
+		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
+		for (int i = 0; i < 100; i++) {
+			DBUtil.close();
+		}
 	}
 }

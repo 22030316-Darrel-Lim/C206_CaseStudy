@@ -5,6 +5,7 @@ import org.junit.runner.Result;
 
 import Helper.DBUtil;
 import Helper.TableFormatterTest;
+import Helper_Package.DBDataTest;
 import Helper_Package.DBDataTest_Stage_1;
 import Helper_Package.DBDataTest_Stage_2;
 
@@ -12,16 +13,17 @@ public class RunAllTest {
 
 	private static Result result;
 	private static boolean isSuccessful;
-	private static int CountCompletedRun = 0;
-	private static int CountTotalRun = 0;
 
 	public static void main(String[] args) {
 		System.out.println(runDBDataTest());
 	}
 
 	public static boolean runDBDataTest() {
+		Result result;
 		boolean isAllTested = false;
-
+		int CountCompletedRun = 0;
+		int CountTotalRun = 0;
+		
 		// Stage 1
 		result = JUnitCore.runClasses(DBDataTest_Stage_1.class);
 
@@ -42,6 +44,19 @@ public class RunAllTest {
 
 		if (isSuccessful == false) {
 			System.out.println("DBData Initialization failed - Stage 2");
+			return isAllTested;
+		}
+		
+		CountCompletedRun += result.getFailureCount();
+		CountTotalRun += result.getRunCount();
+		
+		// DBData test
+		result = JUnitCore.runClasses(DBDataTest.class);
+
+		isSuccessful = result.wasSuccessful();
+
+		if (isSuccessful == false) {
+			System.out.println("DBData Initialization failed - All");
 			return isAllTested;
 		}
 		
