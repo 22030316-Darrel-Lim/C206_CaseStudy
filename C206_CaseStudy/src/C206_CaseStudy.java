@@ -185,6 +185,9 @@ public class C206_CaseStudy {
 				// Delete Item
 				deleteFoodItem();
 				break;
+			case 6:
+				// Link School to Vendor
+				addVendorToSchool();
 			case 9:
 				thankYou();
 				break;
@@ -572,6 +575,62 @@ public class C206_CaseStudy {
 		return menuChoice;
 	}
 
+	//TODO
+	private static void addVendorToSchool() {
+		
+		if (CREDENTIAL.getSchoolCount() == 0) {
+			print("There is currently no school available to add to");
+			vendorMenu();
+		}
+		
+		String[][] tableListSchool = CREDENTIAL.viewAllSchool();
+		String[][] tableListVendorSchool = CREDENTIAL.viewSchoolHasVendor();
+		
+		print("\n===== Available Schools =====");
+		print(TableFormatter.tableFormatter(tableListSchool));
+		
+		print("\n==== Current school linked to vendor ====");
+		print(TableFormatter.tableFormatter(tableListVendorSchool));
+		
+		ArrayList<String> SchoolID = new ArrayList<String>();
+		for(String[] rowSchoolID : tableListSchool) {
+			if (rowSchoolID[0].equalsIgnoreCase("School ID")) {
+				continue;
+			}
+			SchoolID.add(rowSchoolID[0]);
+		}
+		
+		for (String[] rowSchoolID : tableListVendorSchool) {
+			if (rowSchoolID[0].equalsIgnoreCase("School ID")) {
+				continue;
+			}
+			else if (SchoolID.contains(rowSchoolID[0]) == true) {
+				SchoolID.remove(rowSchoolID[0]);
+			}
+		}
+		
+		int linkSchoolID = readInt("Enter school ID to link to vendor: ");
+		
+		boolean contains = SchoolID.contains(String.valueOf(linkSchoolID));
+		
+		if (contains == false) {
+			print("\nWrong / Already Linked school ID");
+			vendorMenu();
+		}
+		
+		print("\nLinking school to vendor...");
+		
+		Boolean isAdded = CREDENTIAL.addSchoolHasVendor(String.valueOf(linkSchoolID));
+		if (isAdded == false) {
+			print("Add School to Vendor Failed");
+		} else if (isAdded == null) {
+			print("Wrong access type");
+		} else {
+			print("Add School to Vendor Successful");
+		}
+		vendorMenu();
+	}
+	
 	// ==========================
 	// Methods For ADMIN
 	// ==========================
@@ -683,6 +742,11 @@ public class C206_CaseStudy {
 		adminMenu();
 	}
 
+	//TODO
+	private static void addSchool() {
+		
+	}
+	
 	// =============================
 	// Refactoring
 	// =============================
@@ -740,6 +804,7 @@ public class C206_CaseStudy {
 			print("3) Delete Menu");
 			print("4) Add new Item");
 			print("5) Delete Item");
+			print("6) Link Vendor To School");
 			print("9) Exit");
 			line(20, "-");
 			break;

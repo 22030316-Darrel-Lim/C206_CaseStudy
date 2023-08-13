@@ -38,7 +38,7 @@ public class DBData {
 		email = SQLInjection(email);
 		password = SQLInjection(password);
 		OtherInfo = SQLInjection(OtherInfo);
-		
+
 		access = access.toLowerCase();
 
 		// Check if email is in DB
@@ -223,9 +223,9 @@ public class DBData {
 		if (user_access.equals("admin") == false) {
 			return isDeleted;
 		}
-		
+
 		user_id = SQLInjection(user_id);
-		
+
 		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
 
 		DeleteSQL = "DELETE FROM user WHERE user_id = '%s';";
@@ -253,16 +253,16 @@ public class DBData {
 		if (email == null || password == null) {
 			return isLogged;
 		}
-		
+
 		email = SQLInjection(email);
 		password = SQLInjection(password);
-		
+
 		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
 
 		SelectSQL = "SELECT ACCESS_TYPE, user_id FROM user WHERE user_email = '%s' AND user_password = SHA1('%s');";
 
 		SelectSQL = String.format(SelectSQL, email, password);
-		
+
 		try {
 
 			rs = DBUtil.getTable(SelectSQL);
@@ -279,7 +279,7 @@ public class DBData {
 		} catch (SQLException e) {
 			System.out.println("SQL Error: " + e.getMessage());
 		}
-		
+
 		DBUtil.close();
 		return isLogged;
 	}
@@ -352,7 +352,7 @@ public class DBData {
 		return user_id;
 	}
 
-	// TODO TEST needy
+	// (Done need tesing)
 	public String getUser_id(String email) {
 		String user_id = null;
 
@@ -431,13 +431,13 @@ public class DBData {
 		}
 
 		int column = getUserCount() + 1;
-		String[] header = { "user_id", "user_name", "user_email", "ACCESS_TYPE", "LAST_LOGIN" };
+		String[] header = { "User ID", "User Name", "User Email", "Access Type", "Last Login" };
 		int row = header.length;
 
 		String table[][] = new String[column][row];
 
-		SelectSQL = "Select %s FROM user;";
-		SelectSQL = String.format(SelectSQL, String.join(", ", header));
+		SelectSQL = "Select user_id,user_name,user_email,ACCESS_TYPE,LAST_LOGIN FROM user;";
+		//SelectSQL = String.format(SelectSQL, String.join(", ", header));
 
 		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
 
@@ -450,11 +450,11 @@ public class DBData {
 		try {
 			while (rs.next()) {
 				// Assign values based on header info
-				String id = rs.getString(header[0]);
-				String name = rs.getString(header[1]);
-				String email = rs.getString(header[2]);
-				String access = rs.getString(header[3]);
-				String login = rs.getString(header[4]);
+				String id = rs.getString("user_id");
+				String name = rs.getString("user_name");
+				String email = rs.getString("user_email");
+				String access = rs.getString("ACCESS_TYPE");
+				String login = rs.getString("LAST_LOGIN");
 
 				// Add (You) based on user id
 				if (id.equals(user_id))
@@ -477,18 +477,18 @@ public class DBData {
 
 	public String[][] viewAllSchool() {
 
-		if (user_access.equals("admin") == false) {
+		if ((user_access.equals("admin") || user_access.equals("vendor")) == false) {
 			return null;
 		}
 
 		int column = getSchoolCount() + 1;
-		String[] header = { "school_id", "school_name", "school_address" };
+		String[] header = { "School ID", "School Name", "School Address" };
 		int row = header.length;
 
 		String table[][] = new String[column][row];
 
-		SelectSQL = "Select %s FROM school;";
-		SelectSQL = String.format(SelectSQL, String.join(", ", header));
+		SelectSQL = "Select school_id,school_name,school_address FROM school;";
+		//SelectSQL = String.format(SelectSQL, String.join(", ", header));
 
 		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
 
@@ -501,9 +501,9 @@ public class DBData {
 		try {
 			while (rs.next()) {
 				// Assign values based on header info
-				String id = rs.getString(header[0]);
-				String name = rs.getString(header[1]);
-				String address = rs.getString(header[2]);
+				String id = rs.getString("school_id");
+				String name = rs.getString("school_name");
+				String address = rs.getString("school_address");
 
 				table[count + 1][0] = id;
 				table[count + 1][1] = name;
@@ -525,13 +525,13 @@ public class DBData {
 		}
 
 		int column = getOrderCount() + 1;
-		String[] header = { "order_id", "order_status", "child_id", "school_has_vendor_id", "payment_id", "normal_id" };
+		String[] header = { "Order ID", "order Status", "Child ID", "School Has Vendor ID", "Payment Type", "Normal ID" };
 		int row = header.length;
 
 		String table[][] = new String[column][row];
 
-		SelectSQL = "Select %s FROM has_order;";
-		SelectSQL = String.format(SelectSQL, String.join(", ", header));
+		SelectSQL = "Select order_id,order_status,child_id,school_has_vendor_id,payment_nane,normal_id FROM has_order INNER JOIN payment ON payment.payment_id = has_order.payment_id;";
+		//SelectSQL = String.format(SelectSQL, String.join(", ", header));
 
 		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
 
@@ -544,18 +544,18 @@ public class DBData {
 		try {
 			while (rs.next()) {
 				// Assign values based on header info
-				String order_id = rs.getString(header[0]);
-				String status = rs.getString(header[1]);
-				String child_id = rs.getString(header[2]);
-				String school_has_vendor_id = rs.getString(header[3]);
-				String payment_id = rs.getString(header[4]);
-				String normal_id = rs.getString(header[5]);
+				String order_id = rs.getString("order_id");
+				String status = rs.getString("order_status");
+				String child_id = rs.getString("child_id");
+				String school_has_vendor_id = rs.getString("school_has_vendor_id");
+				String payment_type = rs.getString("payment_nane");
+				String normal_id = rs.getString("normal_id");
 
 				table[count + 1][0] = order_id;
 				table[count + 1][1] = status;
 				table[count + 1][2] = child_id;
 				table[count + 1][3] = school_has_vendor_id;
-				table[count + 1][4] = payment_id;
+				table[count + 1][4] = payment_type;
 				table[count + 1][5] = normal_id;
 				count++;
 			}
@@ -570,13 +570,13 @@ public class DBData {
 	public String[][] viewAllMenu() {
 
 		int column = getMenuCount() + 1;
-		String[] header = { "menu_id", "menu_item.item_id", "item_name", "item_qty", "item_description", "item_price" };
+		String[] header = { "Menu ID", "Item ID", "Item Name", "Quantity", "Description", "Price" };
 		int row = header.length;
 
 		String table[][] = new String[column][row];
 
-		SelectSQL = "Select %s FROM menu_item INNER JOIN item ON item.item_id = menu_item.item_id;";
-		SelectSQL = String.format(SelectSQL, String.join(", ", header));
+		SelectSQL = "Select menu_id,menu_item.item_id,item_name,item_qty,item_description,item_price FROM menu_item INNER JOIN item ON item.item_id = menu_item.item_id;";
+		//SelectSQL = String.format(SelectSQL);
 
 		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
 
@@ -589,12 +589,12 @@ public class DBData {
 		try {
 			while (rs.next()) {
 				// Assign values based on header info
-				String menu_id = rs.getString(header[0]);
-				String item_id = rs.getString(header[1]);
-				String item_name = rs.getString(header[2]);
-				String item_qty = rs.getString(header[3]);
-				String item_description = rs.getString(header[4]);
-				double item_price = rs.getDouble(header[5]);
+				String menu_id = rs.getString("menu_id");
+				String item_id = rs.getString("menu_item.item_id");
+				String item_name = rs.getString("item_name");
+				String item_qty = rs.getString("item_qty");
+				String item_description = rs.getString("item_description");
+				double item_price = rs.getDouble("item_price");
 
 				String price = String.format("$%.2f", item_price);
 
@@ -701,14 +701,13 @@ public class DBData {
 
 		int column = getItemCount() + 1;
 
-		String[] header = { "item_id", "item_name", "item_qty", "item_description", "item_dietary", "item_ingredients",
-				"item_price" };
+		String[] header = { "Item ID", "Name", "Quantity", "Description", "Dietary", "Ingredients", "Price" };
 		int row = header.length;
 
 		String table[][] = new String[column][row];
 
-		SelectSQL = "Select %s FROM item WHERE vendor_id = '%s';";
-		SelectSQL = String.format(SelectSQL, String.join(", ", header), user_id);
+		SelectSQL = "Select item_id,item_name,item_qty,item_description,item_dietary,item_ingredients,item_price FROM item WHERE vendor_id = '%s';";
+		SelectSQL = String.format(SelectSQL, user_id);
 
 		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
 
@@ -721,13 +720,13 @@ public class DBData {
 		try {
 			while (rs.next()) {
 				// Assign values based on header info
-				String item_id = rs.getString(header[0]);
-				String item_name = rs.getString(header[1]);
-				String item_qty = rs.getString(header[2]);
-				String item_description = rs.getString(header[3]);
-				String item_dietary = rs.getString(header[4]);
-				String item_ingredients = rs.getString(header[5]);
-				double item_price = rs.getDouble(header[6]);
+				String item_id = rs.getString("item_id");
+				String item_name = rs.getString("item_name");
+				String item_qty = rs.getString("item_qty");
+				String item_description = rs.getString("item_description");
+				String item_dietary = rs.getString("item_dietary");
+				String item_ingredients = rs.getString("item_ingredients");
+				double item_price = rs.getDouble("item_price");
 
 				String price = String.format("$%.2f", item_price);
 
@@ -755,15 +754,15 @@ public class DBData {
 			return null;
 		}
 		menu_id = SQLInjection(menu_id);
-		
+
 		Boolean isAdded = false;
-		
+
 		// Check if item_id inside menu_item
 		SelectSQL = "SELECT item_id FROM menu_item WHERE item_id = '%s'";
 		SelectSQL = String.format(SelectSQL, item_id);
-		
+
 		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
-		
+
 		rs = DBUtil.getTable(SelectSQL);
 		int count = 0;
 		try {
@@ -773,7 +772,7 @@ public class DBData {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		
+
 		if (count != 0) {
 			return isAdded;
 		}
@@ -813,8 +812,8 @@ public class DBData {
 
 		InsertSQL = "INSERT INTO `item`(`vendor_id`, `item_name`, `item_qty`, `item_description`, `item_dietary`, `item_ingredients`, `item_price`) "
 				+ "VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s');";
-		InsertSQL = String.format(InsertSQL, user_id, item_name, item_qty, item_description, item_dietary, item_ingredients,
-				item_price);
+		InsertSQL = String.format(InsertSQL, user_id, item_name, item_qty, item_description, item_dietary,
+				item_ingredients, item_price);
 
 		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
 
@@ -832,8 +831,8 @@ public class DBData {
 		int item_id = 0;
 
 		SelectSQL = "SELECT item_id FROM `item` WHERE vendor_id = '%s' AND item_name = '%s' AND item_qty = '%s' AND item_description = '%s' AND item_dietary = '%s' AND item_ingredients = '%s' AND item_price = '%s';";
-		SelectSQL = String.format(SelectSQL, user_id, item_name, item_qty, item_description, item_dietary, item_ingredients,
-				item_price);
+		SelectSQL = String.format(SelectSQL, user_id, item_name, item_qty, item_description, item_dietary,
+				item_ingredients, item_price);
 
 		rs = DBUtil.getTable(SelectSQL);
 
@@ -854,39 +853,39 @@ public class DBData {
 
 	// (DONE - testing)
 	public Boolean deleteMenu(String menu_id) {
-		
+
 		if (user_access.equals("vendor") == false) {
 			return null;
 		}
-		
+
 		Boolean isDeleted = false;
-		
+
 		menu_id = SQLInjection(menu_id);
-		
+
 		DeleteSQL = "DELETE FROM menu WHERE `menu`.`menu_id` = '%s';";
 		DeleteSQL = String.format(DeleteSQL, menu_id);
-		
+
 		int rowsDeleted = DBUtil.execSQL(DeleteSQL);
 
 		if (rowsDeleted == 1) {
 			isDeleted = true;
 		}
-		
+
 		return isDeleted;
 	}
-	
+
 	// (DONE need testing)
 	public Boolean addNewMenu() {
-		
+
 		if (user_access.equals("vendor") == false) {
 			return null;
 		}
-		
+
 		Boolean isAdded = false;
-		
+
 		InsertSQL = "INSERT INTO `menu` (`vendor_id`) VALUES ('%s')";
 		InsertSQL = String.format(InsertSQL, user_id);
-		
+
 		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
 
 		int rowsAdded = DBUtil.execSQL(InsertSQL);
@@ -894,31 +893,101 @@ public class DBData {
 		if (rowsAdded == 1) {
 			isAdded = true;
 		}
-		
+
 		DBUtil.close();
 		return isAdded;
 	}
-	
+
 	// (Done need testing)
 	public Boolean deleteItem(String item_id) {
-		
+
 		if (user_access.equals("vendor") == false) {
 			return null;
 		}
-		
+
 		item_id = SQLInjection(item_id);
 		Boolean isDeleted = false;
-		
+
 		DeleteSQL = "DELETE FROM item WHERE `item`.`item_id` = '%s';";
 		DeleteSQL = String.format(DeleteSQL, item_id);
-		
+
 		int rowsDeleted = DBUtil.execSQL(DeleteSQL);
 
 		if (rowsDeleted == 1) {
 			isDeleted = true;
 		}
-		
+
 		return isDeleted;
+	}
+
+	// (Done need tesing)
+	public String[][] viewSchoolHasVendor() {
+
+		if (user_access.equals("vendor") == false) {
+			return null;
+		}
+
+		int column = getVenderHasSchoolCount() + 1;
+
+		String[] header = { "School ID", "School Name", "School Address" };
+		int row = header.length;
+
+		String table[][] = new String[column][row];
+
+		SelectSQL = "SELECT school.school_id,school_name,school_address FROM `school` INNER JOIN school_has_vendor ON school.school_id = school_has_vendor.school_id WHERE school_has_vendor.vendor_id = '%s';";
+		SelectSQL = String.format(SelectSQL, user_id);
+
+		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
+
+		// Set first index of data to header
+		table[0] = header;
+
+		// Assigning values into data
+		rs = DBUtil.getTable(SelectSQL);
+		int count = 0;
+		try {
+			while (rs.next()) {
+				// Assign values based on header info
+				String school_id = rs.getString("school.school_id");
+				String school_name = rs.getString("school_name");
+				String school_address = rs.getString("school_address");
+
+				table[count + 1][0] = school_id;
+				table[count + 1][1] = school_name;
+				table[count + 1][2] = school_address;
+				count++;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		DBUtil.close();
+
+		return table;
+	}
+
+	// (Done need tesing)
+	public Boolean addSchoolHasVendor(String school_id) {
+		
+		if (user_access.equals("vendor") == false) {
+			return null;
+		}
+		
+		school_id = SQLInjection(school_id);
+		Boolean isAdded = false;
+
+		InsertSQL = "INSERT INTO `school_has_vendor` (`vendor_id`, `school_id`) VALUES ('%s', '%s')";
+		InsertSQL = String.format(InsertSQL, user_id, school_id);
+
+		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
+
+		int rowsAdded = DBUtil.execSQL(InsertSQL);
+
+		if (rowsAdded == 1) {
+			isAdded = true;
+		}
+
+		DBUtil.close();
+		return isAdded;
 	}
 	
 	// ======================================
@@ -946,6 +1015,29 @@ public class DBData {
 		int count = 0;
 		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
 		SelectSQL = "SELECT school_id FROM school;";
+
+		rs = DBUtil.getTable(SelectSQL);
+		try {
+			while (rs.next()) {
+				count++;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		DBUtil.close();
+		return count;
+	}
+
+	public int getVenderHasSchoolCount() {
+		int count = 0;
+
+		if (user_access.equals("vendor") == false) {
+			return count;
+		}
+
+		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
+		SelectSQL = "SELECT school_id FROM school_has_vendor WHERE vendor_id = '%s';";
+		SelectSQL = String.format(SelectSQL, user_id);
 
 		rs = DBUtil.getTable(SelectSQL);
 		try {
@@ -1017,11 +1109,11 @@ public class DBData {
 		if (user_access.equals("vendor") == false) {
 			return count;
 		}
-		
+
 		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
 		SelectSQL = "SELECT item_id FROM item WHERE vendor_id = '%s';";
 		SelectSQL = String.format(SelectSQL, user_id);
-		
+
 		rs = DBUtil.getTable(SelectSQL);
 		try {
 			while (rs.next()) {
