@@ -178,8 +178,8 @@ public class C206_CaseStudy {
 				deleteFoodMenu();
 				break;
 			case 4:
-				// Add new Item to menu
-				addFoodItem();
+				// Add new menu
+				addNewMenu();
 				break;
 			case 5:
 				// Delete Item
@@ -260,7 +260,7 @@ public class C206_CaseStudy {
 	// Methods For VENDOR
 	// ==========================
 
-	// TODO (DONE) Method for Vendor to delete the Food Menu
+	// (DONE) Method for Vendor to delete the Food Menu
 	// Test if there is no menu
 	private static void deleteFoodMenu() {
 		line(40, "-");
@@ -315,7 +315,6 @@ public class C206_CaseStudy {
 	// (DONE - Testing NEEDED) Method for Vendor to add new food
 	// Test if there is no menu
 	private static void addFoodItem() {
-
 		// Check if menu is available to add item
 		int currentMenu = CREDENTIAL.getMenuCount();
 
@@ -323,7 +322,7 @@ public class C206_CaseStudy {
 			print("\nSorry but currently there are no menu to add items in\n");
 			return;
 		}
-
+		
 		// Looping for input
 		CHOICE = -1;
 		String menuChoice;
@@ -331,13 +330,14 @@ public class C206_CaseStudy {
 		Boolean isSuccessful;
 
 		while (CHOICE != 9) {
+			
 			displayMenu("addFoodItem");
 
 			CHOICE = readInt("Enter Option: ");
 
 			switch (CHOICE) {
 			case 1:
-
+				
 				String[] vendorInfo = CREDENTIAL.getVendorInfo();
 
 				if (vendorInfo.length != 8) {
@@ -475,6 +475,32 @@ public class C206_CaseStudy {
 		}
 	}
 
+	// Done need testing) add new menu
+	private static void addNewMenu() {
+		line(40, "-");
+		print("== Add New Menu ==");
+		
+		char YESNO = readChar("Do you want to create a new Menu? (Y/N) ");
+
+		if (YESNO != 'y') {
+			print("Returning back to [Vendor MENU]");
+			vendorMenu();
+		}
+		
+		Boolean isAdded = CREDENTIAL.addNewMenu();
+		
+		if (isAdded == null) {
+			print("Wrong credential access");
+		} else if (isAdded == false) {
+			print("Menu Creation failed");
+		} else {
+			print("Menu Creation Successful");
+			print("Bringing user to addFoodItem");
+			addFoodItem();
+		}
+		vendorMenu();
+	}
+	
 	// (DONE - Testing)
 	private static String getVendorMenu() {
 		String[] vendorInfo = CREDENTIAL.getVendorInfo();
@@ -533,7 +559,7 @@ public class C206_CaseStudy {
 		System.out.println(TableFormatter.tableFormatter(table));
 	}
 
-	// TODO (DONE NEED TESTING) SQL Code to create any user
+	// (DONE NEED TESTING) SQL Code to create any user
 	private static void createUser() {
 		line(40, "-");
 

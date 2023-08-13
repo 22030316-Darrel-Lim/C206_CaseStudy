@@ -875,6 +875,29 @@ public class DBData {
 		return isDeleted;
 	}
 	
+	// (DONE need testing)
+	public Boolean addNewMenu() {
+		
+		if (user_access.equals("vendor") == false) {
+			return null;
+		}
+		
+		Boolean isAdded = false;
+		
+		InsertSQL = "INSERT INTO `menu` (`vendor_id`) VALUES ('%s')";
+		InsertSQL = String.format(InsertSQL, user_id);
+		
+		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
+
+		int rowsAdded = DBUtil.execSQL(InsertSQL);
+
+		if (rowsAdded == 1) {
+			isAdded = true;
+		}
+		
+		DBUtil.close();
+		return isAdded;
+	}
 	// ======================================
 	// Extra methods
 	// ======================================
