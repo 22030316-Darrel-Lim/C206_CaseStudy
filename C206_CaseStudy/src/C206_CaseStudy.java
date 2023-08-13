@@ -188,6 +188,7 @@ public class C206_CaseStudy {
 			case 6:
 				// Link School to Vendor
 				addVendorToSchool();
+				break;
 			case 9:
 				thankYou();
 				break;
@@ -230,6 +231,10 @@ public class C206_CaseStudy {
 			case 6:
 				// Delete User
 				deleteUser();
+				break;
+			case 7:
+				// Add school
+				addSchool();
 				break;
 			case 9:
 				thankYou();
@@ -325,7 +330,7 @@ public class C206_CaseStudy {
 			print("\nSorry but currently there are no menu to add items in\n");
 			return;
 		}
-		
+
 		// Looping for input
 		CHOICE = -1;
 		String menuChoice;
@@ -333,14 +338,14 @@ public class C206_CaseStudy {
 		Boolean isSuccessful;
 
 		while (CHOICE != 9) {
-			
+
 			displayMenu("addFoodItem");
 
 			CHOICE = readInt("Enter Option: ");
 
 			switch (CHOICE) {
 			case 1:
-				
+
 				String[] vendorInfo = CREDENTIAL.getVendorInfo();
 
 				if (vendorInfo.length != 8) {
@@ -508,11 +513,11 @@ public class C206_CaseStudy {
 			print("Deletation Aborted");
 			vendorMenu();
 		}
-		
+
 		// Run Delete SQL
 		print("Deleting item....");
 		Boolean isDeleted = CREDENTIAL.deleteItem(food_id);
-		
+
 		if (isDeleted == false) {
 			print("Delete item Failed");
 		} else if (isDeleted == null) {
@@ -527,16 +532,16 @@ public class C206_CaseStudy {
 	private static void addNewMenu() {
 		line(40, "-");
 		print("== Add New Menu ==");
-		
+
 		char YESNO = readChar("Do you want to create a new Menu? (Y/N) ");
 
 		if (YESNO != 'y') {
 			print("Returning back to [Vendor MENU]");
 			vendorMenu();
 		}
-		
+
 		Boolean isAdded = CREDENTIAL.addNewMenu();
-		
+
 		if (isAdded == null) {
 			print("Wrong credential access");
 		} else if (isAdded == false) {
@@ -548,7 +553,7 @@ public class C206_CaseStudy {
 		}
 		vendorMenu();
 	}
-	
+
 	// (DONE - Testing)
 	private static String getVendorMenu() {
 		String[] vendorInfo = CREDENTIAL.getVendorInfo();
@@ -577,49 +582,48 @@ public class C206_CaseStudy {
 
 	// (Done need testing)
 	private static void addVendorToSchool() {
-		
+
 		if (CREDENTIAL.getSchoolCount() == 0) {
 			print("There is currently no school available to add to");
 			vendorMenu();
 		}
-		
+
 		String[][] tableListSchool = CREDENTIAL.viewAllSchool();
 		String[][] tableListVendorSchool = CREDENTIAL.viewSchoolHasVendor();
-		
+
 		print("\n===== Available Schools =====");
 		print(TableFormatter.tableFormatter(tableListSchool));
-		
+
 		print("\n==== Current school linked to vendor ====");
 		print(TableFormatter.tableFormatter(tableListVendorSchool));
-		
+
 		ArrayList<String> SchoolID = new ArrayList<String>();
-		for(String[] rowSchoolID : tableListSchool) {
+		for (String[] rowSchoolID : tableListSchool) {
 			if (rowSchoolID[0].equalsIgnoreCase("School ID")) {
 				continue;
 			}
 			SchoolID.add(rowSchoolID[0]);
 		}
-		
+
 		for (String[] rowSchoolID : tableListVendorSchool) {
 			if (rowSchoolID[0].equalsIgnoreCase("School ID")) {
 				continue;
-			}
-			else if (SchoolID.contains(rowSchoolID[0]) == true) {
+			} else if (SchoolID.contains(rowSchoolID[0]) == true) {
 				SchoolID.remove(rowSchoolID[0]);
 			}
 		}
-		
+
 		int linkSchoolID = readInt("Enter school ID to link to vendor: ");
-		
+
 		boolean contains = SchoolID.contains(String.valueOf(linkSchoolID));
-		
+
 		if (contains == false) {
 			print("\nWrong / Already Linked school ID");
 			vendorMenu();
 		}
-		
+
 		print("\nLinking school to vendor...");
-		
+
 		Boolean isAdded = CREDENTIAL.addSchoolHasVendor(String.valueOf(linkSchoolID));
 		if (isAdded == false) {
 			print("Add School to Vendor Failed");
@@ -630,7 +634,7 @@ public class C206_CaseStudy {
 		}
 		vendorMenu();
 	}
-	
+
 	// ==========================
 	// Methods For ADMIN
 	// ==========================
@@ -667,35 +671,48 @@ public class C206_CaseStudy {
 	private static void createUser() {
 		line(40, "-");
 
-		String email = readString("Enter Email: ");
-		String name = readString("Enter Name: ");
-		String password = readString("Enter Password: ");
-		String access = readString("Enter Access Type (admin/vendor/normal): ").toLowerCase();
+		String email = "";
+		String name = "";
+		String password = "";
+		String access = "";
 		String[] otherInfo = {};
+
+		while (true) {
+			email = readString("Enter Email: ");
+			name = readString("Enter Name: ");
+			password = readString("Enter Password: ");
+			access = readString("Enter Access Type (admin/vendor/normal): ").toLowerCase();
+			
+			if ((isName(name) && isEmail(email) && isPassword(password)
+				&& (access.equals("normal") || access.equals("vendor") || access.equals("admin"))) == true) {
+				break;
+			}
+		}
 
 		DBData createAccount = null;
 		switch (access) {
 		case "normal":
 			otherInfo = new String[3]; // Changed size to 3
-			otherInfo[0] = readString("Enter Phone Number: ");
+			otherInfo[0] = String.valueOf(readInt("Enter Phone Number: "));
 			otherInfo[1] = readString("Enter Address: ");
 			otherInfo[2] = readString("Enter Allergies: ");
-			
+
 			print("Creeting normal accout....");
-			createAccount = Authentication.RegisterAccountAdmin(name, email, password, otherInfo);
+			createAccount = Authentication.RegisterAccountNormal(name, email, password, otherInfo);
+			print(createAccount == null);
 			break;
 		case "vendor":
-			otherInfo = new String[3];
+			otherInfo = new String[3]; // Changed size to 3
 			otherInfo[0] = readString("Enter Company Name: ");
-			otherInfo[1] = readString("Enter Vendor Phone Number: ");
+			otherInfo[1] = String.valueOf(readString("Enter Vendor Phone Number: "));
 			otherInfo[2] = readString("Enter Vendor Address: ");
-			
+
 			print("Creeting vender accout....");
-			createAccount = Authentication.RegisterAccountAdmin(name, email, password, otherInfo);
+			createAccount = Authentication.RegisterAccountVendor(name, email, password, otherInfo);
 			break;
 		case "admin":
 			otherInfo = new String[1];
-			
+
 			print("Creeting admin accout....");
 			createAccount = Authentication.RegisterAccountAdmin(name, email, password, otherInfo);
 			break;
@@ -704,11 +721,11 @@ public class C206_CaseStudy {
 			adminMenu(); // Bring user back to admin menu
 		}
 
-	    if (createAccount == null) {
-	        print("\nUser created successfully!\n");
-	    } else {
-	        print("\nUser creation failed.\n");
-	    }
+		if (createAccount != null) {
+			print("\nUser created successfully!\n");
+		} else {
+			print("\nUser creation failed.\n");
+		}
 
 		adminMenu(); // Bring user back to admin menu
 	}
@@ -742,11 +759,25 @@ public class C206_CaseStudy {
 		adminMenu();
 	}
 
-	//TODO
+	// DONE NEED TESTING)
 	private static void addSchool() {
-		
+		line(40, "-");
+
+		String school_name = readString("Enter school name: ");
+		String school_address = readString("Enter school address: ");
+
+		Boolean isSuccessful = CREDENTIAL.addSchool(school_name, school_address);
+
+		if (isSuccessful == null) {
+			print("Something went wrong when adding");
+		} else if (isSuccessful) {
+			print("Added Item to Menu Successful");
+		} else {
+			print("Item cant be added [Item already inside Menu]");
+		}
+		adminMenu();
 	}
-	
+
 	// =============================
 	// Refactoring
 	// =============================
@@ -764,8 +795,13 @@ public class C206_CaseStudy {
 	}
 
 	@SuppressWarnings("unused")
-	private static void print(int str) {
-		System.out.println(str);
+	private static void print(int i) {
+		System.out.println(i);
+	}
+
+	@SuppressWarnings("unused")
+	private static void print(boolean b) {
+		System.out.println(b);
 	}
 
 	private static void displayMenu(String menuType) {
@@ -820,6 +856,7 @@ public class C206_CaseStudy {
 			print("             (4) View All Orders");
 			print("             (5) Create User");
 			print("             (6) Delete User");
+			print("             (7) Add School");
 			print("             (9) Exit");
 			line(40, "-");
 			break;
