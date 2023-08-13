@@ -16,12 +16,82 @@ public class Main {
 
 	public static void main(String[] args) {
 
-		CREDENTIAL = new DBData("admin1@admin1", "admin1");
+		CREDENTIAL = new DBData("normal1@normal1", "normal1");
 		System.out.println(CREDENTIAL.getUser_access() + " " +
 		CREDENTIAL.getUser_name());
 		
-		String t = TableFormatter.tableFormatter(CREDENTIAL.viewAllPayment());
-		print(t);
+		line(40, "-");
+		print("== Add Order ==");
+		// Method to view the Food
+		// SQL
+		
+		if (CREDENTIAL.getMenuCount() == 0) {
+			print("\nSorry but currently there are no menu available");
+			return;
+		}
+		
+		String[][] table = CREDENTIAL.viewAllMenu();
+
+		print(TableFormatter.tableFormatter(table));
+
+		ArrayList<String> menu_idList = new ArrayList<String>();
+
+		for (String[] row : table) {
+			menu_idList.add(row[1]);print(row[1]);}
+		menu_idList.remove(0);
+
+		String menu_id = readString("Enter Item ID to add into order: ");
+
+		if (menu_idList.contains(menu_id) == false) {
+			print("\nWrong item ID entered - Returning back to [Normal MENU]\n");
+			//normalMenu();
+			return;
+		}
+
+		CHOICE = menu_idList.indexOf(menu_id) + 1;
+
+		String item_id = table[CHOICE][0];
+		String item_name = table[CHOICE][1];
+		String item_qty = table[CHOICE][2];
+		String item_description = table[CHOICE][3];
+		String item_dietary = table[CHOICE][4];
+		String item_ingredients = table[CHOICE][5];
+		String item_price = table[CHOICE][6];
+
+		String descrip = "" + "\n======= Food =======\n" + "Item ID: %s\n" + "Item name: %s\n" + "Item quantity: %s\n"
+				+ "Item description: %s\n" + "Item dietary: %s\n" + "Item ingredients: %s\n" + "Item price: %s\n";
+
+		descrip = String.format(descrip, item_id, item_name, item_qty, item_description, item_dietary, item_ingredients,
+				item_price);
+		print(descrip);
+
+		String confirm = readString("Confirm Order? (Y/N): ");
+		if (confirm.equalsIgnoreCase("y") == false) {
+			print("Deletation Aborted");
+			//vendorMenu();
+			return;
+		}
+
+		//
+		// Get Payment
+		//
+		table = CREDENTIAL.viewAllMenu();
+
+		print(TableFormatter.tableFormatter(table));
+
+		menu_idList = new ArrayList<String>();
+
+		for (String[] row : table)
+			menu_idList.add(row[0]);
+		menu_idList.remove(0);
+
+		menu_id = readString("Enter item_id to add into menu: ");
+
+		if (menu_idList.contains(menu_id) == false) {
+			print("\nWrong item ID entered - Returning back to [Vendor MENU]\n");
+			//vendorMenu();
+			return;
+		}
 	}
 
 	@SuppressWarnings("unused")
