@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 13, 2023 at 12:03 PM
+-- Generation Time: Aug 13, 2023 at 02:41 PM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -224,7 +224,9 @@ CREATE TABLE `school` (
 
 INSERT INTO `school` (`school_id`, `school_name`, `school_address`) VALUES
 (1, 'Republic Polytechnic ', '9 Woodlands Ave 9, Singapore 738964'),
-(2, 'Temasek Polytechnic', 'Temasek Polytechnic, 21 Tampines Ave 1, Singapore 529757');
+(2, 'Temasek Polytechnic', 'Temasek Polytechnic, 21 Tampines Ave 1, Singapore 529757'),
+(3, 'School 1', 'Street School 1'),
+(4, 'School 2', 'Street School 2');
 
 -- --------------------------------------------------------
 
@@ -233,7 +235,7 @@ INSERT INTO `school` (`school_id`, `school_name`, `school_address`) VALUES
 --
 
 CREATE TABLE `school_has_vendor` (
-  `school_has_vendor_id` int(11) NOT NULL,
+  `school_has_vendor_id` int(10) NOT NULL,
   `vendor_id` int(11) NOT NULL,
   `school_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -244,7 +246,11 @@ CREATE TABLE `school_has_vendor` (
 
 INSERT INTO `school_has_vendor` (`school_has_vendor_id`, `vendor_id`, `school_id`) VALUES
 (1, 2, 1),
-(2, 3, 2);
+(2, 3, 1),
+(3, 2, 3),
+(4, 3, 3),
+(5, 2, 2),
+(6, 3, 4);
 
 -- --------------------------------------------------------
 
@@ -395,6 +401,12 @@ ALTER TABLE `admin`
   MODIFY `admin_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
+-- AUTO_INCREMENT for table `child`
+--
+ALTER TABLE `child`
+  MODIFY `child_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
 -- AUTO_INCREMENT for table `has_order`
 --
 ALTER TABLE `has_order`
@@ -425,10 +437,22 @@ ALTER TABLE `normal`
   MODIFY `normal_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
+-- AUTO_INCREMENT for table `payment`
+--
+ALTER TABLE `payment`
+  MODIFY `payment_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
 -- AUTO_INCREMENT for table `school`
 --
 ALTER TABLE `school`
-  MODIFY `school_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `school_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT for table `school_has_vendor`
+--
+ALTER TABLE `school_has_vendor`
+  MODIFY `school_has_vendor_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `user`

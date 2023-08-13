@@ -509,7 +509,7 @@ public class C206_CaseStudy {
 			vendorMenu();
 		}
 		
-		// TODO Run Delete SQL
+		// Run Delete SQL
 		print("Deleting item....");
 		Boolean isDeleted = CREDENTIAL.deleteItem(food_id);
 		
@@ -575,7 +575,7 @@ public class C206_CaseStudy {
 		return menuChoice;
 	}
 
-	//TODO
+	// (Done need testing)
 	private static void addVendorToSchool() {
 		
 		if (CREDENTIAL.getSchoolCount() == 0) {
@@ -775,53 +775,53 @@ public class C206_CaseStudy {
 			line(40, "-");
 			print("====== SCHOOL LUNCH BOX MAIN MENU ======");
 			line(40, "-");
-			print("\n======= Menu =======");
-			print("1. Login");
-			print("2. Register");
-			print("9. Quit");
-			line(20, "-");
+			print("\n          |======= Menu =======|          ");
+			print("          |(1) Login           |");
+			print("          |(2) Register        |");
+			print("          |(9) Quit            |");
+			line(40, "-");
 			break;
 		case "normal":
 			print("");
 			line(40, "-");
 			print("============== NORMAL MENU =============");
-			print("Welcome " + CREDENTIAL.getUser_name());
+			print("             Welcome " + CREDENTIAL.getUser_name());
 			line(40, "-");
-			print("1) View All Menu");
-			print("2) Add a New Order");
-			print("3) View Order");
-			print("9) Exit");
-			line(20, "-");
+			print("           (1) View All Menu   ");
+			print("           (2) Add a New Order  ");
+			print("           (3) View Order       ");
+			print("           (9) Exit             ");
+			line(40, "-");
 			break;
 		case "vendor":
 			print("");
 			line(40, "-");
 			print("============== VENDOR MENU =============");
-			print("Welcome " + CREDENTIAL.getUser_name());
+			print("             Welcome " + CREDENTIAL.getUser_name());
 			line(40, "-");
-			print("1) View All Menu");
-			print("2) Add new Menu");
-			print("3) Delete Menu");
-			print("4) Add new Item");
-			print("5) Delete Item");
-			print("6) Link Vendor To School");
-			print("9) Exit");
-			line(20, "-");
+			print("             (1) View All Menu");
+			print("             (2) Add new Menu");
+			print("             (3) Delete Menu");
+			print("             (4) Add new Item");
+			print("             (5) Delete Item");
+			print("             (5) Link School to Vendor");
+			print("             (9) Exit");
+			line(40, "-");
 			break;
 		case "admin":
 			print("");
 			line(40, "-");
 			print("============== ADMIN MENU ==============");
-			print("Welcome " + CREDENTIAL.getUser_name());
+			print("             Welcome " + CREDENTIAL.getUser_name());
 			line(40, "-");
-			print("1) View All Users");
-			print("2) View All Schools");
-			print("3) View All Menus");
-			print("4) View All Orders");
-			print("5) Create User");
-			print("6) Delete User");
-			print("9) Exit");
-			line(20, "-");
+			print("             (1) View All Users");
+			print("             (2) View All Schools");
+			print("             (3) View All Menus");
+			print("             (4) View All Orders");
+			print("             (5) Create User");
+			print("             (6) Delete User");
+			print("             (9) Exit");
+			line(40, "-");
 			break;
 		case "addFoodItem":
 			line(40, "-");
