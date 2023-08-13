@@ -2,6 +2,7 @@ import Helper_Package.Authentication;
 import Helper_Package.DBData;
 import Temp_Holding.RunAllTest;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.regex.Pattern;
 
@@ -300,12 +301,20 @@ public class C206_CaseStudy {
 					break;
 				}
 
-				CHOICE = readInt("Enter item_id to add into menu: ") + 1;
+				ArrayList<String> item_idList = new ArrayList<String>();
 
-				if (CHOICE > countItem || CHOICE <= 0) {
+				for (String[] row : table)
+					item_idList.add(row[0]);
+				item_idList.remove(0);
+
+				String CHOICE_itemID = readString("Enter item_id to add into menu: ");
+
+				if (item_idList.contains(CHOICE_itemID) == false) {
 					print("\nWrong item ID entered - Returning back to [ADD FOOD TO MENU]\n");
 					break;
 				}
+
+				CHOICE = item_idList.indexOf(CHOICE_itemID) + 1;
 
 				String item_id = table[CHOICE][0];
 				String item_name = table[CHOICE][1];
@@ -336,8 +345,15 @@ public class C206_CaseStudy {
 				}
 
 				print("Adding Item to Menu...");
-				CREDENTIAL.addItemToMenu(CHOICE - 1, menuChoice);
-				print("Added Item to Menu Successful");
+				Boolean isSuccessful = CREDENTIAL.addItemToMenu(Integer.parseInt(CHOICE_itemID), menuChoice);
+
+				if (isSuccessful == null) {
+					print("Something went wrong when adding");
+				} else if (isSuccessful) {
+					print("Added Item to Menu Successful");
+				} else {
+					print("Item cant be added [Item already inside Menu]");
+				}
 				break;
 
 			case 2:

@@ -700,14 +700,15 @@ public class DBData {
 		}
 
 		int column = getItemCount() + 1;
+		System.out.println(column);
 		String[] header = { "item_id", "item_name", "item_qty", "item_description", "item_dietary", "item_ingredients",
 				"item_price" };
 		int row = header.length;
 
 		String table[][] = new String[column][row];
 
-		SelectSQL = "Select %s FROM item;";
-		SelectSQL = String.format(SelectSQL, String.join(", ", header));
+		SelectSQL = "Select %s FROM item WHERE vendor_id = '%s';";
+		SelectSQL = String.format(SelectSQL, String.join(", ", header), user_id);
 
 		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
 
@@ -753,13 +754,31 @@ public class DBData {
 			return null;
 		}
 		menu_id = SQLInjection(menu_id);
-
+		
 		Boolean isAdded = false;
+		
+		// Check if item_id inside menu_item
+		SelectSQL = "SELECT item_id FROM menu_item WHERE item_id = '%s'";
+		SelectSQL = String.format(SelectSQL, item_id);
+		
+		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
+		
+		rs = DBUtil.getTable(SelectSQL);
+		int count = 0;
+		try {
+			while (rs.next()) {
+				count++;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		if (count != 0) {
+			return isAdded;
+		}
 
 		InsertSQL = "INSERT INTO `menu_item` (`item_id`, `menu_id`) VALUES ('%d', '%s');";
 		InsertSQL = String.format(InsertSQL, item_id, menu_id);
-
-		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
 
 		int rowsAdded = DBUtil.execSQL(InsertSQL);
 
@@ -790,9 +809,9 @@ public class DBData {
 		String item_ingredients = item[4];
 		String item_price = item[5];
 
-		InsertSQL = "INSERT INTO `item`(`item_name`, `item_qty`, `item_description`, `item_dietary`, `item_ingredients`, `item_price`) "
-				+ "VALUES ('%s', '%s', '%s', '%s', '%s', '%s');";
-		InsertSQL = String.format(InsertSQL, item_name, item_qty, item_description, item_dietary, item_ingredients,
+		InsertSQL = "INSERT INTO `item`(`vendor_id`, `item_name`, `item_qty`, `item_description`, `item_dietary`, `item_ingredients`, `item_price`) "
+				+ "VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s');";
+		InsertSQL = String.format(InsertSQL, user_id, item_name, item_qty, item_description, item_dietary, item_ingredients,
 				item_price);
 
 		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
@@ -810,8 +829,8 @@ public class DBData {
 		//
 		int item_id = 0;
 
-		SelectSQL = "SELECT item_id FROM `item` WHERE item_name = '%s' AND item_qty = '%s' AND item_description = '%s' AND item_dietary = '%s' AND item_ingredients = '%s' AND item_price = '%s';";
-		SelectSQL = String.format(SelectSQL, item_name, item_qty, item_description, item_dietary, item_ingredients,
+		SelectSQL = "SELECT item_id FROM `item` WHERE vendor_id = '%s' AND item_name = '%s' AND item_qty = '%s' AND item_description = '%s' AND item_dietary = '%s' AND item_ingredients = '%s' AND item_price = '%s';";
+		SelectSQL = String.format(SelectSQL, user_id, item_name, item_qty, item_description, item_dietary, item_ingredients,
 				item_price);
 
 		rs = DBUtil.getTable(SelectSQL);
@@ -923,9 +942,15 @@ public class DBData {
 
 	public int getItemCount() {
 		int count = 0;
-		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
-		SelectSQL = "SELECT item_id FROM item;";
 
+		if (user_access.equals("vendor") == false) {
+			return count;
+		}
+		
+		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
+		SelectSQL = "SELECT item_id FROM item WHERE vendor_id = '%s';";
+		SelectSQL = String.format(SelectSQL, user_id);
+		
 		rs = DBUtil.getTable(SelectSQL);
 		try {
 			while (rs.next()) {
