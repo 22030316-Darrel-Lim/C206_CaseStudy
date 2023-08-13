@@ -201,7 +201,7 @@ public class C206_CaseStudy {
 	private static void adminMenu() {
 		CHOICE = -1;
 
-		while (CHOICE != 9) {
+		while (CHOICE != 20) {
 
 			displayMenu("admin");
 			CHOICE = readInt("Enter Option: ");
@@ -236,7 +236,11 @@ public class C206_CaseStudy {
 				// Add school
 				addSchool();
 				break;
-			case 9:
+			case 8:
+				// Delete school
+				deleteSchool();
+				break;
+			case 20:
 				thankYou();
 				break;
 			default:
@@ -697,9 +701,8 @@ public class C206_CaseStudy {
 			otherInfo[1] = readString("Enter Address: ");
 			otherInfo[2] = readString("Enter Allergies: ");
 
-			print("Creeting normal accout....");
+			print("Creeting normal account....");
 			createAccount = Authentication.RegisterAccountNormal(name, email, password, otherInfo);
-			print(createAccount == null);
 			break;
 		case "vendor":
 			otherInfo = new String[3]; // Changed size to 3
@@ -711,7 +714,7 @@ public class C206_CaseStudy {
 			createAccount = Authentication.RegisterAccountVendor(name, email, password, otherInfo);
 			break;
 		case "admin":
-			otherInfo = new String[1];
+			otherInfo = new String[]{};
 
 			print("Creeting admin accout....");
 			createAccount = Authentication.RegisterAccountAdmin(name, email, password, otherInfo);
@@ -749,12 +752,12 @@ public class C206_CaseStudy {
 			adminMenu();
 		}
 
-		boolean isSuccessful = CREDENTIAL.DELETE_USER(user_id);
+		Boolean isDeleted = CREDENTIAL.DELETE_USER(user_id);
 
-		if (isSuccessful == false) {
-			print("Delete User Error - Deletion unsuccessful");
+		if (isDeleted == false) {
+			print("Delete user Failed");
 		} else {
-			print("Delete User Successful");
+			print("Delete user Successful");
 		}
 		adminMenu();
 	}
@@ -778,6 +781,49 @@ public class C206_CaseStudy {
 		adminMenu();
 	}
 
+	// (DONE NEED TESTING)
+	private static void deleteSchool() {
+		line(40, "-");
+
+		print("=========== Available Schools =======");
+		String[][] table = CREDENTIAL.viewAllSchool();
+
+		System.out.println(TableFormatter.tableFormatter(table));
+		
+		ArrayList<String> schoolIDArray = new ArrayList<String>();
+		for(String[] row : table) {
+			print(row[0]);
+			schoolIDArray.add(row[0]);
+		}
+		schoolIDArray.remove(0);
+		
+		String school = readString("Enter School ID: ");
+		boolean contains = schoolIDArray.contains(school);
+
+		if (contains != true) {
+			print("\nWrong School ID entered - Returning back to [Admin Menu]\n");
+			adminMenu();
+		}
+		
+		String confirm = readString("Confirm Deletetion? (y/n): ");
+
+		if (confirm.equalsIgnoreCase("y") == false) {
+			print("Deletation Aborted");
+			adminMenu();
+		}
+
+		Boolean isDeleted = CREDENTIAL.deleteSchool(school);
+
+		if (isDeleted == false) {
+			print("Delete School Failed");
+		} else if (isDeleted == null) {
+			print("Wrong access type");
+		} else {
+			print("Delete School Successful");
+		}
+		adminMenu();
+	}
+	
 	// =============================
 	// Refactoring
 	// =============================
@@ -857,7 +903,8 @@ public class C206_CaseStudy {
 			print("             (5) Create User");
 			print("             (6) Delete User");
 			print("             (7) Add School");
-			print("             (9) Exit");
+			print("             (8) Delete School");
+			print("             (20) Exit");
 			line(40, "-");
 			break;
 		case "addFoodItem":

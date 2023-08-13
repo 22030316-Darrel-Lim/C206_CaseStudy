@@ -638,6 +638,30 @@ public class DBData {
 		return isAdded;
 	}
 
+	// (DOne need testing)
+	public Boolean deleteSchool(String school_id) {
+
+		if (user_access.equals("admin") == false) {
+			return null;
+		}
+
+		Boolean isDeleted = false;
+
+		school_id = SQLInjection(school_id);
+
+		DeleteSQL = "DELETE FROM school WHERE `school`.`school_id` = '%s';";
+		DeleteSQL = String.format(DeleteSQL, school_id);
+
+		int rowsDeleted = DBUtil.execSQL(DeleteSQL);
+
+		if (rowsDeleted == 1) {
+			isDeleted = true;
+		}
+
+		return isDeleted;
+	}
+	
+	
 	// ---------- Vendor ONLY
 	// (DONE - Tested)
 	public String[] getVendorInfo() {
