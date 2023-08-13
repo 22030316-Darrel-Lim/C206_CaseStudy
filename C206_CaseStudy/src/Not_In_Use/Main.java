@@ -16,131 +16,66 @@ public class Main {
 	public static void main(String[] args) {
 
 		CREDENTIAL = new DBData("vendor1@vendor1", "vendor1");
-		// System.out.println(CREDENTIAL.getUser_access() + " " +
-		// CREDENTIAL.getUser_name());
+		System.out.println(CREDENTIAL.getUser_access() + " " +
+		CREDENTIAL.getUser_name());
 
-		// Looping for input
-		CHOICE = -1;
-		String menuChoice;
-		char YESNO;
+		line(40, "-");
+		print("== DELETE FOOD ITEM ==");
+		// Method to view the Food
+		// SQL
 
-		while (CHOICE != 9) {
-			displayMenu("addFoodItem");
+		String[][] table = CREDENTIAL.viewAllFood();
 
-			CHOICE = readInt("Enter Option: ");
+		print(TableFormatter.tableFormatter(table));
 
-			switch (CHOICE) {
-			case 1:
+		ArrayList<String> item_idList = new ArrayList<String>();
 
-				String[] vendorInfo = CREDENTIAL.getVendorInfo();
+		for (String[] row : table)
+			item_idList.add(row[0]);
+		item_idList.remove(0);
 
-				if (vendorInfo.length != 8) {
-					print("[Add exisitng food to menu] Cant be choosen as currently there is no menu to your account");
-					return;
-				}
+		String food_id = readString("Enter item_id to add into menu: ");
 
-				String[][] table = CREDENTIAL.viewAllFood();
+		if (item_idList.contains(food_id) == false) {
+			print("\nWrong item ID entered - Returning back to [Vendor MENU]\n");
+			// vendorMenu();
+			return;
+		}
 
-				print(TableFormatter.tableFormatter(table));
+		CHOICE = item_idList.indexOf(food_id) + 1;
 
-				int countItem = CREDENTIAL.getItemCount();
+		String item_id = table[CHOICE][0];
+		String item_name = table[CHOICE][1];
+		String item_qty = table[CHOICE][2];
+		String item_description = table[CHOICE][3];
+		String item_dietary = table[CHOICE][4];
+		String item_ingredients = table[CHOICE][5];
+		String item_price = table[CHOICE][6];
 
-				if (countItem == 0) {
-					print("There are currently no items in the DB");
-					break;
-				}
+		String row = "" + "\n======= Food =======\n" + "Item ID: %s\n" + "Item name: %s\n" + "Item quantity: %s\n"
+				+ "Item description: %s\n" + "Item dietary: %s\n" + "Item ingredients: %s\n" + "Item price: %s\n";
 
-				ArrayList<String> item_idList = new ArrayList<String>();
+		row = String.format(row, item_id, item_name, item_qty, item_description, item_dietary, item_ingredients,
+				item_price);
+		print(row);
 
-				for (String[] row : table)
-					item_idList.add(row[0]);
-				item_idList.remove(0);
-
-				String CHOICE_itemID = readString("Enter item_id to add into menu: ");
-
-				if (item_idList.contains(CHOICE_itemID) == false) {
-					print("\nWrong item ID entered - Returning back to [ADD FOOD TO MENU]\n");
-					break;
-				}
-
-				CHOICE = item_idList.indexOf(CHOICE_itemID) + 1;
-
-				String item_id = table[CHOICE][0];
-				String item_name = table[CHOICE][1];
-				String item_qty = table[CHOICE][2];
-				String item_description = table[CHOICE][3];
-				String item_dietary = table[CHOICE][4];
-				String item_ingredients = table[CHOICE][5];
-				String item_price = table[CHOICE][6];
-
-				String row = "" + "\n======= Food =======\n" + "Item ID: %s\n" + "Item name: %s\n"
-						+ "Item quantity: %s\n" + "Item description: %s\n" + "Item dietary: %s\n"
-						+ "Item ingredients: %s\n" + "Item price: %s\n";
-
-				row = String.format(row, item_id, item_name, item_qty, item_description, item_dietary, item_ingredients,
-						item_price);
-				print(row);
-
-				//
-				// Check for vendor available menu
-				//
-				menuChoice = getVendorMenu();
-
-				YESNO = readChar("Add item to menu? (Y/N) ");
-
-				if (YESNO != 'y') {
-					print("Returning back to [ADD FOOD TO MENU]");
-					break;
-				}
-
-				print("Adding Item to Menu...");
-				Boolean isSuccessful = CREDENTIAL.addItemToMenu(CHOICE - 1, menuChoice);
-
-				if (isSuccessful == null) {
-					print("Something went wrong when adding");
-				} else if (isSuccessful) {
-					print("Added Item to Menu Successful");
-				} else {
-					print("Item cant be added [Item already inside Menu]");
-				}
-				break;
-
-			case 2:
-				// Create new food and add it to SQL
-
-				String food = readString("Enter Food Name: ");
-				String description = readString("Enter Food Description: ");
-				String dietary = readString("Enter Food Dietary: ");
-				String ingredients = readString("Enter Food Ingredients: ");
-				Double price = readDouble("Enter Food Price: $");
-				int qty = readInt("Enter Food Quantity: ");
-
-				// TODO Run insert SQL Statement to create new food and add it to menu
-				menuChoice = getVendorMenu();
-
-				YESNO = readChar("Add item to menu? (Y/N) ");
-
-				if (YESNO != 'y') {
-					print("Returning back to [ADD FOOD TO MENU]");
-					break;
-				}
-
-				print("Adding new Item to Menu...");
-				String[] item = { food, String.valueOf(qty), description, dietary, ingredients, String.valueOf(price) };
-				CREDENTIAL.addItemToMenu(item, menuChoice);
-				print("Added new Item to Menu Successful");
-				break;
-
-			case 9:
-				// Exit from Menu Option
-
-				break;
-
-			default:
-				// Error message
-
-
-			}
+		String confirm = readString("Confirm Deletetion? (Y/N): ");
+		if (confirm.equalsIgnoreCase("y") == false) {
+			print("Deletation Aborted");
+			// vendorMenu();
+			return;
+		}
+		
+		// TODO Run Delete SQL
+		print("Deleting item....");
+		Boolean isDeleted = CREDENTIAL.deleteItem(food_id);
+		
+		if (isDeleted == false) {
+			print("Delete item Failed");
+		} else if (isDeleted == null) {
+			print("Wrong access type");
+		} else {
+			print("Delete item Successful");
 		}
 
 	}
@@ -242,13 +177,16 @@ public class Main {
 	private static void print(String str) {
 		System.out.println(str);
 	}
+
 	private static void print(int str) {
 		System.out.println(str);
 	}
+
 	@SuppressWarnings("unused")
 	private static void print(boolean str) {
 		System.out.println(str);
 	}
+
 	@SuppressWarnings("unused")
 	private static void print() {
 		System.out.println();

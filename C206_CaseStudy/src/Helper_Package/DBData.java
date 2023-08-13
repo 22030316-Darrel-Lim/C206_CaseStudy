@@ -898,6 +898,29 @@ public class DBData {
 		DBUtil.close();
 		return isAdded;
 	}
+	
+	// (Done need testing)
+	public Boolean deleteItem(String item_id) {
+		
+		if (user_access.equals("vendor") == false) {
+			return null;
+		}
+		
+		item_id = SQLInjection(item_id);
+		Boolean isDeleted = false;
+		
+		DeleteSQL = "DELETE FROM item WHERE `item`.`item_id` = '%s';";
+		DeleteSQL = String.format(DeleteSQL, item_id);
+		
+		int rowsDeleted = DBUtil.execSQL(DeleteSQL);
+
+		if (rowsDeleted == 1) {
+			isDeleted = true;
+		}
+		
+		return isDeleted;
+	}
+	
 	// ======================================
 	// Extra methods
 	// ======================================

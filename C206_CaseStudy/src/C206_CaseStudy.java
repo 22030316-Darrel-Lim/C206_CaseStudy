@@ -260,7 +260,7 @@ public class C206_CaseStudy {
 	// Methods For VENDOR
 	// ==========================
 
-	// (DONE) Method for Vendor to delete the Food Menu
+	// (DONE) Method for Vendor to delete the Menu and Food
 	// Test if there is no menu
 	private static void deleteFoodMenu() {
 		line(40, "-");
@@ -459,23 +459,68 @@ public class C206_CaseStudy {
 		}
 	}
 
-	// TODO Method for Vendor to delete Food
+	// (Done need testing) Method for Vendor to delete Food
 	private static void deleteFoodItem() {
 		line(40, "-");
 		print("== DELETE FOOD ITEM ==");
 		// Method to view the Food
 		// SQL
-		String food = readString("Enter Food Name: ");
-		String confirm = readString("Confirm Deletetion? (y/n): ");
-		if (confirm.equalsIgnoreCase("y")) {
-			// TODO Run Delete SQL
-		} else {
+
+		String[][] table = CREDENTIAL.viewAllFood();
+
+		print(TableFormatter.tableFormatter(table));
+
+		ArrayList<String> item_idList = new ArrayList<String>();
+
+		for (String[] row : table)
+			item_idList.add(row[0]);
+		item_idList.remove(0);
+
+		String food_id = readString("Enter item_id to add into menu: ");
+
+		if (item_idList.contains(food_id) == false) {
+			print("\nWrong item ID entered - Returning back to [Vendor MENU]\n");
+			vendorMenu();
+		}
+
+		CHOICE = item_idList.indexOf(food_id) + 1;
+
+		String item_id = table[CHOICE][0];
+		String item_name = table[CHOICE][1];
+		String item_qty = table[CHOICE][2];
+		String item_description = table[CHOICE][3];
+		String item_dietary = table[CHOICE][4];
+		String item_ingredients = table[CHOICE][5];
+		String item_price = table[CHOICE][6];
+
+		String row = "" + "\n======= Food =======\n" + "Item ID: %s\n" + "Item name: %s\n" + "Item quantity: %s\n"
+				+ "Item description: %s\n" + "Item dietary: %s\n" + "Item ingredients: %s\n" + "Item price: %s\n";
+
+		row = String.format(row, item_id, item_name, item_qty, item_description, item_dietary, item_ingredients,
+				item_price);
+		print(row);
+
+		String confirm = readString("Confirm Deletetion? (Y/N): ");
+		if (confirm.equalsIgnoreCase("y") == false) {
 			print("Deletation Aborted");
 			vendorMenu();
 		}
+		
+		// TODO Run Delete SQL
+		print("Deleting item....");
+		Boolean isDeleted = CREDENTIAL.deleteItem(food_id);
+		
+		if (isDeleted == false) {
+			print("Delete item Failed");
+		} else if (isDeleted == null) {
+			print("Wrong access type");
+		} else {
+			print("Delete item Successful");
+		}
+		vendorMenu();
 	}
 
-	// Done need testing) add new menu
+	// (Done need testing) add new menu
 	private static void addNewMenu() {
 		line(40, "-");
 		print("== Add New Menu ==");
