@@ -652,9 +652,9 @@ public class DBData {
 			e.printStackTrace();
 		}
 
-		// Reset max length to 4 if no menufound
+		// Set menu to blank
 		if (menufoundList.size() == 0) {
-			vendorInfo = new String[4];
+			vendorInfo[4] = "";
 		}
 
 		//
@@ -700,7 +700,7 @@ public class DBData {
 		}
 
 		int column = getItemCount() + 1;
-		System.out.println(column);
+
 		String[] header = { "item_id", "item_name", "item_qty", "item_description", "item_dietary", "item_ingredients",
 				"item_price" };
 		int row = header.length;
@@ -748,6 +748,7 @@ public class DBData {
 		return table;
 	}
 
+	// (DONE - testing)
 	public Boolean addItemToMenu(int item_id, String menu_id) {
 
 		if (user_access.equals("vendor") == false) {
@@ -792,6 +793,7 @@ public class DBData {
 		return isAdded;
 	}
 
+	// (DONE - testing)
 	public Boolean addItemToMenu(String[] item, String menu_id) {
 
 		if (user_access.equals("vendor") == false || item.length != 6) {
@@ -850,6 +852,29 @@ public class DBData {
 		return isAdded;
 	}
 
+	// (DONE - testing)
+	public Boolean deleteMenu(String menu_id) {
+		
+		if (user_access.equals("vendor") == false) {
+			return null;
+		}
+		
+		Boolean isDeleted = false;
+		
+		menu_id = SQLInjection(menu_id);
+		
+		DeleteSQL = "DELETE FROM menu WHERE `menu`.`menu_id` = '%s';";
+		DeleteSQL = String.format(DeleteSQL, menu_id);
+		
+		int rowsDeleted = DBUtil.execSQL(DeleteSQL);
+
+		if (rowsDeleted == 1) {
+			isDeleted = true;
+		}
+		
+		return isDeleted;
+	}
+	
 	// ======================================
 	// Extra methods
 	// ======================================

@@ -247,7 +247,12 @@ public class C206_CaseStudy {
 
 		String[][] table = CREDENTIAL.viewAllMenu();
 
-		System.out.println(TableFormatter.tableFormatter(table));
+		if (table.length == 1) {
+			print("\nSorry but currently there are no menu offered by the vendors");
+			return;
+		}
+
+		print(TableFormatter.tableFormatter(table));
 
 	}
 
@@ -255,29 +260,79 @@ public class C206_CaseStudy {
 	// Methods For VENDOR
 	// ==========================
 
-	// TODO Method for Vendor to delete the Food Menu
+	// TODO (DONE) Method for Vendor to delete the Food Menu
+	// Test if there is no menu
 	private static void deleteFoodMenu() {
 		line(40, "-");
 		print("=== DELETE FOOD MENU ===");
 		line(40, "-");
 
-		// TODO Run SQL Statement to get Menu_id
+		// Check if menu is available to add item
+		int currentMenu = CREDENTIAL.getMenuCount();
 
-		int id = readInt("Select Menu_ID to delete: ");
-		// TODO Run SQL Statement to delete base on Menu_Id
+		if (currentMenu == 0) {
+			print("\nSorry but currently there are no available menu to delete\n");
+			return;
+		}
+
+		// Run SQL Statement to get Menu_id
+		String[] vendorInfo = CREDENTIAL.getVendorInfo();
+
+		String[] menu = vendorInfo[7].split(",");
+
+		print("----- Avaible Menu -----");
+		String[][] table = new String[menu.length + 1][1];
+		table[0][0] = "Menu_ID";
+
+		for (int i = 0; i < menu.length; i++) {
+			table[i + 1][0] = menu[i];
+		}
+
+		print(TableFormatter.tableFormatter(table));
+
+		String menuChoice = readString("Select Menu_ID to delete: ");
+		boolean contains = Arrays.asList(menu).contains(menuChoice);
+
+		if (contains != true) {
+			print("\nWrong Menu ID entered - Returning back to [Vender Menu]\n");
+			vendorMenu();
+		}
+
+		// Run SQL Statement to delete base on Menu_Id
+		print("Deleting menu....");
+		Boolean isDeleted = CREDENTIAL.deleteMenu(menuChoice);
+
+		if (isDeleted == false) {
+			print("Delete Menu Failed");
+		} else if (isDeleted == null) {
+			print("Wrong access type");
+		} else {
+			print("Delete Menu Successful");
+		}
+		vendorMenu();
 	}
 
 	// (DONE - Testing NEEDED) Method for Vendor to add new food
+	// Test if there is no menu
 	private static void addFoodItem() {
+
+		// Check if menu is available to add item
+		int currentMenu = CREDENTIAL.getMenuCount();
+
+		if (currentMenu == 0) {
+			print("\nSorry but currently there are no menu to add items in\n");
+			return;
+		}
 
 		// Looping for input
 		CHOICE = -1;
 		String menuChoice;
 		char YESNO;
-		
+		Boolean isSuccessful;
+
 		while (CHOICE != 9) {
 			displayMenu("addFoodItem");
-			
+
 			CHOICE = readInt("Enter Option: ");
 
 			switch (CHOICE) {
@@ -287,7 +342,7 @@ public class C206_CaseStudy {
 
 				if (vendorInfo.length != 8) {
 					print("[Add exisitng food to menu] Cant be choosen as currently there is no menu to your account");
-					return;
+					continue;
 				}
 
 				String[][] table = CREDENTIAL.viewAllFood();
@@ -298,7 +353,7 @@ public class C206_CaseStudy {
 
 				if (countItem == 0) {
 					print("There are currently no items in the DB");
-					break;
+					continue;
 				}
 
 				ArrayList<String> item_idList = new ArrayList<String>();
@@ -311,7 +366,7 @@ public class C206_CaseStudy {
 
 				if (item_idList.contains(CHOICE_itemID) == false) {
 					print("\nWrong item ID entered - Returning back to [ADD FOOD TO MENU]\n");
-					break;
+					continue;
 				}
 
 				CHOICE = item_idList.indexOf(CHOICE_itemID) + 1;
@@ -341,11 +396,11 @@ public class C206_CaseStudy {
 
 				if (YESNO != 'y') {
 					print("Returning back to [ADD FOOD TO MENU]");
-					break;
+					continue;
 				}
 
 				print("Adding Item to Menu...");
-				Boolean isSuccessful = CREDENTIAL.addItemToMenu(Integer.parseInt(CHOICE_itemID), menuChoice);
+				isSuccessful = CREDENTIAL.addItemToMenu(Integer.parseInt(CHOICE_itemID), menuChoice);
 
 				if (isSuccessful == null) {
 					print("Something went wrong when adding");
@@ -354,7 +409,7 @@ public class C206_CaseStudy {
 				} else {
 					print("Item cant be added [Item already inside Menu]");
 				}
-				break;
+				continue;
 
 			case 2:
 				// Create new food and add it to SQL
@@ -366,21 +421,30 @@ public class C206_CaseStudy {
 				Double price = readDouble("Enter Food Price: $");
 				int qty = readInt("Enter Food Quantity: ");
 
-				// TODO Run insert SQL Statement to create new food and add it to menu
 				menuChoice = getVendorMenu();
-				
+
 				YESNO = readChar("Add item to menu? (Y/N) ");
 
 				if (YESNO != 'y') {
 					print("Returning back to [ADD FOOD TO MENU]");
-					break;
+					continue;
 				}
-				
+
 				print("Adding new Item to Menu...");
-				String[] item = {food, String.valueOf(qty), description, dietary, ingredients, String.valueOf(price)};
-				CREDENTIAL.addItemToMenu(item, menuChoice);
+				String[] itemArr = { food, String.valueOf(qty), description, dietary, ingredients,
+						String.valueOf(price) };
+				isSuccessful = CREDENTIAL.addItemToMenu(itemArr, menuChoice);
+
+				if (isSuccessful == null) {
+					print("Something went wrong when adding");
+				} else if (isSuccessful) {
+					print("Added Item to Menu Successful");
+				} else {
+					print("Item cant be added [Item already inside Menu]");
+				}
+
 				print("Added new Item to Menu Successful");
-				break;
+				continue;
 
 			case 9:
 				// Exit from Menu Option
@@ -436,7 +500,7 @@ public class C206_CaseStudy {
 		}
 		return menuChoice;
 	}
-	
+
 	// ==========================
 	// Methods For ADMIN
 	// ==========================
@@ -469,37 +533,77 @@ public class C206_CaseStudy {
 		System.out.println(TableFormatter.tableFormatter(table));
 	}
 
-	// TODO SQL Code to create any user
+	// TODO (DONE NEED TESTING) SQL Code to create any user
 	private static void createUser() {
 		line(40, "-");
-		
+
 		String email = readString("Enter Email: ");
 		String name = readString("Enter Name: ");
 		String password = readString("Enter Password: ");
-		String access = readString("Enter Access Type: ");
+		String access = readString("Enter Access Type (admin/vendor/normal): ").toLowerCase();
+		String[] otherInfo = {};
+
+		DBData createAccount = null;
+		switch (access) {
+		case "normal":
+			otherInfo = new String[3]; // Changed size to 3
+			otherInfo[0] = readString("Enter Phone Number: ");
+			otherInfo[1] = readString("Enter Address: ");
+			otherInfo[2] = readString("Enter Allergies: ");
+			
+			print("Creeting normal accout....");
+			createAccount = Authentication.RegisterAccountAdmin(name, email, password, otherInfo);
+			break;
+		case "vendor":
+			otherInfo = new String[3];
+			otherInfo[0] = readString("Enter Company Name: ");
+			otherInfo[1] = readString("Enter Vendor Phone Number: ");
+			otherInfo[2] = readString("Enter Vendor Address: ");
+			
+			print("Creeting vender accout....");
+			createAccount = Authentication.RegisterAccountAdmin(name, email, password, otherInfo);
+			break;
+		case "admin":
+			otherInfo = new String[1];
+			
+			print("Creeting admin accout....");
+			createAccount = Authentication.RegisterAccountAdmin(name, email, password, otherInfo);
+			break;
+		default:
+			print("\nInvalid access type.\n");
+			adminMenu(); // Bring user back to admin menu
+		}
+
+	    if (createAccount == null) {
+	        print("\nUser created successfully!\n");
+	    } else {
+	        print("\nUser creation failed.\n");
+	    }
+
+		adminMenu(); // Bring user back to admin menu
 	}
 
 	// (DONE NEEDED TEST) SQL Code to delete Users + View All Users
 	private static void deleteUser() {
 		line(40, "-");
-		
+
 		String email = readString("Enter Email: ");
 		String confirm = readString("Confirm Deletetion? (y/n): ");
-		
+
 		if (confirm.equalsIgnoreCase("y") == false) {
 			print("Deletation Aborted");
 			adminMenu();
 		}
-		
+
 		String user_id = CREDENTIAL.getUser_id(email);
-		
+
 		if (user_id == null) {
 			print("Delete User Error - user id NULL");
 			adminMenu();
 		}
-		
+
 		boolean isSuccessful = CREDENTIAL.DELETE_USER(user_id);
-		
+
 		if (isSuccessful == false) {
 			print("Delete User Error - Deletion unsuccessful");
 		} else {
@@ -507,7 +611,7 @@ public class C206_CaseStudy {
 		}
 		adminMenu();
 	}
-	
+
 	// =============================
 	// Refactoring
 	// =============================

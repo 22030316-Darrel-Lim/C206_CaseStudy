@@ -2,6 +2,8 @@ package Temp_Holding;
 
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
+
+import Helper.DBUtil;
 import Helper.TableFormatterTest;
 import Helper_Package.DBDataTest_Stage_1;
 import Helper_Package.DBDataTest_Stage_2;
@@ -49,6 +51,11 @@ public class RunAllTest {
 		}
 
 		isAllTested = true;
+		
+		for (int i = 0; i < 100; i++) {
+			DBUtil.close();
+		}
+		
 		return isAllTested;
 	}
 
