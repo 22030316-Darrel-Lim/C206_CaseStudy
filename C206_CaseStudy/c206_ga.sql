@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 13, 2023 at 07:44 AM
+-- Generation Time: Aug 13, 2023 at 12:03 PM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -79,6 +79,14 @@ CREATE TABLE `has_order` (
   `payment_id` int(10) NOT NULL,
   `normal_id` int(10) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `has_order`
+--
+
+INSERT INTO `has_order` (`order_id`, `order_status`, `preference`, `child_id`, `school_has_vendor_id`, `item_id`, `payment_id`, `normal_id`) VALUES
+(1, 'Pending Payment', 'No Nut', 1, 1, 0, 2, 4),
+(2, 'Delivering', 'More white toppings', 2, 2, 8, 1, 4);
 
 -- --------------------------------------------------------
 
@@ -264,7 +272,7 @@ INSERT INTO `user` (`user_id`, `user_name`, `user_email`, `user_password`, `ACCE
 (4, 'normal1', 'normal1@normal1', 'feb3c5bb1c85509f6b9fa5d7be536c092a26d1dd', 'normal', '2023-08-12 15:20:27.000000'),
 (5, 'normal2', 'normal2@normal2', 'b5fd3d974c0c792f83f08f5386ee468e004cf100', 'normal', '2023-07-31 13:46:41.000000'),
 (6, 'normal3', 'normal3@normal3', 'ef9135171318c4abd8cbe007503b25a50a972012', 'normal', '0000-00-00 00:00:00.000000'),
-(8, 'admin1', 'admin1@admin1', 'admin1', 'admin', '0000-00-00 00:00:00.000000');
+(8, 'admin1', 'admin1@admin1', '6c7ca345f63f835cb353ff15bd6c5e052ec08e7a', 'admin', '0000-00-00 00:00:00.000000');
 
 -- --------------------------------------------------------
 
@@ -385,6 +393,12 @@ ALTER TABLE `vendor`
 --
 ALTER TABLE `admin`
   MODIFY `admin_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+
+--
+-- AUTO_INCREMENT for table `has_order`
+--
+ALTER TABLE `has_order`
+  MODIFY `order_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `item`
