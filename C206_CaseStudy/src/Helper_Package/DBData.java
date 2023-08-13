@@ -56,7 +56,7 @@ public class DBData {
 		// Start of Account Creation
 		//
 		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
-
+		
 		// Create and format SQL insert Statement
 		InsertSQL = "INSERT INTO user (user_name, user_email, user_password, ACCESS_TYPE, LAST_LOGIN) VALUES ('%s' , '%s', SHA1('%s'), '%s', NOW());";
 		InsertSQL = String.format(InsertSQL, name, email, password, access);
@@ -74,7 +74,7 @@ public class DBData {
 			DBUtil.close();
 			return;
 		}
-
+		
 		int RowAffectByAccess;
 		String phoneNo;
 		String address;
@@ -88,7 +88,7 @@ public class DBData {
 				DELETE_USER();
 				break;
 			}
-
+			
 			// Validate inside info
 			for (int i = 0; i < OtherInfo.length; i++) {
 				if (OtherInfo[i] == null) {
@@ -99,7 +99,7 @@ public class DBData {
 					}
 				}
 			}
-
+			
 			phoneNo = OtherInfo[0];
 			allegies = OtherInfo[1];
 			address = OtherInfo[2];
@@ -423,7 +423,7 @@ public class DBData {
 		return userInfo;
 	}
 
-	// Admin ONLY
+	// ------------ Admin ONLY
 	public String[][] viewAllUser() {
 
 		if (user_access.equals("admin") == false) {
@@ -530,7 +530,7 @@ public class DBData {
 
 		String table[][] = new String[column][row];
 
-		SelectSQL = "Select order_id,order_status,child_id,school_has_vendor_id,payment_nane,normal_id FROM has_order INNER JOIN payment ON payment.payment_id = has_order.payment_id;";
+		SelectSQL = "Select order_id,order_status,child_id,school_has_vendor_id,payment_name,normal_id FROM has_order INNER JOIN payment ON payment.payment_id = has_order.payment_id;";
 		//SelectSQL = String.format(SelectSQL, String.join(", ", header));
 
 		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
@@ -548,7 +548,7 @@ public class DBData {
 				String status = rs.getString("order_status");
 				String child_id = rs.getString("child_id");
 				String school_has_vendor_id = rs.getString("school_has_vendor_id");
-				String payment_type = rs.getString("payment_nane");
+				String payment_type = rs.getString("payment_name");
 				String normal_id = rs.getString("normal_id");
 
 				table[count + 1][0] = order_id;
@@ -614,7 +614,31 @@ public class DBData {
 		return table;
 	}
 
-	// Vendor ONLY
+	// (DONE need testing)
+	public Boolean addSchool(String school_name, String school_id) {
+
+		if (user_access.equals("admin") == false) {
+			return null;
+		}
+
+		Boolean isAdded = false;
+
+		InsertSQL = "INSERT INTO `school` (`school_name`, `school_address`) VALUES ('%s','%s')";
+		InsertSQL = String.format(InsertSQL, school_name, school_id);
+
+		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
+
+		int rowsAdded = DBUtil.execSQL(InsertSQL);
+
+		if (rowsAdded == 1) {
+			isAdded = true;
+		}
+
+		DBUtil.close();
+		return isAdded;
+	}
+
+	// ---------- Vendor ONLY
 	// (DONE - Tested)
 	public String[] getVendorInfo() {
 		String[] vendorInfo = new String[5];

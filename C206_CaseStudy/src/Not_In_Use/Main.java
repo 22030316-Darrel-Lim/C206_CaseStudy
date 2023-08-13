@@ -2,6 +2,7 @@ package Not_In_Use;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import Helper.Helper;
@@ -15,13 +16,71 @@ public class Main {
 
 	public static void main(String[] args) {
 
-		CREDENTIAL = new DBData("vendor1@vendor1", "vendor1");
+		CREDENTIAL = new DBData("admin1@admin1", "admin1");
 		System.out.println(CREDENTIAL.getUser_access() + " " +
 		CREDENTIAL.getUser_name());
+		
+		line(40, "-");
 
+		String email = "";
+		String name = "";
+		String password = "";
+		String access = "";
+		String[] otherInfo = {};
+
+		while (true) {
+			email = "Jeff@email.com";//readString("Enter Email: ");
+			name = "Jeff";//readString("Enter Name: ");
+			password = "JeffJeff";//readString("Enter Password: ");
+			access = "normal";//readString("Enter Access Type (admin/vendor/normal): ").toLowerCase();
+			
+			if ((isName(name) && isEmail(email) && isPassword(password)
+				&& (access.equals("normal") || access.equals("vendor") || access.equals("admin"))) == true) {
+				break;
+			}
+		}
+
+		DBData createAccount = null;
+		switch (access) {
+		case "normal":
+			otherInfo = new String[3]; // Changed size to 3
+			otherInfo[0] = "99";//String.valueOf(readInt("Enter Phone Number: "));
+			otherInfo[1] = "99 stee";//readString("Enter Address: ");
+			otherInfo[2] = "no nut nov";//readString("Enter Allergies: ");
+
+			print("Creeting normal accout....");
+			createAccount = Authentication.RegisterAccountNormal(name, email, password, otherInfo);
+			//print(createAccount == null);
+			break;
+		case "vendor":
+			otherInfo = new String[3]; // Changed size to 3
+			otherInfo[0] = readString("Enter Company Name: ");
+			otherInfo[1] = String.valueOf(readString("Enter Vendor Phone Number: "));
+			otherInfo[2] = readString("Enter Vendor Address: ");
+
+			print("Creeting vender accout....");
+			createAccount = Authentication.RegisterAccountVendor(name, email, password, otherInfo);
+			break;
+		case "admin":
+			otherInfo = new String[1];
+
+			print("Creeting admin accout....");
+			createAccount = Authentication.RegisterAccountAdmin(name, email, password, otherInfo);
+			break;
+		default:
+			print("\nInvalid access type.\n");
+			//adminMenu(); // Bring user back to admin menu
+		}
+
+		if (createAccount != null) {
+			print("\nUser created successfully!\n");
+		} else {
+			print("\nUser creation failed.\n");
+		}
 		
 	}
 
+	@SuppressWarnings("unused")
 	private static String getVendorMenu() {
 		String[] vendorInfo = CREDENTIAL.getVendorInfo();
 
@@ -47,6 +106,7 @@ public class Main {
 		return menuChoice;
 	}
 
+	@SuppressWarnings("unused")
 	private static void displayMenu(String menuType) {
 		switch (menuType) {
 		case "main":
@@ -120,6 +180,7 @@ public class Main {
 		System.out.println(str);
 	}
 
+	@SuppressWarnings("unused")
 	private static void print(int str) {
 		System.out.println(str);
 	}
@@ -148,11 +209,13 @@ public class Main {
 		return d;
 	}
 
+	@SuppressWarnings("unused")
 	private static double readDouble(String str) {
 		double d = Helper.readDouble(str);
 		return d;
 	}
 
+	@SuppressWarnings("unused")
 	private static char readChar(String str) {
 		char c = Helper.readChar(str);
 		c = Character.toLowerCase(c);
@@ -160,5 +223,64 @@ public class Main {
 	}
 	// NOT IN USE - USE THE DEFAULT PACKAGE
 	// THIS SERVERS AS A WORKSTATION TO AVOID CONFLICT WITH THE DEFAULT CLASS
+
+	/**
+	 * Method is about validating name by checking if name is all in alphabetical
+	 * 
+	 * @param name
+	 * @return true if name matches
+	 */
+	private static boolean isName(String name) {
+
+		// Match name using RegEx
+		String pattern = "[a-zA-Z]+";
+
+		boolean matched = Pattern.matches(pattern, name);
+
+		if (matched != true) {
+			System.out.println("\nError - Name is not all in alphabet\n");
+		}
+		return matched;
+	} // End of isName
+
+	/**
+	 * Method is about validating email by checking if email contains @ and .
+	 * 
+	 * @param email
+	 * @return true if email matches
+	 */
+	private static boolean isEmail(String email) {
+
+		// Match email using RegEx
+		String pattern = "[a-zA-Z0-9]+@[a-zA-Z]+.[a-zA-Z]+";
+
+		boolean matched = Pattern.matches(pattern, email);
+
+		if (matched != true) {
+			System.out.println("\nError - Email should contains @ and . [Name@email.com]\n");
+		}
+		return matched;
+	} // End of isEmail
+
+	/**
+	 * Method is about validating the password strength using regex.
+	 * 
+	 * @param password
+	 * @return true if password is strong (at least one capital letter and at least
+	 *         8 characters long)
+	 */
+	private static boolean isPassword(String password) {
+
+		// Match password using RegEx
+		String pattern = "^(?=.*[A-Z]).{8,}$";
+
+		boolean matched = Pattern.matches(pattern, password);
+
+		if (matched != true) {
+			System.out
+					.println("\nError - Password contain at least one capital letter and at least 8 characters long\n");
+		}
+		return matched;
+	} // End of isPassword
 
 }

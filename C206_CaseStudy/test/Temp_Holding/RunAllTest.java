@@ -12,6 +12,8 @@ public class RunAllTest {
 
 	private static Result result;
 	private static boolean isSuccessful;
+	private static int CountCompletedRun = 0;
+	private static int CountTotalRun = 0;
 
 	public static void main(String[] args) {
 		System.out.println(runDBDataTest());
@@ -30,6 +32,9 @@ public class RunAllTest {
 			return isAllTested;
 		}
 		
+		CountCompletedRun += result.getFailureCount();
+		CountTotalRun += result.getRunCount();
+		
 		// Stage 2
 		result = JUnitCore.runClasses(DBDataTest_Stage_2.class);
 
@@ -39,7 +44,10 @@ public class RunAllTest {
 			System.out.println("DBData Initialization failed - Stage 2");
 			return isAllTested;
 		}
-
+		
+		CountCompletedRun += result.getFailureCount();
+		CountTotalRun += result.getRunCount();
+		
 		// TableFormatter
 		result = JUnitCore.runClasses(TableFormatterTest.class);
 
@@ -49,9 +57,15 @@ public class RunAllTest {
 			System.out.println("TableFormatter failed");
 			return isAllTested;
 		}
-
-		isAllTested = true;
 		
+		CountCompletedRun += result.getFailureCount();
+		CountTotalRun += result.getRunCount();
+		
+		
+		// END
+		isAllTested = true;
+		CountCompletedRun = CountTotalRun - CountCompletedRun;
+		System.out.printf("Ran %d / %d test\n",CountCompletedRun,CountTotalRun);
 		for (int i = 0; i < 100; i++) {
 			DBUtil.close();
 		}
