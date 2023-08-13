@@ -37,7 +37,8 @@ public class DBData {
 		name = SQLInjection(name);
 		email = SQLInjection(email);
 		password = SQLInjection(password);
-
+		OtherInfo = SQLInjection(OtherInfo);
+		
 		access = access.toLowerCase();
 
 		// Check if email is in DB
@@ -96,8 +97,6 @@ public class DBData {
 						user_id = null;
 						break main;
 					}
-				} else {
-					OtherInfo[i] = SQLInjection(OtherInfo[i]);
 				}
 			}
 
@@ -134,8 +133,6 @@ public class DBData {
 						user_id = null;
 						break main;
 					}
-				} else {
-					OtherInfo[i] = SQLInjection(OtherInfo[i]);
 				}
 			}
 
@@ -226,7 +223,9 @@ public class DBData {
 		if (user_access.equals("admin") == false) {
 			return isDeleted;
 		}
-
+		
+		user_id = SQLInjection(user_id);
+		
 		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
 
 		DeleteSQL = "DELETE FROM user WHERE user_id = '%s';";
@@ -254,24 +253,23 @@ public class DBData {
 		if (email == null || password == null) {
 			return isLogged;
 		}
+		
+		email = SQLInjection(email);
+		password = SQLInjection(password);
+		
+		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
 
+		SelectSQL = "SELECT ACCESS_TYPE, user_id FROM user WHERE user_email = '%s' AND user_password = SHA1('%s');";
+
+		SelectSQL = String.format(SelectSQL, email, password);
+		
 		try {
-			DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
-
-			email = SQLInjection(email);
-			password = SQLInjection(password);
-
-			SelectSQL = "SELECT ACCESS_TYPE, user_id FROM user WHERE user_email = '%s' AND user_password = SHA1('%s');";
-
-			SelectSQL = String.format(SelectSQL, email, password);
 
 			rs = DBUtil.getTable(SelectSQL);
 			if (rs.next()) {
 				user_access = rs.getString("ACCESS_TYPE");
 				user_id = String.valueOf(rs.getInt("user_id"));
 			}
-
-			DBUtil.close();
 
 			// Update Last Login
 			if (LAST_LOGIN() == true) {
@@ -281,6 +279,8 @@ public class DBData {
 		} catch (SQLException e) {
 			System.out.println("SQL Error: " + e.getMessage());
 		}
+		
+		DBUtil.close();
 		return isLogged;
 	}
 
@@ -752,6 +752,7 @@ public class DBData {
 		if (user_access.equals("vendor") == false) {
 			return null;
 		}
+		menu_id = SQLInjection(menu_id);
 
 		Boolean isAdded = false;
 
@@ -777,6 +778,8 @@ public class DBData {
 		if (user_access.equals("vendor") == false || item.length != 6) {
 			return null;
 		}
+		menu_id = SQLInjection(menu_id);
+		item = SQLInjection(item);
 
 		Boolean isAdded = null;
 
@@ -952,7 +955,7 @@ public class DBData {
 		return count;
 	}
 
-	// (DONE - TESTING)
+	// (DONE - Tested)
 	protected static String SQLInjection(String str) {
 		if (str == null) {
 			return null;
@@ -960,5 +963,13 @@ public class DBData {
 		str = str.strip();
 		str = str.replaceAll("'", "''");
 		return str;
+	} // End of SQLInjection
+
+	// (DONE - Tested)
+	protected static String[] SQLInjection(String[] strArr) {
+		for (int i = 0; i < strArr.length; i++) {
+			strArr[i] = SQLInjection(strArr[i]);
+		}
+		return strArr;
 	} // End of SQLInjection
 }

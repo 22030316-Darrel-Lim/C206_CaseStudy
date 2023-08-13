@@ -170,14 +170,14 @@ public class C206_CaseStudy {
 				break;
 			case 2:
 				// New Menu + add Items
-				createFoodMenu();
+				addFoodItem();
 				break;
 			case 3:
 				// Delete Menu
 				deleteFoodMenu();
 				break;
 			case 4:
-				// Add new Item
+				// Add new Item to menu
 				addFoodItem();
 				break;
 			case 5:
@@ -236,6 +236,262 @@ public class C206_CaseStudy {
 		}
 	}
 
+	// ==========================
+	// Methods For USER
+	// ==========================
+
+	// (DONE) SQL to view all Menu
+	private static void viewAllMenu() {
+		line(40, "-");
+
+		String[][] table = CREDENTIAL.viewAllMenu();
+
+		System.out.println(TableFormatter.tableFormatter(table));
+
+	}
+
+	// ==========================
+	// Methods For VENDOR
+	// ==========================
+
+	// TODO Method for Vendor to delete the Food Menu
+	private static void deleteFoodMenu() {
+		line(40, "-");
+		print("=== DELETE FOOD MENU ===");
+		line(40, "-");
+
+		// TODO Run SQL Statement to get Menu_id
+
+		int id = readInt("Select Menu_ID to delete: ");
+		// TODO Run SQL Statement to delete base on Menu_Id
+	}
+
+	// (DONE - Testing NEEDED) Method for Vendor to add new food
+	private static void addFoodItem() {
+
+		// Looping for input
+		CHOICE = -1;
+		String menuChoice;
+		char YESNO;
+		
+		while (CHOICE != 9) {
+			displayMenu("addFoodItem");
+			
+			CHOICE = readInt("Enter Option: ");
+
+			switch (CHOICE) {
+			case 1:
+
+				String[] vendorInfo = CREDENTIAL.getVendorInfo();
+
+				if (vendorInfo.length != 8) {
+					print("[Add exisitng food to menu] Cant be choosen as currently there is no menu to your account");
+					return;
+				}
+
+				String[][] table = CREDENTIAL.viewAllFood();
+
+				print(TableFormatter.tableFormatter(table));
+
+				int countItem = CREDENTIAL.getItemCount();
+
+				if (countItem == 0) {
+					print("There are currently no items in the DB");
+					break;
+				}
+
+				CHOICE = readInt("Enter item_id to add into menu: ") + 1;
+
+				if (CHOICE > countItem || CHOICE <= 0) {
+					print("\nWrong item ID entered - Returning back to [ADD FOOD TO MENU]\n");
+					break;
+				}
+
+				String item_id = table[CHOICE][0];
+				String item_name = table[CHOICE][1];
+				String item_qty = table[CHOICE][2];
+				String item_description = table[CHOICE][3];
+				String item_dietary = table[CHOICE][4];
+				String item_ingredients = table[CHOICE][5];
+				String item_price = table[CHOICE][6];
+
+				String row = "" + "\n======= Food =======\n" + "Item ID: %s\n" + "Item name: %s\n"
+						+ "Item quantity: %s\n" + "Item description: %s\n" + "Item dietary: %s\n"
+						+ "Item ingredients: %s\n" + "Item price: %s\n";
+
+				row = String.format(row, item_id, item_name, item_qty, item_description, item_dietary, item_ingredients,
+						item_price);
+				print(row);
+
+				//
+				// Check for vendor available menu
+				//
+				menuChoice = getVendorMenu();
+
+				YESNO = readChar("Add item to menu? (Y/N) ");
+
+				if (YESNO != 'y') {
+					print("Returning back to [ADD FOOD TO MENU]");
+					break;
+				}
+
+				print("Adding Item to Menu...");
+				CREDENTIAL.addItemToMenu(CHOICE - 1, menuChoice);
+				print("Added Item to Menu Successful");
+				break;
+
+			case 2:
+				// Create new food and add it to SQL
+
+				String food = readString("Enter Food Name: ");
+				String description = readString("Enter Food Description: ");
+				String dietary = readString("Enter Food Dietary: ");
+				String ingredients = readString("Enter Food Ingredients: ");
+				Double price = readDouble("Enter Food Price: $");
+				int qty = readInt("Enter Food Quantity: ");
+
+				// TODO Run insert SQL Statement to create new food and add it to menu
+				menuChoice = getVendorMenu();
+				
+				YESNO = readChar("Add item to menu? (Y/N) ");
+
+				if (YESNO != 'y') {
+					print("Returning back to [ADD FOOD TO MENU]");
+					break;
+				}
+				
+				print("Adding new Item to Menu...");
+				String[] item = {food, String.valueOf(qty), description, dietary, ingredients, String.valueOf(price)};
+				CREDENTIAL.addItemToMenu(item, menuChoice);
+				print("Added new Item to Menu Successful");
+				break;
+
+			case 9:
+				// Exit from Menu Option
+				vendorMenu();
+				break;
+
+			default:
+				// Error message
+				invalidChoice();
+
+			}
+		}
+	}
+
+	// TODO Method for Vendor to delete Food
+	private static void deleteFoodItem() {
+		line(40, "-");
+		print("== DELETE FOOD ITEM ==");
+		// Method to view the Food
+		// SQL
+		String food = readString("Enter Food Name: ");
+		String confirm = readString("Confirm Deletetion? (y/n): ");
+		if (confirm.equalsIgnoreCase("y")) {
+			// TODO Run Delete SQL
+		} else {
+			print("Deletation Aborted");
+			vendorMenu();
+		}
+	}
+
+	// (DONE - Testing)
+	private static String getVendorMenu() {
+		String[] vendorInfo = CREDENTIAL.getVendorInfo();
+
+		String[] menu = vendorInfo[7].split(",");
+
+		print("----- Avaible Menu -----");
+		String[][] table = new String[menu.length + 1][1];
+		table[0][0] = "Menu_ID";
+
+		for (int i = 0; i < menu.length; i++) {
+			table[i + 1][0] = menu[i];
+		}
+
+		print(TableFormatter.tableFormatter(table));
+
+		String menuChoice = readString("Enter menu ID to add item in: ");
+		boolean contains = Arrays.asList(menu).contains(menuChoice);
+
+		if (contains != true) {
+			print("\nWrong Menu ID entered - Returning back to [ADD FOOD TO MENU]\n");
+			menuChoice = null;
+		}
+		return menuChoice;
+	}
+	
+	// ==========================
+	// Methods For ADMIN
+	// ==========================
+
+	// (DONE) SQL Code to view all Users
+	private static void viewAllUser() {
+		line(40, "-");
+
+		String[][] table = CREDENTIAL.viewAllUser();
+
+		System.out.println(TableFormatter.tableFormatter(table));
+
+	}
+
+	// (DONE) SQL Code to view all Schools
+	private static void viewAllSchool() {
+		line(40, "-");
+
+		String[][] table = CREDENTIAL.viewAllSchool();
+
+		System.out.println(TableFormatter.tableFormatter(table));
+	}
+
+	// (DONE) SQL Code to view all Orders
+	private static void viewAllOrder() {
+		line(40, "-");
+
+		String[][] table = CREDENTIAL.viewAllOrder();
+
+		System.out.println(TableFormatter.tableFormatter(table));
+	}
+
+	// TODO SQL Code to create any user
+	private static void createUser() {
+		line(40, "-");
+		
+		String email = readString("Enter Email: ");
+		String name = readString("Enter Name: ");
+		String password = readString("Enter Password: ");
+		String access = readString("Enter Access Type: ");
+	}
+
+	// (DONE NEEDED TEST) SQL Code to delete Users + View All Users
+	private static void deleteUser() {
+		line(40, "-");
+		
+		String email = readString("Enter Email: ");
+		String confirm = readString("Confirm Deletetion? (y/n): ");
+		
+		if (confirm.equalsIgnoreCase("y") == false) {
+			print("Deletation Aborted");
+			adminMenu();
+		}
+		
+		String user_id = CREDENTIAL.getUser_id(email);
+		
+		if (user_id == null) {
+			print("Delete User Error - user id NULL");
+			adminMenu();
+		}
+		
+		boolean isSuccessful = CREDENTIAL.DELETE_USER(user_id);
+		
+		if (isSuccessful == false) {
+			print("Delete User Error - Deletion unsuccessful");
+		} else {
+			print("Delete User Successful");
+		}
+		adminMenu();
+	}
+	
 	// =============================
 	// Refactoring
 	// =============================
@@ -252,6 +508,7 @@ public class C206_CaseStudy {
 		System.out.println(str);
 	}
 
+	@SuppressWarnings("unused")
 	private static void print(int str) {
 		System.out.println(str);
 	}
@@ -412,271 +669,5 @@ public class C206_CaseStudy {
 		}
 		return matched;
 	} // End of isPassword
-
-	// ==========================
-	// Methods For USER
-	// ==========================
-
-	// (DONE) SQL to view all Menu
-	private static void viewAllMenu() {
-		line(40, "-");
-
-		String[][] table = CREDENTIAL.viewAllMenu();
-
-		System.out.println(TableFormatter.tableFormatter(table));
-
-	}
-
-	// ==========================
-	// Methods For VENDOR
-	// ==========================
-
-	// (DONE ???) Method for Vendor to create a new food Menu
-	private static void createFoodMenu() {
-		line(40, "-");
-		print("=== CREATE NEW FOOD MENU ===");
-		line(40, "-");
-
-		// TODO Create a new Food menu - SQL to Insert new Menu
-		addFoodItem();
-
-	}
-
-	// TODO Method for Vendor to delete the Food Menu
-	private static void deleteFoodMenu() {
-		line(40, "-");
-		print("=== DELETE FOOD MENU ===");
-		line(40, "-");
-
-		// TODO Run SQL Statement to get Menu_id
-
-		int id = readInt("Select Menu_ID to delete: ");
-		// TODO Run SQL Statement to delete base on Menu_Id
-	}
-
-	// (DONE - Testing NEEDED)Method for Vendor to add new food
-	private static void addFoodItem() {
-
-		// Looping for input
-		CHOICE = -1;
-		String menuChoice;
-		char YESNO;
-		
-		while (CHOICE != 9) {
-			displayMenu("addFoodItem");
-			
-			CHOICE = readInt("Enter Option: ");
-
-			switch (CHOICE) {
-			case 1:
-
-				String[] vendorInfo = CREDENTIAL.getVendorInfo();
-
-				if (vendorInfo.length != 8) {
-					print("[Add exisitng food to menu] Cant be choosen as currently there is no menu to your account");
-					return;
-				}
-
-				String[][] table = CREDENTIAL.viewAllFood();
-
-				print(TableFormatter.tableFormatter(table));
-
-				int countItem = CREDENTIAL.getItemCount();
-
-				if (countItem == 0) {
-					print("There are currently no items in the DB");
-					break;
-				}
-
-				CHOICE = readInt("Enter item_id to add into menu: ") + 1;
-
-				if (CHOICE > countItem || CHOICE <= 0) {
-					print("\nWrong item ID entered - Returning back to [ADD FOOD TO MENU]\n");
-					break;
-				}
-
-				String item_id = table[CHOICE][0];
-				String item_name = table[CHOICE][1];
-				String item_qty = table[CHOICE][2];
-				String item_description = table[CHOICE][3];
-				String item_dietary = table[CHOICE][4];
-				String item_ingredients = table[CHOICE][5];
-				String item_price = table[CHOICE][6];
-
-				String row = "" + "\n======= Food =======\n" + "Item ID: %s\n" + "Item name: %s\n"
-						+ "Item quantity: %s\n" + "Item description: %s\n" + "Item dietary: %s\n"
-						+ "Item ingredients: %s\n" + "Item price: %s\n";
-
-				row = String.format(row, item_id, item_name, item_qty, item_description, item_dietary, item_ingredients,
-						item_price);
-				print(row);
-
-				//
-				// Check for vendor available menu
-				//
-				menuChoice = getVendorMenu();
-
-				YESNO = readChar("Add item to menu? (Y/N) ");
-
-				if (YESNO != 'y') {
-					print("Returning back to [ADD FOOD TO MENU]");
-					break;
-				}
-
-				print("Adding Item to Menu...");
-				CREDENTIAL.addItemToMenu(CHOICE - 1, menuChoice);
-				print("Added Item to Menu Successful");
-				break;
-
-			case 2:
-				// Create new food and add it to SQL
-
-				String food = readString("Enter Food Name: ");
-				String description = readString("Enter Food Description: ");
-				String dietary = readString("Enter Food Dietary: ");
-				String ingredients = readString("Enter Food Ingredients: ");
-				Double price = readDouble("Enter Food Price: $");
-				int qty = readInt("Enter Food Quantity: ");
-
-				// TODO Run insert SQL Statement to create new food and add it to menu
-				menuChoice = getVendorMenu();
-				
-				YESNO = readChar("Add item to menu? (Y/N) ");
-
-				if (YESNO != 'y') {
-					print("Returning back to [ADD FOOD TO MENU]");
-					break;
-				}
-				
-				print("Adding new Item to Menu...");
-				String[] item = {food, String.valueOf(qty), description, dietary, ingredients, String.valueOf(price)};
-				CREDENTIAL.addItemToMenu(item, menuChoice);
-				print("Added new Item to Menu Successful");
-				break;
-
-			case 9:
-				// Exit from Menu Option
-				vendorMenu();
-				break;
-
-			default:
-				// Error message
-				invalidChoice();
-
-			}
-		}
-	}
-
-	// TODO Method for Vendor to delete Food
-	private static void deleteFoodItem() {
-		line(40, "-");
-		print("== DELETE FOOD ITEM ==");
-		// Method to view the Food
-		// SQL
-		String food = readString("Enter Food Name: ");
-		String confirm = readString("Confirm Deletetion? (y/n): ");
-		if (confirm.equalsIgnoreCase("y")) {
-			// TODO Run Delete SQL
-		} else {
-			print("Deletation Aborted");
-		}
-	}
-
-	// (DONE - Testing)
-	private static String getVendorMenu() {
-		String[] vendorInfo = CREDENTIAL.getVendorInfo();
-
-		String[] menu = vendorInfo[7].split(",");
-
-		print("----- Avaible Menu -----");
-		String[][] table = new String[menu.length + 1][1];
-		table[0][0] = "Menu_ID";
-
-		for (int i = 0; i < menu.length; i++) {
-			table[i + 1][0] = menu[i];
-		}
-
-		print(TableFormatter.tableFormatter(table));
-
-		String menuChoice = readString("Enter menu ID to add item in: ");
-		boolean contains = Arrays.asList(menu).contains(menuChoice);
-
-		if (contains != true) {
-			print("\nWrong Menu ID entered - Returning back to [ADD FOOD TO MENU]\n");
-			menuChoice = null;
-		}
-		return menuChoice;
-	}
-	
-	// ==========================
-	// Methods For ADMIN
-	// ==========================
-
-	// (DONE) SQL Code to view all Users
-	private static void viewAllUser() {
-		line(40, "-");
-
-		String[][] table = CREDENTIAL.viewAllUser();
-
-		System.out.println(TableFormatter.tableFormatter(table));
-
-	}
-
-	// (DONE) SQL Code to view all Schools
-	private static void viewAllSchool() {
-		line(40, "-");
-
-		String[][] table = CREDENTIAL.viewAllSchool();
-
-		System.out.println(TableFormatter.tableFormatter(table));
-	}
-
-	// (DONE) SQL Code to view all Orders
-	private static void viewAllOrder() {
-		line(40, "-");
-
-		String[][] table = CREDENTIAL.viewAllOrder();
-
-		System.out.println(TableFormatter.tableFormatter(table));
-	}
-
-	// TODO SQL Code to create any user
-	private static void createUser() {
-		line(40, "-");
-		
-		String email = readString("Enter Email: ");
-		String name = readString("Enter Name: ");
-		String password = readString("Enter Password: ");
-		String access = readString("Enter Access Type: ");
-	}
-
-	// (DONE NEEDED TEST) SQL Code to delete Users + View All Users
-	private static void deleteUser() {
-		line(40, "-");
-		
-		String email = readString("Enter Email: ");
-		String confirm = readString("Confirm Deletetion? (y/n): ");
-		
-		if (confirm.equalsIgnoreCase("y") == false) {
-			print("Deletation Aborted");
-			adminMenu();
-		}
-		
-		String user_id = CREDENTIAL.getUser_id(email);
-		
-		if (user_id == null) {
-			print("Delete User Error - user id NULL");
-			adminMenu();
-		}
-		
-		boolean isSuccessful = CREDENTIAL.DELETE_USER(user_id);
-		
-		if (isSuccessful == false) {
-			print("Delete User Error - Deletion unsuccessful");
-		} else {
-			print("Delete User Successful");
-		}
-		adminMenu();
-	}
 
 }
