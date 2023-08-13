@@ -518,6 +518,43 @@ public class DBData {
 		return table;
 	}
 
+	public String[][] viewAllPayment() {
+
+		int column = getPaymentCount() + 1;
+		String[] header = { "Payment ID", "Payment Name"};
+		int row = header.length;
+
+		String table[][] = new String[column][row];
+
+		SelectSQL = "Select payment_id,payment_name FROM payment;";
+		//SelectSQL = String.format(SelectSQL, String.join(", ", header));
+
+		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
+
+		// Set first index of data to header
+		table[0] = header;
+
+		// Assigning values into data
+		rs = DBUtil.getTable(SelectSQL);
+		int count = 0;
+		try {
+			while (rs.next()) {
+				// Assign values based on header info
+				String id = rs.getString("payment_id");
+				String name = rs.getString("payment_name");
+
+				table[count + 1][0] = id;
+				table[count + 1][1] = name;
+				count++;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		DBUtil.close();
+
+		return table;
+	}
+	
 	public String[][] viewAllOrder() {
 
 		if (user_access.equals("admin") == false) {
@@ -623,7 +660,7 @@ public class DBData {
 
 		Boolean isAdded = false;
 
-		InsertSQL = "INSERT INTO `school` (`school_name`, `school_address`) VALUES ('%s','%s')";
+		InsertSQL = "INSERT INTO `school` (`school_name`, `school_address`) VALUES ('%s','%s');";
 		InsertSQL = String.format(InsertSQL, school_name, school_id);
 
 		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
@@ -661,6 +698,54 @@ public class DBData {
 		return isDeleted;
 	}
 	
+	// (DOne need testing)
+	public Boolean addPayment(String payment_name) {
+		
+		if (user_access.equals("admin") == false) {
+			return null;
+		}
+		
+		payment_name = SQLInjection(payment_name);
+		
+		Boolean isAdded = false;
+
+		InsertSQL = "INSERT INTO `payment`( `payment_name`) VALUES ('%s');";
+		InsertSQL = String.format(InsertSQL, payment_name);
+
+		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
+
+		int rowsAdded = DBUtil.execSQL(InsertSQL);
+
+		if (rowsAdded == 1) {
+			isAdded = true;
+		}
+
+		DBUtil.close();
+		return isAdded;
+	}
+	
+	// (DOne need testing)
+	public Boolean deletePayment(String payment_name) {
+
+		if (user_access.equals("admin") == false) {
+			return null;
+		}
+
+		Boolean isDeleted = false;
+
+		payment_name = SQLInjection(payment_name);
+
+		DeleteSQL = "DELETE FROM `payment` WHERE `payment_name` = '%s';";
+		DeleteSQL = String.format(DeleteSQL, payment_name);
+
+		int rowsDeleted = DBUtil.execSQL(DeleteSQL);
+
+		if (rowsDeleted == 1) {
+			isDeleted = true;
+		}
+
+		return isDeleted;
+	}
 	
 	// ---------- Vendor ONLY
 	// (DONE - Tested)
@@ -1047,6 +1132,23 @@ public class DBData {
 		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
 		SelectSQL = "SELECT menu_id FROM menu_item;";
 
+		rs = DBUtil.getTable(SelectSQL);
+		try {
+			while (rs.next()) {
+				count++;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		DBUtil.close();
+		return count;
+	}
+	
+	public int getPaymentCount() {
+		int count = 0;
+		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
+		SelectSQL = "SELECT payment_id FROM payment;";
+		
 		rs = DBUtil.getTable(SelectSQL);
 		try {
 			while (rs.next()) {

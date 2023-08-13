@@ -225,20 +225,32 @@ public class C206_CaseStudy {
 				viewAllOrder();
 				break;
 			case 5:
+				// View All payment
+				viewAllPayment();
+				break;
+			case 6:
 				// Call Method to Create User
 				createUser();
 				break;
-			case 6:
+			case 7:
 				// Delete User
 				deleteUser();
 				break;
-			case 7:
+			case 8:
 				// Add school
 				addSchool();
 				break;
-			case 8:
+			case 9:
 				// Delete school
 				deleteSchool();
+				break;
+			case 10:
+				// add Payment
+				addPayment();
+				break;
+			case 11:
+				// Delete Payment
+				deletePayment();
 				break;
 			case 20:
 				thankYou();
@@ -670,6 +682,15 @@ public class C206_CaseStudy {
 
 		System.out.println(TableFormatter.tableFormatter(table));
 	}
+	
+	// (DONE) SQL Code to view all Orders
+	private static void viewAllPayment() {
+		line(40, "-");
+
+		String[][] table = CREDENTIAL.viewAllPayment();
+
+		System.out.println(TableFormatter.tableFormatter(table));
+	}
 
 	// (DONE NEED TESTING) SQL Code to create any user
 	private static void createUser() {
@@ -822,6 +843,66 @@ public class C206_CaseStudy {
 		adminMenu();
 	}
 	
+	// DONE NEED TESTING)
+	private static void addPayment() {
+		line(40, "-");
+
+		String paymnet_name = readString("Enter payment name: ");
+
+		Boolean isSuccessful = CREDENTIAL.addPayment(paymnet_name);
+
+		if (isSuccessful == null) {
+			print("Wrong credential access");
+		} else if (isSuccessful == false) {
+			print("Paymnet Creation failed");
+		} else {
+			print("Paymnet Creation Successful");
+		}
+		adminMenu();
+	}
+
+	// (DONE NEED TESTING)
+	private static void deletePayment() {
+		line(40, "-");
+
+		print("=========== Available Payment =======");
+		String[][] table = CREDENTIAL.viewAllPayment();
+
+		System.out.println(TableFormatter.tableFormatter(table));
+		
+		ArrayList<String> paymentIDArray = new ArrayList<String>();
+		for(String[] row : table) {
+			paymentIDArray.add(row[0]);
+		}
+		paymentIDArray.remove(0);
+		
+		String payment = readString("Enter Payment ID: ");
+		boolean contains = paymentIDArray.contains(payment);
+
+		if (contains != true) {
+			print("\nWrong Payment ID entered - Returning back to [Admin Menu]\n");
+			adminMenu();
+		}
+		
+		String confirm = readString("Confirm Deletetion? (y/n): ");
+
+		if (confirm.equalsIgnoreCase("y") == false) {
+			print("Deletation Aborted");
+			adminMenu();
+		}
+
+		Boolean isDeleted = CREDENTIAL.deleteSchool(payment);
+
+		if (isDeleted == false) {
+			print("\nDelete Payment Failed");
+		} else if (isDeleted == null) {
+			print("\nWrong access type");
+		} else {
+			print("\nDelete Payment Successful");
+		}
+		adminMenu();
+	}
+	
 	// =============================
 	// Refactoring
 	// =============================
@@ -898,10 +979,13 @@ public class C206_CaseStudy {
 			print("             (2) View All Schools");
 			print("             (3) View All Menus");
 			print("             (4) View All Orders");
-			print("             (5) Create User");
-			print("             (6) Delete User");
-			print("             (7) Add School");
-			print("             (8) Delete School");
+			print("             (5) View All Payment");
+			print("             (6) Create User");
+			print("             (7) Delete User");
+			print("             (8) Add School");
+			print("             (9) Delete School");
+			print("             (10) Add Payment");
+			print("             (11) Delete Payment");
 			print("             (20) Exit");
 			line(40, "-");
 			break;
