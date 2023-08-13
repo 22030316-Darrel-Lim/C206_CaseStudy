@@ -20,64 +20,8 @@ public class Main {
 		System.out.println(CREDENTIAL.getUser_access() + " " +
 		CREDENTIAL.getUser_name());
 		
-		line(40, "-");
-
-		String email = "";
-		String name = "";
-		String password = "";
-		String access = "";
-		String[] otherInfo = {};
-
-		while (true) {
-			email = "Jeff@email.com";//readString("Enter Email: ");
-			name = "Jeff";//readString("Enter Name: ");
-			password = "JeffJeff";//readString("Enter Password: ");
-			access = "normal";//readString("Enter Access Type (admin/vendor/normal): ").toLowerCase();
-			
-			if ((isName(name) && isEmail(email) && isPassword(password)
-				&& (access.equals("normal") || access.equals("vendor") || access.equals("admin"))) == true) {
-				break;
-			}
-		}
-
-		DBData createAccount = null;
-		switch (access) {
-		case "normal":
-			otherInfo = new String[3]; // Changed size to 3
-			otherInfo[0] = "99";//String.valueOf(readInt("Enter Phone Number: "));
-			otherInfo[1] = "99 stee";//readString("Enter Address: ");
-			otherInfo[2] = "no nut nov";//readString("Enter Allergies: ");
-
-			print("Creeting normal accout....");
-			createAccount = Authentication.RegisterAccountNormal(name, email, password, otherInfo);
-			//print(createAccount == null);
-			break;
-		case "vendor":
-			otherInfo = new String[3]; // Changed size to 3
-			otherInfo[0] = readString("Enter Company Name: ");
-			otherInfo[1] = String.valueOf(readString("Enter Vendor Phone Number: "));
-			otherInfo[2] = readString("Enter Vendor Address: ");
-
-			print("Creeting vender accout....");
-			createAccount = Authentication.RegisterAccountVendor(name, email, password, otherInfo);
-			break;
-		case "admin":
-			otherInfo = new String[1];
-
-			print("Creeting admin accout....");
-			createAccount = Authentication.RegisterAccountAdmin(name, email, password, otherInfo);
-			break;
-		default:
-			print("\nInvalid access type.\n");
-			//adminMenu(); // Bring user back to admin menu
-		}
-
-		if (createAccount != null) {
-			print("\nUser created successfully!\n");
-		} else {
-			print("\nUser creation failed.\n");
-		}
-		
+		String t = TableFormatter.tableFormatter(CREDENTIAL.viewAllPayment());
+		print(t);
 	}
 
 	@SuppressWarnings("unused")
