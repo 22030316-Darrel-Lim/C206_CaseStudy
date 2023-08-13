@@ -216,6 +216,7 @@ public class DBData {
 		return isDeleted;
 	}
 
+
 	// Delete user - Error in creating will delete user (DONE - TESTED)
 	public boolean DELETE_USER(String user_id) {
 		boolean isDeleted = false;
@@ -244,7 +245,7 @@ public class DBData {
 
 		return isDeleted;
 	}
-
+  
 	// Login (DONE - TESTED)
 	protected static boolean LOGIN(String email, String password) {
 		boolean isLogged = false;
@@ -264,7 +265,6 @@ public class DBData {
 		SelectSQL = String.format(SelectSQL, email, password);
 		
 		try {
-
 			rs = DBUtil.getTable(SelectSQL);
 			if (rs.next()) {
 				user_access = rs.getString("ACCESS_TYPE");
@@ -754,6 +754,7 @@ public class DBData {
 		if (user_access.equals("vendor") == false) {
 			return null;
 		}
+
 		menu_id = SQLInjection(menu_id);
 		
 		Boolean isAdded = false;
@@ -780,7 +781,7 @@ public class DBData {
 
 		InsertSQL = "INSERT INTO `menu_item` (`item_id`, `menu_id`) VALUES ('%d', '%s');";
 		InsertSQL = String.format(InsertSQL, item_id, menu_id);
-
+    
 		int rowsAdded = DBUtil.execSQL(InsertSQL);
 
 		if (rowsAdded == 1) {
@@ -799,6 +800,7 @@ public class DBData {
 		if (user_access.equals("vendor") == false || item.length != 6) {
 			return null;
 		}
+
 		menu_id = SQLInjection(menu_id);
 		item = SQLInjection(item);
 
@@ -920,7 +922,7 @@ public class DBData {
 		
 		return isDeleted;
 	}
-	
+
 	// ======================================
 	// Extra methods
 	// ======================================
@@ -1050,7 +1052,7 @@ public class DBData {
 		DBUtil.close();
 		return count;
 	}
-
+  
 	// (DONE - Tested)
 	protected static String SQLInjection(String str) {
 		if (str == null) {

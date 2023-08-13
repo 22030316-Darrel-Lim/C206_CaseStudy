@@ -29,9 +29,11 @@ public class DBDataTest_Stage_2 {
 
 	@Test
 	public void testSQLInjection_Null() {
+
 		String inject = null;
 		
 		String actual = DBData.SQLInjection(inject);
+
 		String expected = null;
 		assertEquals("SQL Injection failed - Null", expected, actual);
 	}
