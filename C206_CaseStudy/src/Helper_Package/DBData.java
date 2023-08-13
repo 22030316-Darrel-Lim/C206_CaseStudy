@@ -422,7 +422,75 @@ public class DBData {
 		DBUtil.close();
 		return userInfo;
 	}
+	
+	public String[][] viewAllOrder() {
 
+		if (user_access.equals("admin") == false) {
+			return null;
+		}
+
+		int column = getOrderCount() + 1;
+		String[] header = { "Order ID", "order Status", "Child ID", "School Has Vendor ID", "Payment Type", "Normal ID" };
+		int row = header.length;
+
+		String table[][] = new String[column][row];
+
+		SelectSQL = "Select order_id,order_status,child_id,school_has_vendor_id,payment_name,normal_id FROM has_order INNER JOIN payment ON payment.payment_id = has_order.payment_id;";
+		//SelectSQL = String.format(SelectSQL, String.join(", ", header));
+
+		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
+
+		// Set first index of data to header
+		table[0] = header;
+
+		// Assigning values into data
+		rs = DBUtil.getTable(SelectSQL);
+		int count = 0;
+		try {
+			while (rs.next()) {
+				// Assign values based on header info
+				String order_id = rs.getString("order_id");
+				String status = rs.getString("order_status");
+				String child_id = rs.getString("child_id");
+				String school_has_vendor_id = rs.getString("school_has_vendor_id");
+				String payment_type = rs.getString("payment_name");
+				String normal_id = rs.getString("normal_id");
+
+				table[count + 1][0] = order_id;
+				table[count + 1][1] = status;
+				table[count + 1][2] = child_id;
+				table[count + 1][3] = school_has_vendor_id;
+				table[count + 1][4] = payment_type;
+				table[count + 1][5] = normal_id;
+				count++;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		DBUtil.close();
+
+		return table;
+	}
+	
+	// (DOne need testing)
+	public Boolean deleteOrder(String order_id) {
+		
+		Boolean isDeleted = false;
+
+		order_id = SQLInjection(order_id);
+
+		DeleteSQL = "DELETE FROM has_order WHERE `order_id` = '%s';";
+		DeleteSQL = String.format(DeleteSQL, order_id);
+
+		int rowsDeleted = DBUtil.execSQL(DeleteSQL);
+
+		if (rowsDeleted == 1) {
+			isDeleted = true;
+		}
+
+		return isDeleted;
+	}
+	
 	// ------------ Admin ONLY
 	public String[][] viewAllUser() {
 
@@ -555,9 +623,9 @@ public class DBData {
 		return table;
 	}
 	
-	public String[][] viewAllOrder() {
+	public String[][] viewUserOrder() {
 
-		if (user_access.equals("admin") == false) {
+		if (user_access.equals("normal") == false) {
 			return null;
 		}
 
@@ -567,7 +635,7 @@ public class DBData {
 
 		String table[][] = new String[column][row];
 
-		SelectSQL = "Select order_id,order_status,child_id,school_has_vendor_id,payment_name,normal_id FROM has_order INNER JOIN payment ON payment.payment_id = has_order.payment_id;";
+		SelectSQL = "Select order_id,order_status,child_id,school_has_vendor_id,payment_name,normal_id FROM has_order INNER JOIN payment ON payment.payment_id = has_order.payment_id WHERE normal_id = '%s';";
 		//SelectSQL = String.format(SelectSQL, String.join(", ", header));
 
 		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);

@@ -142,11 +142,15 @@ public class C206_CaseStudy {
 				break;
 			case 2:
 				// TODO Create a new order + payment
-
+				addOrder();
 				break;
 			case 3:
-				// TODO View current order
+				// View current order
+				viewUserMenu();
 				break;
+			case 4:
+				// Delete order
+				deleteOrder();
 			case 9:
 				thankYou();
 				break;
@@ -278,6 +282,142 @@ public class C206_CaseStudy {
 
 		print(TableFormatter.tableFormatter(table));
 
+	}
+
+	// (DONE) SQL to view all Menu
+	private static void viewUserMenu() {
+		line(40, "-");
+
+		String[][] table = CREDENTIAL.viewUserOrder();
+
+		if (table.length == 1) {
+			print("\nSorry but currently there are no current orders");
+			return;
+		}
+
+		print(TableFormatter.tableFormatter(table));
+
+	}
+
+	// (DONE) Method for User to delete the order
+	// Test if there is no menu
+	private static void deleteOrder() {
+		line(40, "-");
+		print("=== DELETE Order ===");
+		line(40, "-");
+
+		// Check if menu is available to add item
+		int currentMenu = CREDENTIAL.getOrderCount();
+
+		if (currentMenu == 0) {
+			print("\nSorry but currently there are no available order to delete\n");
+			return;
+		}
+
+		print("----- Avaible Order -----");
+		String[][] table = CREDENTIAL.viewUserOrder();
+
+		print(TableFormatter.tableFormatter(table));
+		
+		ArrayList<String> order_idList = new ArrayList<String>();
+
+		for (String[] row : table)
+			order_idList.add(row[0]);
+		order_idList.remove(0);
+		
+		String OrderChoice = readString("Select Order ID to delete: ");
+
+		if (OrderChoice.contains(OrderChoice) == false) {
+			print("\nWrong Order ID entered - Returning back to [Normal MENU]\n");
+			vendorMenu();
+		}
+
+		// Run SQL Statement to delete base on Order ID
+		print("Deleting Order....");
+		Boolean isDeleted = CREDENTIAL.deleteOrder(OrderChoice);
+
+		if (isDeleted == false) {
+			print("Delete Order Failed");
+		} else if (isDeleted == null) {
+			print("Wrong access type");
+		} else {
+			print("Delete Order Successful");
+		}
+		vendorMenu();
+	}
+
+	// (Done need testing) Method for Vendor to delete Food
+	private static void addOrder() {
+		line(40, "-");
+		print("== Add Order ==");
+		// Method to view the Food
+		// SQL
+		
+		if (CREDENTIAL.getMenuCount() == 0) {
+			print("\nSorry but currently there are no menu available");
+			return;
+		}
+		
+		String[][] table = CREDENTIAL.viewAllMenu();
+
+		print(TableFormatter.tableFormatter(table));
+
+		ArrayList<String> menu_idList = new ArrayList<String>();
+
+		for (String[] row : table)
+			menu_idList.add(row[0]);
+		menu_idList.remove(0);
+
+		String menu_id = readString("Enter Item ID to add into order: ");
+
+		if (menu_idList.contains(menu_id) == false) {
+			print("\nWrong item ID entered - Returning back to [Normal MENU]\n");
+			normalMenu();
+		}
+
+		CHOICE = menu_idList.indexOf(menu_id) + 1;
+
+		String item_id = table[CHOICE][0];
+		String item_name = table[CHOICE][1];
+		String item_qty = table[CHOICE][2];
+		String item_description = table[CHOICE][3];
+		String item_dietary = table[CHOICE][4];
+		String item_ingredients = table[CHOICE][5];
+		String item_price = table[CHOICE][6];
+
+		String descrip = "" + "\n======= Food =======\n" + "Item ID: %s\n" + "Item name: %s\n" + "Item quantity: %s\n"
+				+ "Item description: %s\n" + "Item dietary: %s\n" + "Item ingredients: %s\n" + "Item price: %s\n";
+
+		descrip = String.format(descrip, item_id, item_name, item_qty, item_description, item_dietary, item_ingredients,
+				item_price);
+		print(descrip);
+
+		String confirm = readString("Confirm Order? (Y/N): ");
+		if (confirm.equalsIgnoreCase("y") == false) {
+			print("Deletation Aborted");
+			vendorMenu();
+		}
+
+		//
+		// Get Payment
+		//
+		table = CREDENTIAL.viewAllMenu();
+
+		print(TableFormatter.tableFormatter(table));
+
+		menu_idList = new ArrayList<String>();
+
+		for (String[] row : table)
+			menu_idList.add(row[0]);
+		menu_idList.remove(0);
+
+		menu_id = readString("Enter item_id to add into menu: ");
+
+		if (menu_idList.contains(menu_id) == false) {
+			print("\nWrong item ID entered - Returning back to [Vendor MENU]\n");
+			vendorMenu();
+		}
+		
 	}
 
 	// ==========================
