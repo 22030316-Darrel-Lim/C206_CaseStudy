@@ -177,15 +177,16 @@ public class C206_CaseStudy {
 				break;
 			case 2:
 				// New Menu + add Items
-				addFoodItem();
+				addNewMenu();
+
 				break;
 			case 3:
 				// Delete Menu
 				deleteFoodMenu();
 				break;
 			case 4:
-				// Add new menu
-				addNewMenu();
+				// Add new items
+				addFoodItem();
 				break;
 			case 5:
 				// Delete Item
@@ -197,10 +198,11 @@ public class C206_CaseStudy {
 				break;
 			case 9:
 				thankYou();
-				break;
+				return;
 			default:
 				invalidChoice();
 			}
+			
 		}
 	}
 
@@ -1159,7 +1161,7 @@ public class C206_CaseStudy {
 			print("             (3) Delete Menu");
 			print("             (4) Add new Item");
 			print("             (5) Delete Item");
-			print("             (5) Link School to Vendor");
+			print("             (6) Link School to Vendor");
 			print("             (9) Exit");
 			line(40, "-");
 			break;
