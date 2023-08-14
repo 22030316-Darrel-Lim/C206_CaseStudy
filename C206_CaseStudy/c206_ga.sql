@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 13, 2023 at 02:41 PM
+-- Generation Time: Aug 14, 2023 at 05:08 AM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -75,7 +75,7 @@ CREATE TABLE `has_order` (
   `preference` varchar(100) NOT NULL,
   `child_id` int(10) DEFAULT NULL,
   `school_has_vendor_id` int(10) NOT NULL,
-  `item_id` int(10) NOT NULL,
+  `menu_item_id` int(10) NOT NULL,
   `payment_id` int(10) NOT NULL,
   `normal_id` int(10) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -84,9 +84,11 @@ CREATE TABLE `has_order` (
 -- Dumping data for table `has_order`
 --
 
-INSERT INTO `has_order` (`order_id`, `order_status`, `preference`, `child_id`, `school_has_vendor_id`, `item_id`, `payment_id`, `normal_id`) VALUES
-(1, 'Pending Payment', 'No Nut', 1, 1, 0, 2, 4),
-(2, 'Delivering', 'More white toppings', 2, 2, 8, 1, 4);
+INSERT INTO `has_order` (`order_id`, `order_status`, `preference`, `child_id`, `school_has_vendor_id`, `menu_item_id`, `payment_id`, `normal_id`) VALUES
+(1, 'Preparing', 'No Nut', 1, 6, 7, 2, 4),
+(2, 'Delivering', 'More white toppings', 2, 4, 6, 1, 4),
+(3, 'Completed', 'Banana?', 3, 5, 5, 1, 5),
+(4, 'Delivering', 'No vegan', 4, 1, 3, 2, 5);
 
 -- --------------------------------------------------------
 
@@ -162,7 +164,9 @@ INSERT INTO `menu_item` (`menu_item_id`, `item_id`, `menu_id`) VALUES
 (2, 7, 1),
 (3, 8, 1),
 (4, 0, 2),
-(5, 1, 2);
+(5, 1, 2),
+(6, 2, 3),
+(7, 3, 3);
 
 -- --------------------------------------------------------
 
@@ -326,7 +330,7 @@ ALTER TABLE `has_order`
   ADD PRIMARY KEY (`order_id`),
   ADD KEY `child_id` (`child_id`),
   ADD KEY `normal_id` (`school_has_vendor_id`),
-  ADD KEY `item_id` (`item_id`),
+  ADD KEY `menu_item_id` (`menu_item_id`),
   ADD KEY `payment_id` (`payment_id`),
   ADD KEY `normal_id_2` (`normal_id`);
 
@@ -410,7 +414,7 @@ ALTER TABLE `child`
 -- AUTO_INCREMENT for table `has_order`
 --
 ALTER TABLE `has_order`
-  MODIFY `order_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `order_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `item`
@@ -428,7 +432,7 @@ ALTER TABLE `menu`
 -- AUTO_INCREMENT for table `menu_item`
 --
 ALTER TABLE `menu_item`
-  MODIFY `menu_item_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `menu_item_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `normal`
@@ -489,8 +493,8 @@ ALTER TABLE `has_order`
   ADD CONSTRAINT `has_order_ibfk_1` FOREIGN KEY (`child_id`) REFERENCES `child` (`child_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `has_order_ibfk_5` FOREIGN KEY (`school_has_vendor_id`) REFERENCES `school_has_vendor` (`school_has_vendor_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `has_order_ibfk_6` FOREIGN KEY (`payment_id`) REFERENCES `payment` (`payment_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `has_order_ibfk_7` FOREIGN KEY (`item_id`) REFERENCES `menu_item` (`item_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `has_order_ibfk_8` FOREIGN KEY (`normal_id`) REFERENCES `normal` (`normal_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `has_order_ibfk_8` FOREIGN KEY (`normal_id`) REFERENCES `normal` (`normal_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `has_order_ibfk_9` FOREIGN KEY (`menu_item_id`) REFERENCES `menu_item` (`menu_item_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `item`

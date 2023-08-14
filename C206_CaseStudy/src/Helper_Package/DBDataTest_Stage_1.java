@@ -96,7 +96,7 @@ public class DBDataTest_Stage_1 {
 		// Columns in each table
 		String[] admin = { "admin_id", "admin_profile" };
 		String[] child = { "child_id", "child_name", "child_allegies", "normal_id" };
-		String[] has_order = { "order_id", "order_status", "preference", "child_id", "school_has_vendor_id", "item_id",
+		String[] has_order = { "order_id", "order_status", "preference", "child_id", "school_has_vendor_id", "menu_item_id",
 				"payment_id", "normal_id" };
 		String[] item = { "item_id", "vendor_id", "item_name", "item_qty", "item_description", "item_dietary", "item_ingredients",
 				"item_price" };

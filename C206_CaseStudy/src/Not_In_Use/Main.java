@@ -14,111 +14,113 @@ public class Main {
 	private static DBData CREDENTIAL;
 	private static int CHOICE;
 
+
 	public static void main(String[] args) {
 
-		CREDENTIAL = new DBData("normal1@normal1", "normal1");
-		System.out.println(CREDENTIAL.getUser_access() + " " +
-		CREDENTIAL.getUser_name());
+		DBData CREDENTIAL1 = new DBData("admin1@admin1", "admin1");//System.out.println(CREDENTIAL1.getUser_access() + " | " + CREDENTIAL1.getUser_name() + "||");
+		//DBData CREDENTIAL2 = Authentication.Login("admin2@admin2", "admin2");//System.out.println(CREDENTIAL2.getUser_access() + " | " + CREDENTIAL2.getUser_name() + "||");
+		//DBData CREDENTIAL3 = Authentication.Login("vendor1@vendor1", "vendor1");//System.out.println(CREDENTIAL3.getUser_access() + " | " + CREDENTIAL3.getUser_name() + "||");
+		//DBData CREDENTIAL4 = Authentication.Login("vendor2@vendor2", "vendor2");//System.out.println(CREDENTIAL4.getUser_access() + " | " + CREDENTIAL4.getUser_name() + "||");
+		//DBData CREDENTIAL5 = Authentication.Login("normal1@normal1", "normal1");//System.out.println(CREDENTIAL5.getUser_access() + " | " + CREDENTIAL5.getUser_name() + "||");
+		//DBData CREDENTIAL6 = Authentication.Login("normal2@normal2", "normal2");//System.out.println(CREDENTIAL6.getUser_access() + " | " + CREDENTIAL6.getUser_name() + "||");
+		DBData CREDENTIAL7 = new DBData("normal3@normal3", "normal3");//System.out.println(CREDENTIAL7.getUser_access() + " | " + CREDENTIAL7.getUser_name() + "||");
+		System.out.println(CREDENTIAL7.getUser_access() + " | " + "|Normal3|");
+		System.out.println(CREDENTIAL1.getUser_access() + " | " + "|Admin1|");
+
+//		ArrayList<DBData> lis = new ArrayList<DBData>();
+//		lis.add(Authentication.Login("admin1@admin1", "admin1"));//System.out.print(CREDENTIAL1.getUser_access() + " | " + CREDENTIAL1.getUser_name() + "||");
+//		lis.add(Authentication.Login("normal3@normal3", "normal3"));//System.out.println(CREDENTIAL1.getUser_access() + " | " + CREDENTIAL1.getUser_name());
+//		lis.add(CREDENTIAL3);
+//		lis.add(CREDENTIAL4);
+//		lis.add(CREDENTIAL5);
+//		lis.add(CREDENTIAL6);
+//		lis.add(CREDENTIAL7);
+//		
+//		for (int i = 0; i < lis.size(); i++) {
+//			print(i);
+//			CREDENTIAL = lis.get(i);
+//			System.out.println(lis.get(i).getUser_access() + " " + lis.get(i).getUser_name());
+//			//print(TableFormatter.tableFormatter(CREDENTIAL.viewAllMenu()));
+//		}
 		
-		line(40, "-");
-		print("== Add Order ==");
-		// Method to view the Food
-		// SQL
 		
-		if (CREDENTIAL.getMenuCount() == 0) {
-			print("\nSorry but currently there are no menu available");
-			return;
-		}
-		
-		String[][] table = CREDENTIAL.viewAllMenu();
-
-		print(TableFormatter.tableFormatter(table));
-
-		ArrayList<String> menu_idList = new ArrayList<String>();
-
-		for (String[] row : table) {
-			menu_idList.add(row[1]);print(row[1]);}
-		menu_idList.remove(0);
-
-		String menu_id = readString("Enter Item ID to add into order: ");
-
-		if (menu_idList.contains(menu_id) == false) {
-			print("\nWrong item ID entered - Returning back to [Normal MENU]\n");
-			//normalMenu();
-			return;
-		}
-
-		CHOICE = menu_idList.indexOf(menu_id) + 1;
-
-		String item_id = table[CHOICE][0];
-		String item_name = table[CHOICE][1];
-		String item_qty = table[CHOICE][2];
-		String item_description = table[CHOICE][3];
-		String item_dietary = table[CHOICE][4];
-		String item_ingredients = table[CHOICE][5];
-		String item_price = table[CHOICE][6];
-
-		String descrip = "" + "\n======= Food =======\n" + "Item ID: %s\n" + "Item name: %s\n" + "Item quantity: %s\n"
-				+ "Item description: %s\n" + "Item dietary: %s\n" + "Item ingredients: %s\n" + "Item price: %s\n";
-
-		descrip = String.format(descrip, item_id, item_name, item_qty, item_description, item_dietary, item_ingredients,
-				item_price);
-		print(descrip);
-
-		String confirm = readString("Confirm Order? (Y/N): ");
-		if (confirm.equalsIgnoreCase("y") == false) {
-			print("Deletation Aborted");
-			//vendorMenu();
-			return;
-		}
+//		line(40, "-");
+//		print("== Add Order ==");
+//		// Method to view the Food
+//		// SQL
+//
+//		if (CREDENTIAL.getMenuCount() == 0) {
+//			print("\nSorry but currently there are no menu available");
+//			return;
+//		}
+//
+//		String[][] table = CREDENTIAL.viewAllMenu();
+//
+//		print(TableFormatter.tableFormatter(table));
+//
+//		ArrayList<String> item_idList = new ArrayList<String>();
+//		ArrayList<String> menu_idList = new ArrayList<String>();
+//
+//		ArrayList<String> menu_itemList = new ArrayList<String>();
+//		
+//		for (String[] row : table) {
+//			item_idList.add(row[1]);
+//			menu_idList.add(row[0]);
+//			String menuItem = row[0] + "," + row[1];
+//			menu_itemList.add(menuItem);
+//		}
+//		menu_itemList.remove(0);
+//		menu_idList.remove(0);
+//		item_idList.remove(0);
+//
+//		String item_id = readString("Enter Item ID to add into order: ");
+//		String menu_id = readString("Enter Menu ID to add into order: ");
+//		
+//		if (item_idList.contains(item_id) == false) {
+//			print("\nWrong item ID entered - Returning back to [Normal MENU]\n");
+//			// normalMenu();
+//			return;
+//		} else if (menu_idList.contains(menu_id) == false) {
+//			print("\nWrong item ID entered - Returning back to [Normal MENU]\n");
+//			// normalMenu();
+//			return;
+//		}
+//
+//		CHOICE = menu_idList.indexOf(item_id) + 1;
+//		
+//		print("---- Item to Add From Menu ------");
+//		print(CREDENTIAL.getItemInfo(item_id));
+//
+//		String confirm = readString("Confirm Order? (Y/N): ");
+//		if (confirm.equalsIgnoreCase("y") == false) {
+//			print("Deletation Aborted");
+//			// vendorMenu();
+//			return;
+//		}
 
 		//
 		// Get Payment
 		//
-		table = CREDENTIAL.viewAllMenu();
-
-		print(TableFormatter.tableFormatter(table));
-
-		menu_idList = new ArrayList<String>();
-
-		for (String[] row : table)
-			menu_idList.add(row[0]);
-		menu_idList.remove(0);
-
-		menu_id = readString("Enter item_id to add into menu: ");
-
-		if (menu_idList.contains(menu_id) == false) {
-			print("\nWrong item ID entered - Returning back to [Vendor MENU]\n");
-			//vendorMenu();
-			return;
-		}
+//		table = CREDENTIAL.viewAllMenu();
+//
+//		print(TableFormatter.tableFormatter(table));
+//
+//		menu_idList = new ArrayList<String>();
+//
+//		for (String[] row : table)
+//			menu_idList.add(row[0]);
+//		menu_idList.remove(0);
+//
+//		menu_id = readString("Enter item_id to add into menu: ");
+//
+//		if (menu_idList.contains(menu_id) == false) {
+//			print("\nWrong item ID entered - Returning back to [Vendor MENU]\n");
+//			// vendorMenu();
+//			return;
+//		}
+	
 	}
 
-	@SuppressWarnings("unused")
-	private static String getVendorMenu() {
-		String[] vendorInfo = CREDENTIAL.getVendorInfo();
-
-		String[] menu = vendorInfo[7].split(",");
-
-		print("----- Avaible Menu -----");
-		String[][] table = new String[menu.length + 1][1];
-		table[0][0] = "Menu_ID";
-
-		for (int i = 0; i < menu.length; i++) {
-			table[i + 1][0] = menu[i];
-		}
-
-		print(TableFormatter.tableFormatter(table));
-
-		String menuChoice = readString("Enter menu ID to add item in: ");
-		boolean contains = Arrays.asList(menu).contains(menuChoice);
-
-		if (contains != true) {
-			print("\nWrong Menu ID entered - Returning back to [ADD FOOD TO MENU]\n");
-			menuChoice = null;
-		}
-		return menuChoice;
-	}
 
 	@SuppressWarnings("unused")
 	private static void displayMenu(String menuType) {
@@ -138,7 +140,7 @@ public class Main {
 			print("");
 			line(40, "-");
 			print("============== NORMAL MENU =============");
-			print("Welcome " + CREDENTIAL.getUser_name());
+			print("Welcome " );
 			line(40, "-");
 			print("1) View All Menu");
 			print("2) Add a New Order");
@@ -150,7 +152,7 @@ public class Main {
 			print("");
 			line(40, "-");
 			print("============== VENDOR MENU =============");
-			print("Welcome " + CREDENTIAL.getUser_name());
+			print("Welcome " );
 			line(40, "-");
 			print("1) View All Menu");
 			print("2) Add new Menu");
@@ -164,7 +166,7 @@ public class Main {
 			print("");
 			line(40, "-");
 			print("============== ADMIN MENU ==============");
-			print("Welcome " + CREDENTIAL.getUser_name());
+			print("Welcome ");
 			line(40, "-");
 			print("1) View All Users");
 			print("2) View All Schools");
