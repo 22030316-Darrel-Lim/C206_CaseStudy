@@ -543,7 +543,7 @@ public class DBData {
 	public String[][] viewUserChild() {
 		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
 
-		if (user_access.equals("user") == false) {
+		if (user_access.equals("normal") == false) {
 			return null;
 		}
 

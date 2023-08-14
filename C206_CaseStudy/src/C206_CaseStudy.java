@@ -151,12 +151,14 @@ public class C206_CaseStudy {
 			case 4:
 				// Delete order
 				deleteOrder();
+				break;
 			case 9:
 				thankYou();
 				break;
 			default:
 				invalidChoice();
 			}
+			return;
 		}
 	}
 
@@ -376,9 +378,9 @@ public class C206_CaseStudy {
 			print("\nSorry but currently there are no child available");
 			normalMenu();
 		}
-		
+
 		String[][] table = null;
-		
+
 		//
 		// Add Menu Item to order
 		//
@@ -396,9 +398,9 @@ public class C206_CaseStudy {
 
 		String menu_id = readString("Enter Menu ID to add into order: ");
 		String item_id = readString("Enter Item ID to add into order: ");
-		
+
 		String menu_item_id = menu_id + "," + item_id;
-		
+
 		if (menu_itemList.contains(menu_item_id) == false) {
 			print("\nWrong Item / Menu ID entered - Returning back to [Normal MENU]\n");
 			normalMenu();
@@ -416,13 +418,12 @@ public class C206_CaseStudy {
 			normalMenu();
 		}
 
-		
 		//
 		// Choose school by meun item ID - vendor
 		//
-		
+
 		table = CREDENTIAL.viewVendorSchoolByMenuItem(String.valueOf(CHOICE));
-		
+
 		print(TableFormatter.tableFormatter(table));
 
 		ArrayList<String> SHV_IDList = new ArrayList<String>();
@@ -431,8 +432,7 @@ public class C206_CaseStudy {
 			SHV_IDList.add(row[0]);
 		}
 		SHV_IDList.remove(0);
-		
-		
+
 		//
 		// Add Child
 		//
