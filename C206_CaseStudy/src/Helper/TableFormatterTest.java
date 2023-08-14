@@ -11,7 +11,8 @@ public class TableFormatterTest {
 	@Test
 	public void testTable_Normal() {
 
-		String tableMenu = "" + "+----------+----------+-----------+-----------+----------+-------------+\n"
+		String tableMenu = "" 
+				+ "+----------+----------+-----------+-----------+----------+-------------+\n"
 				+ "|   Item   |   info   |   price   |   apple   |   Milk   |   Bangbus   |\n"
 				+ "+----------+----------+-----------+-----------+----------+-------------+\n"
 				+ "|     1    |     3    |     5     |     7     |     9    |      11     |\n"
@@ -96,6 +97,7 @@ public class TableFormatterTest {
 		assertEquals(expectedseparator, truecol);
 	}
 
+	@SuppressWarnings("unused")
 	@Test
 	public void testSeparator_Zero() {
 		int[] truecolumnwidth = { 0 };

@@ -4,8 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -113,6 +111,17 @@ public class TempTest {
 			System.out.println(failure.toString());
 		}
 		assertTrue("testAllLogin_Fail_Pass_Half",result.wasSuccessful());
+	}
+	
+	@Test
+	public void testAllLogin_Mutliple() {
+
+		Result result = JUnitCore.runClasses(testAllLogin_ID_FromEmail.class);
+		System.out.printf("\nRan %d runs with failures %d in %s:\n",result.getRunCount(), result.getFailureCount(), "testAllLogin_Mutliple");
+		for (Failure failure : result.getFailures()) {
+			System.out.println(failure.toString());
+		}
+		assertTrue("testAllLogin_Mutliple",result.wasSuccessful());
 	}
 	
 	public static class testAllLogin_NotNull {
@@ -691,4 +700,60 @@ public class TempTest {
 
 	}
 
+	public static class testAllLogin_Mutliple {
+		private DBData CREDENTIAL;
+
+		@Test
+		public void testLogin_Mutlpile_2() {
+			// Login 1
+			String email = "normal1@normal1";
+			String password = "normal1";
+
+			CREDENTIAL = Authentication.Login(email, password);
+
+			assertNotNull(CREDENTIAL);
+
+			String idExpected = "normal1";
+			String idActual = CREDENTIAL.getUser_name();
+			assertEquals(idExpected, idActual);
+			
+			// Login 2
+			email = "normal2@normal2";
+			password = "normal2";
+
+			CREDENTIAL = Authentication.Login(email, password);
+
+			assertNotNull(CREDENTIAL);
+			idExpected = "normal2";
+			idActual = CREDENTIAL.getUser_name();
+			assertEquals(idExpected, idActual);
+		}
+
+		@Test
+		public void testLogin_Mutliple_2_DifferentAccess() {
+			// Login 1
+			String email = "vendor2@vendor2";
+			String password = "vendor2";
+
+			CREDENTIAL = Authentication.Login(email, password);
+
+			assertNotNull(CREDENTIAL);
+
+			String idExpected = "vendor2";
+			String idActual = CREDENTIAL.getUser_name();
+			assertEquals(idExpected, idActual);
+			
+			// Login 2
+			email = "admin1@admin1";
+			password = "admin1";
+
+			CREDENTIAL = Authentication.Login(email, password);
+
+			assertNotNull(CREDENTIAL);
+			idExpected = "admin1";
+			idActual = CREDENTIAL.getUser_name();
+			assertEquals(idExpected, idActual);
+		}
+
+	}
 }
