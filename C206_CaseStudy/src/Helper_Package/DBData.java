@@ -547,7 +547,8 @@ public class DBData {
 			return null;
 		}
 
-		int column = getUserChildCount() + 1;System.out.println(column);
+		int column = getUserChildCount() + 1;
+		System.out.println(column);
 		String[] header = { "Child ID", "Child Name", "Child Allegies" };
 		int row = header.length;
 
@@ -555,7 +556,7 @@ public class DBData {
 
 		SelectSQL = "SELECT `child_id`,`child_name`,`child_allegies` FROM `child` WHERE normal_id = '%s';";
 		SelectSQL = String.format(SelectSQL, user_id);
-		
+
 		// Set first index of data to header
 		table[0] = header;
 
@@ -593,15 +594,13 @@ public class DBData {
 		//
 		SelectSQL = "SELECT COUNT(school.school_name) AS COUNT FROM `school_has_vendor` "
 				+ "INNER JOIN school ON school.school_id = school_has_vendor.school_id "
-				+ "WHERE school_has_vendor.vendor_id IN ("
-				+ "SELECT DISTINCT menu.vendor_id FROM `menu_item` "
-				+ "INNER JOIN menu ON menu.menu_id = menu_item.menu_id WHERE menu_item_id = '%s'"
-				+ ");";
+				+ "WHERE school_has_vendor.vendor_id IN (" + "SELECT DISTINCT menu.vendor_id FROM `menu_item` "
+				+ "INNER JOIN menu ON menu.menu_id = menu_item.menu_id WHERE menu_item_id = '%s'" + ");";
 		SelectSQL = String.format(SelectSQL, menu_item_id);
-		
+
 		rs = DBUtil.getTable(SelectSQL);
 		int rowCount = 0;
-		
+
 		try {
 			while (rs.next()) {
 				rowCount = rs.getInt("COUNT");
@@ -609,26 +608,23 @@ public class DBData {
 		} catch (SQLException e) {
 			System.out.println("SQL Error (viewVendorSchoolByMenuItem) COUNT FAILED: " + e.getMessage());
 		}
-		
+
 		//
 		// Getting available table
 		//
-		
-		
+
 		int column = rowCount + 1;
 		String[] header = { "School Has Vendor ID", "School Name" };
 		int row = header.length;
-		
+
 		String table[][] = new String[column][row];
-		
+
 		SelectSQL = "SELECT `school_has_vendor_id` AS SHV_ID, school.school_name AS SN FROM `school_has_vendor` "
 				+ "INNER JOIN school ON school.school_id = school_has_vendor.school_id "
-				+ "WHERE school_has_vendor.vendor_id IN ("
-				+ "SELECT DISTINCT menu.vendor_id FROM `menu_item` "
-				+ "INNER JOIN menu ON menu.menu_id = menu_item.menu_id WHERE menu_item_id = '%s'"
-				+ ");";
+				+ "WHERE school_has_vendor.vendor_id IN (" + "SELECT DISTINCT menu.vendor_id FROM `menu_item` "
+				+ "INNER JOIN menu ON menu.menu_id = menu_item.menu_id WHERE menu_item_id = '%s'" + ");";
 		SelectSQL = String.format(SelectSQL, menu_item_id);
-		
+
 		// Set first index of data to header
 		table[0] = header;
 
@@ -1148,7 +1144,7 @@ public class DBData {
 
 		isAllChecked = null;
 
-		if (user_access.equals("vendor") == false || item.length != 6) {
+		if (user_access.equals("vendor") == false || item.length != 6 || item[0].isEmpty() || item[1].isEmpty()) {
 			return null;
 		}
 		menu_id = SQLInjection(menu_id);
@@ -1277,7 +1273,7 @@ public class DBData {
 	public String[][] viewSchoolHasVendor() {
 		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
 
-		if (user_access.equals("vendor") == false ) {
+		if (user_access.equals("vendor") == false) {
 			return null;
 		}
 
