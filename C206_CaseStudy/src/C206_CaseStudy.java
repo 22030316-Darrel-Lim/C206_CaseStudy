@@ -278,7 +278,7 @@ public class C206_CaseStudy {
 
 		String[][] table = CREDENTIAL.viewAllMenu();
 
-		if (table.length == 1) {
+		if (table.length ==  1) {
 			print("\nSorry but currently there are no menu offered by the vendors");
 			return;
 		}
