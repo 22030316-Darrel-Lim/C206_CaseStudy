@@ -508,7 +508,7 @@ public class DBData {
 		school_has_vendor_id = SQLInjection(school_has_vendor_id);
 		menu_item_id = SQLInjection(menu_item_id);
 		payment_id = SQLInjection(payment_id);
-
+		
 		InsertSQL = "INSERT INTO `has_order` ( `order_status`, `preference`, `child_id`, `school_has_vendor_id`, `menu_item_id`, `payment_id`, `normal_id`) VALUES ('%s','%s','%s','%s','%s','%s','%s');";
 		InsertSQL = String.format(InsertSQL, order_status, preference, child_id, school_has_vendor_id, menu_item_id,
 				payment_id, user_id);
@@ -567,7 +567,7 @@ public class DBData {
 		}
 
 		int column = getUserChildCount() + 1;
-		System.out.println(column);
+		
 		String[] header = { "Child ID", "Child Name", "Child Allegies" };
 		int row = header.length;
 
@@ -805,11 +805,12 @@ public class DBData {
 		String[] header = { "Order ID", "order Status", "Child ID", "School Has Vendor ID", "Payment Type",
 				"Normal ID" };
 		int row = header.length;
-
+		
 		String table[][] = new String[column][row];
 
 		SelectSQL = "Select order_id, order_status, child_id, school_has_vendor_id, payment_name, normal_id FROM has_order INNER JOIN payment ON payment.payment_id = has_order.payment_id WHERE normal_id = '%s';";
-
+		SelectSQL = String.format(SelectSQL, user_id);
+		
 		// Set first index of data to header
 		table[0] = header;
 

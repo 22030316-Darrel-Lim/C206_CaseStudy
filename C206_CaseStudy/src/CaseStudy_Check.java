@@ -17,7 +17,7 @@ public class CaseStudy_Check {
 	// Error
 	// - Add a new order : After choosing school_ID - UserId and UserName is printed
 	// + String.Format Error
-	// - Unable to view order
+	// - Unable to view order (FIX)
 	// ------------------------
 
 	//

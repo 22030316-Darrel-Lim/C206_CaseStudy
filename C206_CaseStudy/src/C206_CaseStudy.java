@@ -15,18 +15,18 @@ public class C206_CaseStudy {
 	private static int CHOICE;
 
 	public static void main(String[] args) {
-		if (RunAllTest.runDBDataTest() == false) {
-			return;
-		} else {
-			System.out.println("Loading Completed");
-		}
+//		if (RunAllTest.runDBDataTest() == false) {
+//			return;
+//		} else {
+//			System.out.println("Loading Completed");
+//		}
 
 		CHOICE = -1;
 
 		while (CHOICE != 9) {
 
 			displayMenu("main");
-			CHOICE = readInt("Enter choice: ");
+			CHOICE = 1;//readInt("Enter choice: ");
 			line(20, "-");
 
 			switch (CHOICE) {
@@ -89,13 +89,13 @@ public class C206_CaseStudy {
 			normalMenu(); // Bring user to normal menu
 		} else {
 			print("\nRegistration failed.\n");
-			main(null); // Return back to main if fail
+			return; // Return back to main if fail
 		}
 	}
 
 	private static void login() {
-		String email = readString("Enter email: ");
-		String password = readString("Enter password: ");
+		String email = "normal1@normal1";//readString("Enter email: ");
+		String password = "normal1";//readString("Enter password: ");
 
 		CREDENTIAL = Authentication.Login(email, password);
 
@@ -104,7 +104,7 @@ public class C206_CaseStudy {
 
 		} else {
 			print("\nLogin failed. Email or Password Incorrect!!");
-			main(null); // Return back to main if fail
+			return; // Return back to main if fail
 		}
 
 		String userAccessType = CREDENTIAL.getUser_access();
@@ -121,7 +121,7 @@ public class C206_CaseStudy {
 			break;
 		default:
 			print("\nLogin Failed - Unknown access type.");
-			main(null); // Return back to main if fail
+			return; // Return back to main if fail
 		}
 	}
 
@@ -396,7 +396,7 @@ public class C206_CaseStudy {
 		}
 
 		CHOICE = menu_itemList.indexOf(menu_item_id) + 1;
-
+		print(CHOICE);
 		print("---- Item to Add From Menu ------");
 		print(CREDENTIAL.getItemInfo(item_id));
 		print("Menu ID Choosen: " + menu_id);
@@ -405,7 +405,11 @@ public class C206_CaseStudy {
 		// Choose school by menu item ID - vendor
 		//
 		table = CREDENTIAL.viewVendorSchoolByMenuItem(String.valueOf(CHOICE));
-
+		
+		if (table.length == 1) {
+			print("Sorry but this menu is not offered by the vendor for school");
+			return;
+		}
 		print(TableFormatter.tableFormatter(table));
 
 		ArrayList<String> SHV_IDList = new ArrayList<String>();
@@ -426,7 +430,6 @@ public class C206_CaseStudy {
 		// Add Child
 		//
 		table = CREDENTIAL.viewUserChild();
-		print(CREDENTIAL.getUser_name());
 
 		print(TableFormatter.tableFormatter(table));
 
@@ -476,7 +479,7 @@ public class C206_CaseStudy {
 		
 		String order_status = "Paid";
 		
-		Boolean isOrdered = CREDENTIAL.addOrder(order_status, child_preference, child_id, SHV_id, menu_item_id, payment_id);
+		Boolean isOrdered = CREDENTIAL.addOrder(order_status, child_preference, child_id, SHV_id, String.valueOf(CHOICE), payment_id);
 		
 		if (isOrdered == false) {
 			print("Ordering Failed");
