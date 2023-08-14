@@ -3,6 +3,7 @@ package RunTesty;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
 
+import Application_MAIN.InputValidation_Test;
 import Helper.DBUtil;
 import Helper.TableFormatterTest;
 import Helper_Package.DBDataTest;
@@ -167,6 +168,19 @@ public class RunAllTest {
 
 		if (isSuccessful == false) {
 			System.out.println("SchoolTest failed");
+			return isAllTested;
+		}
+		
+		CountCompletedRun += result.getFailureCount();
+		CountTotalRun += result.getRunCount();
+		
+		// InputValidation_Test Test
+		result = JUnitCore.runClasses(InputValidation_Test.class);
+
+		isSuccessful = result.wasSuccessful();
+
+		if (isSuccessful == false) {
+			System.out.println("ValidationTest failed");
 			return isAllTested;
 		}
 		
