@@ -24,6 +24,10 @@ public class TempTest {
 	@Before
 	public void initDB() {
 		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
+		for (int i = 0; i < 100; i++) {
+			DBUtil.close();
+		}
+		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
 	}
 
 	@After
@@ -341,7 +345,7 @@ public class TempTest {
 
 			CREDENTIAL = Authentication.Login(email, password);
 
-			String idExpected = "admin1@admin1";
+			String idExpected = "8";
 			String idActual = CREDENTIAL.getUser_id(getIDFromEmail);
 			assertEquals(idExpected, idActual);
 		}
@@ -353,7 +357,7 @@ public class TempTest {
 
 			CREDENTIAL = Authentication.Login(email, password);
 
-			String idExpected = "admin1@admin1";
+			String idExpected = "8";
 			String idActual = CREDENTIAL.getUser_id(getIDFromEmail);
 			assertEquals(idExpected, idActual);
 		}

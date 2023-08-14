@@ -321,7 +321,7 @@ public class DBDataTest {
 		CREDENTIAL = new DBData(name, email, password, access, OtherInfo);
 
 		// Check if tempUser is created in User table
-		checkValidation = DBData.LOGIN(email, password);
+		checkValidation = CREDENTIAL.LOGIN(email, password);
 		assertTrue("Regisration failed in User Table", checkValidation);
 
 		String id = CREDENTIAL.getUser_id();
@@ -388,7 +388,7 @@ public class DBDataTest {
 		CREDENTIAL = new DBData(name, email, password, access, OtherInfo);
 
 		// Check if tempUser is created in User table
-		checkValidation = DBData.LOGIN(email, password);
+		checkValidation = CREDENTIAL.LOGIN(email, password);
 
 		assertTrue("Regisration failed in User Table", checkValidation);
 
@@ -456,7 +456,7 @@ public class DBDataTest {
 		CREDENTIAL = new DBData(name, email, password, access, OtherInfo);
 
 		// Check if tempUser is created in User table
-		checkValidation = DBData.LOGIN(email, password);
+		checkValidation = CREDENTIAL.LOGIN(email, password);
 		assertTrue("Regisration failed in User Table", checkValidation);
 
 		String id = CREDENTIAL.getUser_id();
