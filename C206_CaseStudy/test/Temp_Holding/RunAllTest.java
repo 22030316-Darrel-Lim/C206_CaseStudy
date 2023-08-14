@@ -8,6 +8,11 @@ import Helper.TableFormatterTest;
 import Helper_Package.DBDataTest;
 import Helper_Package.DBDataTest_Stage_1;
 import Helper_Package.DBDataTest_Stage_2;
+import Helper_Package.DBDataTest_Stage_3;
+import Helper_Package.DBDataTest_Stage_4;
+import Helper_Package.ItemTest;
+import Helper_Package.OrderTest;
+import Helper_Package.PaymentTest;
 import Helper_Package.TempTest;
 
 public class RunAllTest {
@@ -45,6 +50,32 @@ public class RunAllTest {
 
 		if (isSuccessful == false) {
 			System.out.println("DBData Initialization failed - Stage 2");
+			return isAllTested;
+		}
+		
+		CountCompletedRun += result.getFailureCount();
+		CountTotalRun += result.getRunCount();
+		
+		// Stage 3
+		result = JUnitCore.runClasses(DBDataTest_Stage_3.class);
+
+		isSuccessful = result.wasSuccessful();
+
+		if (isSuccessful == false) {
+			System.out.println("DBData Initialization failed - Stage 3");
+			return isAllTested;
+		}
+		
+		CountCompletedRun += result.getFailureCount();
+		CountTotalRun += result.getRunCount();
+		
+		// Stage 4
+		result = JUnitCore.runClasses(DBDataTest_Stage_4.class);
+
+		isSuccessful = result.wasSuccessful();
+
+		if (isSuccessful == false) {
+			System.out.println("DBData Initialization failed - Stage 4");
 			return isAllTested;
 		}
 		
@@ -90,6 +121,57 @@ public class RunAllTest {
 		CountCompletedRun += result.getFailureCount();
 		CountTotalRun += result.getRunCount();
 		
+		// Item Test
+		result = JUnitCore.runClasses(ItemTest.class);
+
+		isSuccessful = result.wasSuccessful();
+
+		if (isSuccessful == false) {
+			System.out.println("ItemTest failed");
+			return isAllTested;
+		}
+		
+		CountCompletedRun += result.getFailureCount();
+		CountTotalRun += result.getRunCount();
+		
+		// Order Test
+		result = JUnitCore.runClasses(OrderTest.class);
+
+		isSuccessful = result.wasSuccessful();
+
+		if (isSuccessful == false) {
+			System.out.println("OrderTest failed");
+			return isAllTested;
+		}
+		
+		CountCompletedRun += result.getFailureCount();
+		CountTotalRun += result.getRunCount();
+		
+		// Payment Test
+		result = JUnitCore.runClasses(PaymentTest.class);
+
+		isSuccessful = result.wasSuccessful();
+
+		if (isSuccessful == false) {
+			System.out.println("PaymentTest failed");
+			return isAllTested;
+		}
+		
+		CountCompletedRun += result.getFailureCount();
+		CountTotalRun += result.getRunCount();
+		
+		// School Test
+		result = JUnitCore.runClasses(PaymentTest.class);
+
+		isSuccessful = result.wasSuccessful();
+
+		if (isSuccessful == false) {
+			System.out.println("SchoolTest failed");
+			return isAllTested;
+		}
+		
+		CountCompletedRun += result.getFailureCount();
+		CountTotalRun += result.getRunCount();
 		
 		// END
 		isAllTested = true;
