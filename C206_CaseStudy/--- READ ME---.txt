@@ -1,0 +1,22 @@
+--- READ ME---
+
+The Data for this Java code is in the SQL. Local Host and run it else the program will not start. (We used XAMPP - Learnt in C209) 
+Data table name needs to be " c206_ga " when hosting the SQL
+
+
+Main programe is runned in the default Package - C206_CaseStudy.java
+
+
+Testcases are in HelperPackage & RunTesty - It is also runned when the app starts up
+
+
+Test cases file: DBDataTest, DBDataTest_Stage_1-4, OrderTest, TempTest, PaymentTest, SchoolTest, TableFormatterTest, ItemTest, RunAllTest
+
+
+
+Classes like Authentication, TableFormatter, DBData are classes which assist in enhancing our work (Like Helper class)
+
+
+
+
+The GitHub project is worked by 2023 DIT Year 2 Students: Darrel, Jun Hao, Meng Fong, Ainul, David & Brayden
