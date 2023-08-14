@@ -11,9 +11,9 @@ import Helper.DBUtil;
 public class DBData {
 
 	// NOTE: URL may be different depending on the name of the database
-	private static final String JDBCURL = "jdbc:mysql://localhost/c206_ga";
-	private static final String DBUSERNAME = "root";
-	private static final String DBPASSWORD = "";
+	protected static final String JDBCURL = "jdbc:mysql://localhost/c206_ga";
+	protected static final String DBUSERNAME = "root";
+	protected static final String DBPASSWORD = "";
 
 	private String InsertSQL;
 	private String DeleteSQL;
@@ -33,7 +33,7 @@ public class DBData {
 	// Register Account (DONE - TESTED)
 	protected DBData(String name, String email, String password, String access, String[] OtherInfo) {
 		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
-		System.out.println("36");
+
 		// Check all Inputs
 		if (name == null || email == null || password == null || access == null || OtherInfo == null) {
 			return;
@@ -198,7 +198,7 @@ public class DBData {
 	}
 
 	// Delete user - Error in creating will delete user (DONE - TESTED)
-	private boolean DELETE_USER() {
+	protected boolean DELETE_USER() {
 		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
 
 		isChecked = false;
@@ -248,7 +248,7 @@ public class DBData {
 	}
 
 	// Login (DONE - TESTED)
-	private boolean LOGIN(String email, String password) {
+	protected boolean LOGIN(String email, String password) {
 
 		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
 
@@ -289,10 +289,10 @@ public class DBData {
 	}
 
 	// Check email in DB (DONE - TESTED)
-	private Boolean CheckEmailDB(String email) {
+	protected static Boolean CheckEmailDB(String email) {
 		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
 
-		isAllChecked = false;
+		Boolean isAllChecked = false;
 
 		email = SQLInjection(email);
 
@@ -303,10 +303,10 @@ public class DBData {
 
 		try {
 
-			SelectSQL = "SELECT user_email FROM user WHERE user_email = '%s';";
+			String SelectSQL = "SELECT user_email FROM user WHERE user_email = '%s';";
 			SelectSQL = String.format(SelectSQL, email);
 
-			rs = DBUtil.getTable(SelectSQL);
+			ResultSet rs = DBUtil.getTable(SelectSQL);
 
 			// Getting all the email from the SQL database and comparing it to the input
 			// if rs = null - no result
@@ -322,7 +322,7 @@ public class DBData {
 	} // End of CheckEmailDB
 
 	// Updated last login (DONE - TESTED)
-	private boolean LAST_LOGIN() {
+	protected boolean LAST_LOGIN() {
 		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
 
 		isChecked = false;
@@ -405,7 +405,7 @@ public class DBData {
 	}
 
 	// (DONE - Tested)
-	private String[] getUserInfo() {
+	protected String[] getUserInfo() {
 		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
 
 		String[] userInfo = new String[3];
@@ -1420,7 +1420,7 @@ public class DBData {
 	}
 
 	// (DONE - Tested)
-	private String SQLInjection(String str) {
+	protected static String SQLInjection(String str) {
 		if (str == null) {
 			return null;
 		}
@@ -1430,7 +1430,7 @@ public class DBData {
 	} // End of SQLInjection
 
 	// (DONE - Tested)
-	private String[] SQLInjection(String[] strArr) {
+	protected static String[] SQLInjection(String[] strArr) {
 		for (int i = 0; i < strArr.length; i++) {
 			strArr[i] = SQLInjection(strArr[i]);
 		}

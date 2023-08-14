@@ -2,6 +2,8 @@ package Helper_Package;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.sql.ResultSet;
@@ -220,9 +222,9 @@ public class DBDataTest_Stage_2 {
 		String email = null;
 		String password = null;
 
-		boolean Actual = DBData.LOGIN(email, password);
+		DBData temp = Authentication.Login(email, password);
 
-		assertFalse("LoginUser Parameter null failed", Actual);
+		assertNull("LoginUser Parameter null failed", temp);
 	}
 
 	@Test
@@ -231,10 +233,10 @@ public class DBDataTest_Stage_2 {
 		String email = "john@email.com[ADD_USER]";
 		String password = "Password123";
 
-		boolean Actual = DBData.LOGIN(email, password);
+		DBData temp = Authentication.Login(email, password);
 
 		DBDataTest.delete_User();
-		assertTrue("LoginUser Normal failed", Actual);
+		assertNotNull("LoginUser Normal failed", temp);
 	}
 
 	@Test
@@ -242,8 +244,8 @@ public class DBDataTest_Stage_2 {
 		String email = "sssssss@email.com";
 		String password = "Password12311111111";
 
-		boolean Actual = DBData.LOGIN(email, password);
+		DBData temp = Authentication.Login(email, password);
 
-		assertFalse("LoginUser Outside failed", Actual);
+		assertNull("LoginUser Outside failed", temp);
 	}
 }
