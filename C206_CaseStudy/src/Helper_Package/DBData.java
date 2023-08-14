@@ -11,27 +11,27 @@ import Helper.DBUtil;
 public class DBData {
 
 	// NOTE: URL may be different depending on the name of the database
-	protected static final String JDBCURL = "jdbc:mysql://localhost/c206_ga";
-	protected static final String DBUSERNAME = "root";
-	protected static final String DBPASSWORD = "";
+	private static final String JDBCURL = "jdbc:mysql://localhost/c206_ga";
+	private static final String DBUSERNAME = "root";
+	private static final String DBPASSWORD = "";
 
-	protected static String InsertSQL;
-	protected static String DeleteSQL;
-	protected static String UpdateSQL;
-	protected static String SelectSQL;
-	protected static Boolean isAllChecked;
-	protected static boolean isChecked;
+	private String InsertSQL;
+	private String DeleteSQL;
+	private String UpdateSQL;
+	private String SelectSQL;
+	private Boolean isAllChecked;
+	private boolean isChecked;
 
-	protected static int count;
+	private int count;
 
-	protected static ResultSet rs;
+	private ResultSet rs;
 
-	private static String user_access;
-	private static String user_id;
+	private String user_access;
+	private String user_id;
 
 	// NOTE: IF any error were to occur, user_access, user_id is to return null
 	// Register Account (DONE - TESTED)
-	public DBData(String name, String email, String password, String access, String[] OtherInfo) {
+	protected DBData(String name, String email, String password, String access, String[] OtherInfo) {
 		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
 		System.out.println("36");
 		// Check all Inputs
@@ -190,51 +190,15 @@ public class DBData {
 	}
 
 	// Login to account (DONE - TESTED)
-	public DBData(String email, String password) {
-		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
-		
-		isChecked = false;
-
-		// Check all Inputs
-		if (email == null || password == null) {
-			return;
-		}
-
-		email = SQLInjection(email);
-		password = SQLInjection(password);
-
-		SelectSQL = "SELECT ACCESS_TYPE, user_id FROM user WHERE user_email = '%s' AND user_password = SHA1('%s');";
-
-		SelectSQL = String.format(SelectSQL, email, password);
-
-		try {
-
-			rs = DBUtil.getTable(SelectSQL);
-			if (rs.next()) {
-				
-				user_access = rs.getString("ACCESS_TYPE");
-				user_id = String.valueOf(rs.getInt("user_id"));
-			}
-
-			// Update Last Login
-			if (LAST_LOGIN() == true) {
-				isChecked = true;
-			}
-
-		} catch (SQLException e) {
-			System.out.println("SQL Error (LOGIN): " + e.getMessage());
-		}
-		
-		if (isChecked != true) {
+	protected DBData(String email, String password) {
+		if (LOGIN(email, password) == false) {
 			user_access = null;
 			user_id = null;
 		}
-		
-		DBUtil.close();
 	}
 
 	// Delete user - Error in creating will delete user (DONE - TESTED)
-	protected boolean DELETE_USER() {
+	private boolean DELETE_USER() {
 		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
 
 		isChecked = false;
@@ -284,7 +248,7 @@ public class DBData {
 	}
 
 	// Login (DONE - TESTED)
-	protected static boolean LOGIN(String email, String password) {
+	private boolean LOGIN(String email, String password) {
 
 		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
 
@@ -306,7 +270,8 @@ public class DBData {
 
 			rs = DBUtil.getTable(SelectSQL);
 			if (rs.next()) {
-				user_access = rs.getString("ACCESS_TYPE");
+				setUser_access(rs.getString("ACCESS_TYPE"));
+				// user_access = rs.getString("ACCESS_TYPE");
 				user_id = String.valueOf(rs.getInt("user_id"));
 			}
 
@@ -324,7 +289,7 @@ public class DBData {
 	}
 
 	// Check email in DB (DONE - TESTED)
-	public static Boolean CheckEmailDB(String email) {
+	private Boolean CheckEmailDB(String email) {
 		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
 
 		isAllChecked = false;
@@ -357,7 +322,7 @@ public class DBData {
 	} // End of CheckEmailDB
 
 	// Updated last login (DONE - TESTED)
-	protected static boolean LAST_LOGIN() {
+	private boolean LAST_LOGIN() {
 		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
 
 		isChecked = false;
@@ -390,9 +355,17 @@ public class DBData {
 		return user_id;
 	}
 
+	public void setUser_access(String user_access) {
+		this.user_access = user_access;
+	}
+
+	public void setUser_id(String user_id) {
+		this.user_id = user_id;
+	}
+
 	// (Done need tesing)
 	public String getUser_id(String email) {
-		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);System.out.println("\n\n\n\n\n\n\n\n");
+		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
 
 		String user_id = null;
 
@@ -424,18 +397,16 @@ public class DBData {
 
 	// (DONE - Tested)
 	public String getUser_name() {
-		String name = "";System.out.println("GETTING NAME");
+		String name = "";
 
 		name = getUserInfo()[0];
-		for (String x : getUserInfo()) {
-			System.out.println(x);
-		}
+
 		return name;
 	}
 
 	// (DONE - Tested)
-	protected String[] getUserInfo() {
-		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);System.out.println("\nUser Info: "+getUser_access());
+	private String[] getUserInfo() {
+		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
 
 		String[] userInfo = new String[3];
 
@@ -1449,7 +1420,7 @@ public class DBData {
 	}
 
 	// (DONE - Tested)
-	protected static String SQLInjection(String str) {
+	private String SQLInjection(String str) {
 		if (str == null) {
 			return null;
 		}
@@ -1459,7 +1430,7 @@ public class DBData {
 	} // End of SQLInjection
 
 	// (DONE - Tested)
-	protected static String[] SQLInjection(String[] strArr) {
+	private String[] SQLInjection(String[] strArr) {
 		for (int i = 0; i < strArr.length; i++) {
 			strArr[i] = SQLInjection(strArr[i]);
 		}

@@ -17,31 +17,31 @@ public class Main {
 
 	public static void main(String[] args) {
 
-		DBData CREDENTIAL1 = new DBData("admin1@admin1", "admin1");//System.out.println(CREDENTIAL1.getUser_access() + " | " + CREDENTIAL1.getUser_name() + "||");
-		//DBData CREDENTIAL2 = Authentication.Login("admin2@admin2", "admin2");//System.out.println(CREDENTIAL2.getUser_access() + " | " + CREDENTIAL2.getUser_name() + "||");
-		//DBData CREDENTIAL3 = Authentication.Login("vendor1@vendor1", "vendor1");//System.out.println(CREDENTIAL3.getUser_access() + " | " + CREDENTIAL3.getUser_name() + "||");
-		//DBData CREDENTIAL4 = Authentication.Login("vendor2@vendor2", "vendor2");//System.out.println(CREDENTIAL4.getUser_access() + " | " + CREDENTIAL4.getUser_name() + "||");
-		//DBData CREDENTIAL5 = Authentication.Login("normal1@normal1", "normal1");//System.out.println(CREDENTIAL5.getUser_access() + " | " + CREDENTIAL5.getUser_name() + "||");
-		//DBData CREDENTIAL6 = Authentication.Login("normal2@normal2", "normal2");//System.out.println(CREDENTIAL6.getUser_access() + " | " + CREDENTIAL6.getUser_name() + "||");
-		DBData CREDENTIAL7 = new DBData("normal3@normal3", "normal3");//System.out.println(CREDENTIAL7.getUser_access() + " | " + CREDENTIAL7.getUser_name() + "||");
+		DBData CREDENTIAL1 = Authentication.Login("admin1@admin1", "admin1");//System.out.println(CREDENTIAL1.getUser_access() + " | " + CREDENTIAL1.getUser_name() + "||");
+		DBData CREDENTIAL2 = Authentication.Login("admin2@admin2", "admin2");//System.out.println(CREDENTIAL2.getUser_access() + " | " + CREDENTIAL2.getUser_name() + "||");
+		DBData CREDENTIAL3 = Authentication.Login("vendor1@vendor1", "vendor1");//System.out.println(CREDENTIAL3.getUser_access() + " | " + CREDENTIAL3.getUser_name() + "||");
+		DBData CREDENTIAL4 = Authentication.Login("vendor2@vendor2", "vendor2");//System.out.println(CREDENTIAL4.getUser_access() + " | " + CREDENTIAL4.getUser_name() + "||");
+		DBData CREDENTIAL5 = Authentication.Login("normal1@normal1", "normal1");//System.out.println(CREDENTIAL5.getUser_access() + " | " + CREDENTIAL5.getUser_name() + "||");
+		DBData CREDENTIAL6 = Authentication.Login("normal2@normal2", "normal2");//System.out.println(CREDENTIAL6.getUser_access() + " | " + CREDENTIAL6.getUser_name() + "||");
+		DBData CREDENTIAL7 = Authentication.Login("normal3@normal3", "normal3");//System.out.println(CREDENTIAL7.getUser_access() + " | " + CREDENTIAL7.getUser_name() + "||");
 		System.out.println(CREDENTIAL7.getUser_access() + " | " + "|Normal3|");
 		System.out.println(CREDENTIAL1.getUser_access() + " | " + "|Admin1|");
 
-//		ArrayList<DBData> lis = new ArrayList<DBData>();
-//		lis.add(Authentication.Login("admin1@admin1", "admin1"));//System.out.print(CREDENTIAL1.getUser_access() + " | " + CREDENTIAL1.getUser_name() + "||");
-//		lis.add(Authentication.Login("normal3@normal3", "normal3"));//System.out.println(CREDENTIAL1.getUser_access() + " | " + CREDENTIAL1.getUser_name());
-//		lis.add(CREDENTIAL3);
-//		lis.add(CREDENTIAL4);
-//		lis.add(CREDENTIAL5);
-//		lis.add(CREDENTIAL6);
-//		lis.add(CREDENTIAL7);
-//		
-//		for (int i = 0; i < lis.size(); i++) {
-//			print(i);
-//			CREDENTIAL = lis.get(i);
-//			System.out.println(lis.get(i).getUser_access() + " " + lis.get(i).getUser_name());
-//			//print(TableFormatter.tableFormatter(CREDENTIAL.viewAllMenu()));
-//		}
+		ArrayList<DBData> lis = new ArrayList<DBData>();
+		lis.add(Authentication.Login("admin1@admin1", "admin1"));//System.out.print(CREDENTIAL1.getUser_access() + " | " + CREDENTIAL1.getUser_name() + "||");
+		lis.add(Authentication.Login("normal3@normal3", "normal3"));//System.out.println(CREDENTIAL1.getUser_access() + " | " + CREDENTIAL1.getUser_name());
+		lis.add(CREDENTIAL3);
+		lis.add(CREDENTIAL4);
+		lis.add(CREDENTIAL5);
+		lis.add(CREDENTIAL6);
+		lis.add(CREDENTIAL7);
+		
+		for (int i = 0; i < lis.size(); i++) {
+			print(i);
+			CREDENTIAL = lis.get(i);
+			System.out.println(lis.get(i).getUser_access() + " " + lis.get(i).getUser_name());
+			//print(TableFormatter.tableFormatter(CREDENTIAL.viewAllMenu()));
+		}
 		
 		
 //		line(40, "-");
