@@ -284,7 +284,22 @@ public class C206_CaseStudy {
 
 	}
 
-	// (DONE) SQL to view all Menu
+	// (DONE) SQL to view User Child
+	private static void viewUserChild() {
+		line(40, "-");
+
+		String[][] table = CREDENTIAL.viewUserChild();
+
+		if (table.length == 1) {
+			print("\nSorry but currently there are no child added");
+			return;
+		}
+
+		print(TableFormatter.tableFormatter(table));
+
+	}
+
+	// (DONE) SQL to view User Menu
 	private static void viewUserMenu() {
 		line(40, "-");
 
@@ -318,13 +333,13 @@ public class C206_CaseStudy {
 		String[][] table = CREDENTIAL.viewUserOrder();
 
 		print(TableFormatter.tableFormatter(table));
-		
+
 		ArrayList<String> order_idList = new ArrayList<String>();
 
 		for (String[] row : table)
 			order_idList.add(row[0]);
 		order_idList.remove(0);
-		
+
 		String OrderChoice = readString("Select Order ID to delete: ");
 
 		if (OrderChoice.contains(OrderChoice) == false) {
@@ -350,74 +365,114 @@ public class C206_CaseStudy {
 	private static void addOrder() {
 		line(40, "-");
 		print("== Add Order ==");
-		// Method to view the Food
-		// SQL
-		
+
 		if (CREDENTIAL.getMenuCount() == 0) {
 			print("\nSorry but currently there are no menu available");
-			return;
-		}
-		
-		String[][] table = CREDENTIAL.viewAllMenu();
-
-		print(TableFormatter.tableFormatter(table));
-
-		ArrayList<String> menu_idList = new ArrayList<String>();
-
-		for (String[] row : table)
-			menu_idList.add(row[0]);
-		menu_idList.remove(0);
-
-		String menu_id = readString("Enter Item ID to add into order: ");
-
-		if (menu_idList.contains(menu_id) == false) {
-			print("\nWrong item ID entered - Returning back to [Normal MENU]\n");
+			normalMenu();
+		} else if (CREDENTIAL.getPaymentCount() == 0) {
+			print("\nSorry but currently there are no payment available");
+			normalMenu();
+		} else if (CREDENTIAL.getUserChildCount() == 0) {
+			print("\nSorry but currently there are no child available");
 			normalMenu();
 		}
-
-		CHOICE = menu_idList.indexOf(menu_id) + 1;
-
-		String item_id = table[CHOICE][0];
-		String item_name = table[CHOICE][1];
-		String item_qty = table[CHOICE][2];
-		String item_description = table[CHOICE][3];
-		String item_dietary = table[CHOICE][4];
-		String item_ingredients = table[CHOICE][5];
-		String item_price = table[CHOICE][6];
-
-		String descrip = "" + "\n======= Food =======\n" + "Item ID: %s\n" + "Item name: %s\n" + "Item quantity: %s\n"
-				+ "Item description: %s\n" + "Item dietary: %s\n" + "Item ingredients: %s\n" + "Item price: %s\n";
-
-		descrip = String.format(descrip, item_id, item_name, item_qty, item_description, item_dietary, item_ingredients,
-				item_price);
-		print(descrip);
-
-		String confirm = readString("Confirm Order? (Y/N): ");
-		if (confirm.equalsIgnoreCase("y") == false) {
-			print("Deletation Aborted");
-			vendorMenu();
-		}
-
+		
+		String[][] table = null;
+		
 		//
-		// Get Payment
+		// Add Menu Item to order
 		//
 		table = CREDENTIAL.viewAllMenu();
 
 		print(TableFormatter.tableFormatter(table));
 
-		menu_idList = new ArrayList<String>();
+		ArrayList<String> menu_itemList = new ArrayList<String>();
+
+		for (String[] row : table) {
+			String menuItem = row[0] + "," + row[1];
+			menu_itemList.add(menuItem);
+		}
+		menu_itemList.remove(0);
+
+		String menu_id = readString("Enter Menu ID to add into order: ");
+		String item_id = readString("Enter Item ID to add into order: ");
+		
+		String menu_item_id = menu_id + "," + item_id;
+		
+		if (menu_itemList.contains(menu_item_id) == false) {
+			print("\nWrong Item / Menu ID entered - Returning back to [Normal MENU]\n");
+			normalMenu();
+		}
+
+		CHOICE = menu_itemList.indexOf(menu_item_id) + 1;
+
+		print("---- Item to Add From Menu ------");
+		print(CREDENTIAL.getItemInfo(item_id));
+		print("Menu ID Choosen: " + menu_id);
+
+		String confirm = readString("\nConfirm Order? (Y/N): ");
+		if (confirm.equalsIgnoreCase("y") == false) {
+			print("Deletation Aborted");
+			normalMenu();
+		}
+
+		
+		//
+		// Choose school by meun item ID - vendor
+		//
+		
+		table = CREDENTIAL.viewVendorSchoolByMenuItem(String.valueOf(CHOICE));
+		
+		print(TableFormatter.tableFormatter(table));
+
+		ArrayList<String> SHV_IDList = new ArrayList<String>();
+
+		for (String[] row : table) {
+			SHV_IDList.add(row[0]);
+		}
+		SHV_IDList.remove(0);
+		
+		
+		//
+		// Add Child
+		//
+		table = CREDENTIAL.viewUserChild();
+
+		print(TableFormatter.tableFormatter(table));
+
+		ArrayList<String> child_idList = new ArrayList<String>();
 
 		for (String[] row : table)
-			menu_idList.add(row[0]);
-		menu_idList.remove(0);
+			child_idList.add(row[0]);
+		child_idList.remove(0);
 
-		menu_id = readString("Enter item_id to add into menu: ");
+		String child_id = readString("Enter Child ID option: ");
 
-		if (menu_idList.contains(menu_id) == false) {
-			print("\nWrong item ID entered - Returning back to [Vendor MENU]\n");
-			vendorMenu();
+		if (child_idList.contains(child_id) == false) {
+			print("\nWrong Child ID entered - Returning back to [Normal MENU]\n");
+			normalMenu();
 		}
-		
+
+		//
+		// Add Payment
+		//
+		table = CREDENTIAL.viewAllPayment();
+
+		print(TableFormatter.tableFormatter(table));
+
+		ArrayList<String> payment_idList = new ArrayList<String>();
+
+		for (String[] row : table)
+			payment_idList.add(row[0]);
+		payment_idList.remove(0);
+
+		String payment_id = readString("Enter Payment ID option: ");
+
+		if (payment_idList.contains(payment_id) == false) {
+			print("\nWrong payment ID entered - Returning back to [Normal MENU]\n");
+			normalMenu();
+		}
+
 	}
 
 	// ==========================
@@ -822,7 +877,7 @@ public class C206_CaseStudy {
 
 		System.out.println(TableFormatter.tableFormatter(table));
 	}
-	
+
 	// (DONE) SQL Code to view all Orders
 	private static void viewAllPayment() {
 		line(40, "-");
@@ -842,26 +897,25 @@ public class C206_CaseStudy {
 		String access = "";
 		String[] otherInfo = {};
 
-		
 		while (true) {
 			email = readString("Enter Email: ");
 			name = readString("Enter Name: ");
 			password = readString("Enter Password: ");
 			access = readString("Enter Access Type (admin/vendor/normal): ").toLowerCase();
-			
+
 			if ((isName(name) && isEmail(email) && isPassword(password)
-				&& (access.equals("normal") || access.equals("vendor") || access.equals("admin"))) == true) {
+					&& (access.equals("normal") || access.equals("vendor") || access.equals("admin"))) == true) {
 				break;
 			}
 		}
-		
+
 		switch (access) {
 		case "normal":
 			otherInfo = new String[3]; // Changed size to 3
 			otherInfo[0] = String.valueOf(readInt("Enter Phone Number: "));
 			otherInfo[1] = readString("Enter Address: ");
 			otherInfo[2] = readString("Enter Allergies: ");
-			
+
 			print("Creeting normal account....");
 			break;
 		case "vendor":
@@ -873,7 +927,7 @@ public class C206_CaseStudy {
 			print("Creeting vender accout....");
 			break;
 		case "admin":
-			otherInfo = new String[]{};
+			otherInfo = new String[] {};
 
 			print("Creeting admin accout....");
 			break;
@@ -881,15 +935,15 @@ public class C206_CaseStudy {
 			print("\nInvalid access type.\n");
 			adminMenu(); // Bring user back to admin menu
 		}
-		
+
 		boolean isCreated = Authentication.CreateUser(name, email, password, access, otherInfo);
-		
+
 		if (isCreated == true) {
 			print("\nUser created successfully!\n");
 		} else {
 			print("\nUser creation failed.\n");
 		}
-		
+
 		adminMenu(); // Bring user back to admin menu
 	}
 
@@ -949,13 +1003,13 @@ public class C206_CaseStudy {
 		String[][] table = CREDENTIAL.viewAllSchool();
 
 		System.out.println(TableFormatter.tableFormatter(table));
-		
+
 		ArrayList<String> schoolIDArray = new ArrayList<String>();
-		for(String[] row : table) {
+		for (String[] row : table) {
 			schoolIDArray.add(row[0]);
 		}
 		schoolIDArray.remove(0);
-		
+
 		String school = readString("Enter School ID: ");
 		boolean contains = schoolIDArray.contains(school);
 
@@ -963,7 +1017,7 @@ public class C206_CaseStudy {
 			print("\nWrong School ID entered - Returning back to [Admin Menu]\n");
 			adminMenu();
 		}
-		
+
 		String confirm = readString("Confirm Deletetion? (y/n): ");
 
 		if (confirm.equalsIgnoreCase("y") == false) {
@@ -982,7 +1036,7 @@ public class C206_CaseStudy {
 		}
 		adminMenu();
 	}
-	
+
 	// DONE NEED TESTING)
 	private static void addPayment() {
 		line(40, "-");
@@ -1009,13 +1063,13 @@ public class C206_CaseStudy {
 		String[][] table = CREDENTIAL.viewAllPayment();
 
 		System.out.println(TableFormatter.tableFormatter(table));
-		
+
 		ArrayList<String> paymentIDArray = new ArrayList<String>();
-		for(String[] row : table) {
+		for (String[] row : table) {
 			paymentIDArray.add(row[0]);
 		}
 		paymentIDArray.remove(0);
-		
+
 		String payment = readString("Enter Payment ID: ");
 		boolean contains = paymentIDArray.contains(payment);
 
@@ -1023,7 +1077,7 @@ public class C206_CaseStudy {
 			print("\nWrong Payment ID entered - Returning back to [Admin Menu]\n");
 			adminMenu();
 		}
-		
+
 		String confirm = readString("Confirm Deletetion? (y/n): ");
 
 		if (confirm.equalsIgnoreCase("y") == false) {
@@ -1042,7 +1096,7 @@ public class C206_CaseStudy {
 		}
 		adminMenu();
 	}
-	
+
 	// =============================
 	// Refactoring
 	// =============================

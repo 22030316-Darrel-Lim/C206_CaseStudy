@@ -539,6 +539,120 @@ public class DBData {
 		return itemInfo;
 	}
 
+	// (Done need testing)
+	public String[][] viewUserChild() {
+		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
+
+		if (user_access.equals("user") == false) {
+			return null;
+		}
+
+		int column = getUserChildCount() + 1;System.out.println(column);
+		String[] header = { "Child ID", "Child Name", "Child Allegies" };
+		int row = header.length;
+
+		String table[][] = new String[column][row];
+
+		SelectSQL = "SELECT `child_id`,`child_name`,`child_allegies` FROM `child` WHERE normal_id = '%s';";
+		SelectSQL = String.format(SelectSQL, user_id);
+		
+		// Set first index of data to header
+		table[0] = header;
+
+		// Assigning values into data
+		rs = DBUtil.getTable(SelectSQL);
+		count = 0;
+		try {
+			while (rs.next()) {
+				// Assign values based on header info
+				String id = rs.getString("child_id");
+				String name = rs.getString("child_name");
+				String allegies = rs.getString("child_allegies");
+
+				table[count + 1][0] = id;
+				table[count + 1][1] = name;
+				table[count + 1][2] = allegies;
+				count++;
+			}
+		} catch (SQLException e) {
+			System.out.println("SQL Error (viewUserChild): " + e.getMessage());
+		}
+
+		DBUtil.close();
+		return table;
+	}
+
+	// (Done need testing IMPT!!!!!!)
+	public String[][] viewVendorSchoolByMenuItem(String menu_item_id) {
+		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
+
+		menu_item_id = SQLInjection(menu_item_id);
+
+		//
+		// Count Number of Row
+		//
+		SelectSQL = "SELECT COUNT(school.school_name) AS COUNT FROM `school_has_vendor` "
+				+ "INNER JOIN school ON school.school_id = school_has_vendor.school_id "
+				+ "WHERE school_has_vendor.vendor_id IN ("
+				+ "SELECT DISTINCT menu.vendor_id FROM `menu_item` "
+				+ "INNER JOIN menu ON menu.menu_id = menu_item.menu_id WHERE menu_item_id = '%s'"
+				+ ");";
+		SelectSQL = String.format(SelectSQL, menu_item_id);
+		
+		rs = DBUtil.getTable(SelectSQL);
+		int rowCount = 0;
+		
+		try {
+			while (rs.next()) {
+				rowCount = rs.getInt("COUNT");
+			}
+		} catch (SQLException e) {
+			System.out.println("SQL Error (viewVendorSchoolByMenuItem) COUNT FAILED: " + e.getMessage());
+		}
+		
+		//
+		// Getting available table
+		//
+		
+		
+		int column = rowCount + 1;
+		String[] header = { "School Has Vendor ID", "School Name" };
+		int row = header.length;
+		
+		String table[][] = new String[column][row];
+		
+		SelectSQL = "SELECT `school_has_vendor_id` AS SHV_ID, school.school_name AS SN FROM `school_has_vendor` "
+				+ "INNER JOIN school ON school.school_id = school_has_vendor.school_id "
+				+ "WHERE school_has_vendor.vendor_id IN ("
+				+ "SELECT DISTINCT menu.vendor_id FROM `menu_item` "
+				+ "INNER JOIN menu ON menu.menu_id = menu_item.menu_id WHERE menu_item_id = '%s'"
+				+ ");";
+		SelectSQL = String.format(SelectSQL, menu_item_id);
+		
+		// Set first index of data to header
+		table[0] = header;
+
+		// Assigning values into data
+		rs = DBUtil.getTable(SelectSQL);
+		count = 0;
+		try {
+			while (rs.next()) {
+				// Assign values based on header info
+				String id = rs.getString("SHV_ID");
+				String name = rs.getString("school.SN");
+
+				table[count + 1][0] = id;
+				table[count + 1][1] = name;
+				count++;
+			}
+		} catch (SQLException e) {
+			System.out.println("SQL Error (viewVendorSchoolByMenuItem): " + e.getMessage());
+		}
+
+		DBUtil.close();
+		return table;
+	}
+
 	// ------------ Admin ONLY
 	public String[][] viewAllUser() {
 		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
@@ -1163,7 +1277,7 @@ public class DBData {
 	public String[][] viewSchoolHasVendor() {
 		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
 
-		if (user_access.equals("vendor") == false) {
+		if (user_access.equals("vendor") == false ) {
 			return null;
 		}
 
@@ -1231,6 +1345,26 @@ public class DBData {
 	// ======================================
 	// Extra methods
 	// ======================================
+
+	public int getUserChildCount() {
+		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
+
+		count = 0;
+		SelectSQL = "SELECT child_id FROM child WHERE normal_id = '%s';";
+		SelectSQL = String.format(SelectSQL, user_id);
+
+		rs = DBUtil.getTable(SelectSQL);
+		try {
+			while (rs.next()) {
+				count++;
+			}
+		} catch (SQLException e) {
+			System.out.println("SQL Error (getUserChildCount): " + e.getMessage());
+		}
+
+		DBUtil.close();
+		return count;
+	}
 
 	public int getMenuCount() {
 		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);

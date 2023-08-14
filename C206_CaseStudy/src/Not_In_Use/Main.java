@@ -14,113 +14,170 @@ public class Main {
 	private static DBData CREDENTIAL;
 	private static int CHOICE;
 
+	
+	private static void viewUserChild() {
+		line(40, "-");
 
+		String[][] table = CREDENTIAL.viewUserChild();
+
+		if (table.length == 1) {
+			print("\nSorry but currently there are no child added");
+			return;
+		}
+
+		print(TableFormatter.tableFormatter(table));
+
+	}
+	// (DONE) SQL to view all Menu
+	private static void viewAllMenu() {
+		line(40, "-");
+
+		String[][] table = CREDENTIAL.viewAllMenu();
+
+		if (table.length == 1) {
+			print("\nSorry but currently there are no menu offered by the vendors");
+			return;
+		}
+
+		print(TableFormatter.tableFormatter(table));
+
+	}
+	
 	public static void main(String[] args) {
 
-		DBData CREDENTIAL1 = Authentication.Login("admin1@admin1", "admin1");//System.out.println(CREDENTIAL1.getUser_access() + " | " + CREDENTIAL1.getUser_name() + "||");
-		DBData CREDENTIAL2 = Authentication.Login("admin2@admin2", "admin2");//System.out.println(CREDENTIAL2.getUser_access() + " | " + CREDENTIAL2.getUser_name() + "||");
-		DBData CREDENTIAL3 = Authentication.Login("vendor1@vendor1", "vendor1");//System.out.println(CREDENTIAL3.getUser_access() + " | " + CREDENTIAL3.getUser_name() + "||");
-		DBData CREDENTIAL4 = Authentication.Login("vendor2@vendor2", "vendor2");//System.out.println(CREDENTIAL4.getUser_access() + " | " + CREDENTIAL4.getUser_name() + "||");
-		DBData CREDENTIAL5 = Authentication.Login("normal1@normal1", "normal1");//System.out.println(CREDENTIAL5.getUser_access() + " | " + CREDENTIAL5.getUser_name() + "||");
-		DBData CREDENTIAL6 = Authentication.Login("normal2@normal2", "normal2");//System.out.println(CREDENTIAL6.getUser_access() + " | " + CREDENTIAL6.getUser_name() + "||");
-		DBData CREDENTIAL7 = Authentication.Login("normal3@normal3", "normal3");//System.out.println(CREDENTIAL7.getUser_access() + " | " + CREDENTIAL7.getUser_name() + "||");
-		System.out.println(CREDENTIAL7.getUser_access() + " | " + "|Normal3|");
-		System.out.println(CREDENTIAL1.getUser_access() + " | " + "|Admin1|");
-
-		ArrayList<DBData> lis = new ArrayList<DBData>();
-		lis.add(Authentication.Login("admin1@admin1", "admin1"));//System.out.print(CREDENTIAL1.getUser_access() + " | " + CREDENTIAL1.getUser_name() + "||");
-		lis.add(Authentication.Login("normal3@normal3", "normal3"));//System.out.println(CREDENTIAL1.getUser_access() + " | " + CREDENTIAL1.getUser_name());
-		lis.add(CREDENTIAL3);
-		lis.add(CREDENTIAL4);
-		lis.add(CREDENTIAL5);
-		lis.add(CREDENTIAL6);
-		lis.add(CREDENTIAL7);
+		CREDENTIAL = Authentication.Login("normal1@normal1", "normal1");
+//		CREDENTIAL = Authentication.Login("normal2@normal2", "normal2");
+//		CREDENTIAL = Authentication.Login("normal3@normal3", "normal3");
+//		CREDENTIAL = Authentication.Login("admin1@admin1", "admin1");
+//		CREDENTIAL = Authentication.Login("vendor1@vendor1", "vendor1");
+		print(CREDENTIAL.getUser_name() + " " + CREDENTIAL.getUser_access() + " " + CREDENTIAL.getUser_id());
 		
-		for (int i = 0; i < lis.size(); i++) {
-			print(i);
-			CREDENTIAL = lis.get(i);
-			System.out.println(lis.get(i).getUser_access() + " " + lis.get(i).getUser_name());
-			//print(TableFormatter.tableFormatter(CREDENTIAL.viewAllMenu()));
+		//print(TableFormatter.tableFormatter(CREDENTIAL.viewVendorSchoolByMenuItem("9")));
+		while (true) {
+			
+			line(40, "-");
+			print("== Add Order ==");
+
+			if (CREDENTIAL.getMenuCount() == 0) {
+				print("\nSorry but currently there are no menu available");
+				//normalMenu();
+			} else if (CREDENTIAL.getPaymentCount() == 0) {
+				print("\nSorry but currently there are no payment available");
+				//normalMenu();
+			} else if (CREDENTIAL.getUserChildCount() == 0) {
+				print("\nSorry but currently there are no child available");
+				//normalMenu();
+			} else if (CREDENTIAL.getSchoolCount() == 0) {
+				print("\nSorry but currently there are no school available");
+				//normalMenu();
+			} 
+			
+			String[][] table = null;
+			
+			//
+			// Add Menu Item to order
+			//
+			table = CREDENTIAL.viewAllMenu();
+
+			print(TableFormatter.tableFormatter(table));
+
+			ArrayList<String> menu_itemList = new ArrayList<String>();
+
+			for (String[] row : table) {
+				String menuItem = row[0] + "," + row[1];
+				menu_itemList.add(menuItem);
+			}
+			menu_itemList.remove(0);
+
+			String menu_id = readString("Enter Menu ID to add into order: ");
+			String item_id = readString("Enter Item ID to add into order: ");
+			
+			String menu_item_id = menu_id + "," + item_id;
+			
+			if (menu_itemList.contains(menu_item_id) == false) {
+				print("\nWrong Item / Menu ID entered - Returning back to [Normal MENU]\n");
+				//normalMenu();
+			}
+
+			CHOICE = menu_itemList.indexOf(menu_item_id) + 1;
+
+			print("---- Item to Add From Menu ------");
+			print(CREDENTIAL.getItemInfo(item_id));
+			print("Menu ID Choosen: " + menu_id);
+			
+			//
+			// Choose school by menu item ID - vendor
+			//
+			
+			table = CREDENTIAL.viewVendorSchoolByMenuItem(String.valueOf(CHOICE));
+			
+			print(TableFormatter.tableFormatter(table));
+
+			ArrayList<String> SHV_IDList = new ArrayList<String>();
+
+			for (String[] row : table) {
+				SHV_IDList.add(row[0]);
+			}
+			SHV_IDList.remove(0);
+			
+			String SHV_id = readString("Enter School Has Vendor ID option: ");
+
+			if (SHV_IDList.contains(SHV_id) == false) {
+				print("\nWrong ID entered - Returning back to [Normal MENU]\n");
+				//normalMenu();
+			}
+			
+			//
+			// Add Child
+			//
+			table = CREDENTIAL.viewUserChild();
+			print(CREDENTIAL.getUser_name());
+
+			print(TableFormatter.tableFormatter(table));
+
+			ArrayList<String> child_idList = new ArrayList<String>();
+
+			for (String[] row : table)
+				child_idList.add(row[0]);
+			child_idList.remove(0);
+
+			String child_id = readString("Enter Child ID option: ");
+
+			if (child_idList.contains(child_id) == false) {
+				print("\nWrong Child ID entered - Returning back to [Normal MENU]\n");
+				//normalMenu();
+			}
+
+			//
+			// Add Payment
+			//
+			table = CREDENTIAL.viewAllPayment();
+
+			print(TableFormatter.tableFormatter(table));
+
+			ArrayList<String> payment_idList = new ArrayList<String>();
+
+			for (String[] row : table)
+				payment_idList.add(row[0]);
+			payment_idList.remove(0);
+
+			String payment_id = readString("Enter Payment ID option: ");
+
+			if (payment_idList.contains(payment_id) == false) {
+				print("\nWrong payment ID entered - Returning back to [Normal MENU]\n");
+				//normalMenu();
+			}
+			
+			//
+			// Confirm Order
+			//
+			String confirm = readString("\nConfirm Order? (Y/N): ");
+			if (confirm.equalsIgnoreCase("y") == false) {
+				print("Deletation Aborted");
+				//normalMenu();
+			}
 		}
-		
-		
-//		line(40, "-");
-//		print("== Add Order ==");
-//		// Method to view the Food
-//		// SQL
-//
-//		if (CREDENTIAL.getMenuCount() == 0) {
-//			print("\nSorry but currently there are no menu available");
-//			return;
-//		}
-//
-//		String[][] table = CREDENTIAL.viewAllMenu();
-//
-//		print(TableFormatter.tableFormatter(table));
-//
-//		ArrayList<String> item_idList = new ArrayList<String>();
-//		ArrayList<String> menu_idList = new ArrayList<String>();
-//
-//		ArrayList<String> menu_itemList = new ArrayList<String>();
-//		
-//		for (String[] row : table) {
-//			item_idList.add(row[1]);
-//			menu_idList.add(row[0]);
-//			String menuItem = row[0] + "," + row[1];
-//			menu_itemList.add(menuItem);
-//		}
-//		menu_itemList.remove(0);
-//		menu_idList.remove(0);
-//		item_idList.remove(0);
-//
-//		String item_id = readString("Enter Item ID to add into order: ");
-//		String menu_id = readString("Enter Menu ID to add into order: ");
-//		
-//		if (item_idList.contains(item_id) == false) {
-//			print("\nWrong item ID entered - Returning back to [Normal MENU]\n");
-//			// normalMenu();
-//			return;
-//		} else if (menu_idList.contains(menu_id) == false) {
-//			print("\nWrong item ID entered - Returning back to [Normal MENU]\n");
-//			// normalMenu();
-//			return;
-//		}
-//
-//		CHOICE = menu_idList.indexOf(item_id) + 1;
-//		
-//		print("---- Item to Add From Menu ------");
-//		print(CREDENTIAL.getItemInfo(item_id));
-//
-//		String confirm = readString("Confirm Order? (Y/N): ");
-//		if (confirm.equalsIgnoreCase("y") == false) {
-//			print("Deletation Aborted");
-//			// vendorMenu();
-//			return;
-//		}
-
-		//
-		// Get Payment
-		//
-//		table = CREDENTIAL.viewAllMenu();
-//
-//		print(TableFormatter.tableFormatter(table));
-//
-//		menu_idList = new ArrayList<String>();
-//
-//		for (String[] row : table)
-//			menu_idList.add(row[0]);
-//		menu_idList.remove(0);
-//
-//		menu_id = readString("Enter item_id to add into menu: ");
-//
-//		if (menu_idList.contains(menu_id) == false) {
-//			print("\nWrong item ID entered - Returning back to [Vendor MENU]\n");
-//			// vendorMenu();
-//			return;
-//		}
-	
 	}
-
 
 	@SuppressWarnings("unused")
 	private static void displayMenu(String menuType) {
@@ -140,7 +197,7 @@ public class Main {
 			print("");
 			line(40, "-");
 			print("============== NORMAL MENU =============");
-			print("Welcome " );
+			print("Welcome ");
 			line(40, "-");
 			print("1) View All Menu");
 			print("2) Add a New Order");
@@ -152,7 +209,7 @@ public class Main {
 			print("");
 			line(40, "-");
 			print("============== VENDOR MENU =============");
-			print("Welcome " );
+			print("Welcome ");
 			line(40, "-");
 			print("1) View All Menu");
 			print("2) Add new Menu");
