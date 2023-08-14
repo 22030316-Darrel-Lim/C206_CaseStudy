@@ -26,7 +26,7 @@ public class C206_CaseStudy {
 		while (CHOICE != 9) {
 
 			displayMenu("main");
-			CHOICE = 1;//readInt("Enter choice: ");
+			CHOICE = readInt("Enter choice: ");
 			line(20, "-");
 
 			switch (CHOICE) {
@@ -94,8 +94,8 @@ public class C206_CaseStudy {
 	}
 
 	private static void login() {
-		String email = "admin1@admin1";//readString("Enter email: ");
-		String password = "admin1";//readString("Enter password: ");
+		String email = readString("Enter email: ");
+		String password = readString("Enter password: ");
 
 		CREDENTIAL = Authentication.Login(email, password);
 
@@ -701,7 +701,7 @@ public class C206_CaseStudy {
 			item_idList.add(row[0]);
 		item_idList.remove(0);
 
-		String food_id = readString("Enter item_id to add into menu: ");
+		String food_id = readString("Enter item_id to delete from menu: ");
 
 		if (item_idList.contains(food_id) == false) {
 			print("\nWrong item ID entered - Returning back to [Vendor MENU]\n");
