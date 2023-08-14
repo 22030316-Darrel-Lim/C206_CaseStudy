@@ -228,6 +228,8 @@ public class DBData {
 
 		if (user_access.equals("admin") == false) {
 			return isChecked;
+		} else if (this.user_id.equals(user_id)) {
+			return isChecked;
 		}
 
 		user_id = SQLInjection(user_id);
@@ -432,14 +434,15 @@ public class DBData {
 			return null;
 		}
 
-		int column = getOrderCount() + 1;
+		int column = getAllOrderCount() + 1;
 		String[] header = { "Order ID", "order Status", "Child ID", "School Has Vendor ID", "Payment Type",
 				"Normal ID" };
 		int row = header.length;
 
 		String table[][] = new String[column][row];
 
-		SelectSQL = "Select order_id,order_status,child_id,school_has_vendor_id,payment_name,normal_id FROM has_order INNER JOIN payment ON payment.payment_id = has_order.payment_id;";
+		SelectSQL = "Select order_id,order_status,child_id,school_has_vendor_id,payment_name,normal_id FROM has_order "
+				+ "INNER JOIN payment ON payment.payment_id = has_order.payment_id;";
 
 		// Set first index of data to header
 		table[0] = header;
@@ -1142,11 +1145,11 @@ public class DBData {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-
+		
 		if (count != 0) {
 			return isAllChecked;
 		}
-
+		
 		InsertSQL = "INSERT INTO `menu_item` (`item_id`, `menu_id`) VALUES ('%d', '%s');";
 		InsertSQL = String.format(InsertSQL, item_id, menu_id);
 
@@ -1387,12 +1390,38 @@ public class DBData {
 		return count;
 	}
 
+	public int getMenuVendorCount() {
+		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
+
+		count = 0;
+		if (user_access.equals("vendor") == false) {
+			return count;
+		}
+		
+		SelectSQL = "SELECT menu_item.menu_id FROM menu_item INNER JOIN menu ON menu.menu_id = menu_item.menu_id WHERE vendor_id = '%s';";
+		SelectSQL = String.format(SelectSQL, user_id);
+		
+		rs = DBUtil.getTable(SelectSQL);
+		try {
+			while (rs.next()) {
+				count++;
+			}
+		} catch (SQLException e) {
+			System.out.println("SQL Error (getMenuVendorCount): " + e.getMessage());
+		}
+
+		DBUtil.close();
+		return count;
+	}
+	
 	public int getMenuCount() {
 		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
 
 		count = 0;
+		
 		SelectSQL = "SELECT menu_id FROM menu_item;";
-
+		SelectSQL = String.format(SelectSQL, user_id);
+		
 		rs = DBUtil.getTable(SelectSQL);
 		try {
 			while (rs.next()) {
@@ -1400,6 +1429,27 @@ public class DBData {
 			}
 		} catch (SQLException e) {
 			System.out.println("SQL Error (getMenuCount): " + e.getMessage());
+		}
+
+		DBUtil.close();
+		return count;
+	}
+	
+	public int getMenuVendorIDCount() {
+		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
+
+		count = 0;
+		
+		SelectSQL = "SELECT menu_id FROM menu WHERE vendor_id = '%s';";
+		SelectSQL = String.format(SelectSQL, user_id);
+		
+		rs = DBUtil.getTable(SelectSQL);
+		try {
+			while (rs.next()) {
+				count++;
+			}
+		} catch (SQLException e) {
+			System.out.println("SQL Error (getMenuVendorIDCount): " + e.getMessage());
 		}
 
 		DBUtil.close();
@@ -1575,6 +1625,27 @@ public class DBData {
 	}
 
 	// (DONE - Tested)
+	public int getAllOrderCount() {
+		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
+
+		count = 0;
+		
+		SelectSQL = "SELECT order_id FROM has_order";
+		SelectSQL = String.format(SelectSQL, user_id);
+
+		rs = DBUtil.getTable(SelectSQL);
+		try {
+			while (rs.next()) {
+				count++;
+			}
+		} catch (SQLException e) {
+			System.out.println("SQL Error (getAllOrderCount): " + e.getMessage());
+		}
+
+		DBUtil.close();
+		return count;
+	}
+	
 	protected static String SQLInjection(String str) {
 		if (str == null) {
 			return null;

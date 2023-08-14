@@ -94,8 +94,8 @@ public class C206_CaseStudy {
 	}
 
 	private static void login() {
-		String email = "normal1@normal1";//readString("Enter email: ");
-		String password = "normal1";//readString("Enter password: ");
+		String email = "admin1@admin1";//readString("Enter email: ");
+		String password = "admin1";//readString("Enter password: ");
 
 		CREDENTIAL = Authentication.Login(email, password);
 
@@ -154,7 +154,7 @@ public class C206_CaseStudy {
 				break;
 			case 9:
 				thankYou();
-				break;
+				return;
 			default:
 				invalidChoice();
 			}
@@ -504,7 +504,7 @@ public class C206_CaseStudy {
 		line(40, "-");
 
 		// Check if menu is available to add item
-		int currentMenu = CREDENTIAL.getMenuCount();
+		int currentMenu = CREDENTIAL.getMenuVendorCount();
 
 		if (currentMenu == 0) {
 			print("\nSorry but currently there are no available menu to delete\n");
@@ -531,7 +531,7 @@ public class C206_CaseStudy {
 
 		if (contains != true) {
 			print("\nWrong Menu ID entered - Returning back to [Vender Menu]\n");
-			vendorMenu();
+			return;
 		}
 
 		// Run SQL Statement to delete base on Menu_Id
@@ -545,14 +545,14 @@ public class C206_CaseStudy {
 		} else {
 			print("Delete Menu Successful");
 		}
-		vendorMenu();
+		return;
 	}
 
 	// (DONE - Testing NEEDED) Method for Vendor to add new food
 	// Test if there is no menu
 	private static void addFoodItem() {
 		// Check if menu is available to add item
-		int currentMenu = CREDENTIAL.getMenuCount();
+		int currentMenu = CREDENTIAL.getMenuVendorIDCount();
 
 		if (currentMenu == 0) {
 			print("\nSorry but currently there are no menu to add items in\n");
@@ -579,11 +579,11 @@ public class C206_CaseStudy {
 				
 				if (vendorInfo.length != 8) {
 					print("[Add exisitng food to menu] Cant be choosen as currently there is no menu to your account");
-					addFoodItem();
+					return;
 				}
 				else if (countItem == 0) {
 					print("There are currently no items in the DB");
-					addFoodItem();
+					return;
 				}
 				String[][] table = CREDENTIAL.viewAllFood();
 
@@ -599,7 +599,7 @@ public class C206_CaseStudy {
 
 				if (item_idList.contains(CHOICE_itemID) == false) {
 					print("\nWrong item ID entered - Returning back to [ADD FOOD TO MENU]\n");
-					addFoodItem();
+					return;
 				}
 
 				CHOICE = item_idList.indexOf(CHOICE_itemID) + 1;
@@ -616,7 +616,7 @@ public class C206_CaseStudy {
 
 				if (YESNO != 'y') {
 					print("Returning back to [ADD FOOD TO MENU]");
-					addFoodItem();
+					return;
 				}
 
 				print("Adding Item to Menu...");
@@ -624,12 +624,12 @@ public class C206_CaseStudy {
 
 				if (isSuccessful == null) {
 					print("Something went wrong when adding");
-				} else if (isSuccessful) {
+				} else if (isSuccessful == true) {
 					print("Added Item to Menu Successful");
 				} else {
 					print("Item cant be added [Item already inside Menu]");
 				}
-				addFoodItem();
+				return;
 
 			case 2:
 				// Create new food and add it to SQL
@@ -641,8 +641,8 @@ public class C206_CaseStudy {
 				Double price = readDouble("Enter Food Price: $");
 				int qty = readInt("Enter Food Quantity: ");
 				
-				while (price >= 0 && qty >= 0) {
-					print("Price and Qunatity must be more then 0");
+				while (price <= 0 && qty <= 0) {
+					print("Price / Qty must be more than 0");
 					price = readDouble("Enter Food Price: $");
 					qty = readInt("Enter Food Quantity: ");
 				}
@@ -653,7 +653,7 @@ public class C206_CaseStudy {
 
 				if (YESNO != 'y') {
 					print("Returning back to [ADD FOOD TO MENU]");
-					addFoodItem();
+					return;
 				}
 
 				print("Adding new Item to Menu...");
@@ -670,12 +670,11 @@ public class C206_CaseStudy {
 				}
 
 				print("Added new Item to Menu Successful");
-				addFoodItem();
+				return;
 
 			case 9:
 				// Exit from Menu Option
-				vendorMenu();
-				break;
+				return;
 
 			default:
 				// Error message
@@ -766,7 +765,7 @@ public class C206_CaseStudy {
 			print("Menu Creation failed");
 		} else {
 			print("Menu Creation Successful");
-			print("Bringing user to addFoodItem");
+			print("Bringing user to addFoodItem Menu");
 			addFoodItem();
 		}
 		vendorMenu();
@@ -951,7 +950,7 @@ public class C206_CaseStudy {
 			print("\nUser creation failed.\n");
 		}
 
-		adminMenu(); // Bring user back to admin menu
+		return; // Bring user back to admin menu
 	}
 
 	// (DONE NEEDED TEST) SQL Code to delete Users + View All Users
@@ -963,14 +962,14 @@ public class C206_CaseStudy {
 
 		if (confirm.equalsIgnoreCase("y") == false) {
 			print("Deletation Aborted");
-			adminMenu();
+			return;
 		}
-
+		
 		String user_id = CREDENTIAL.getUser_id(email);
 
 		if (user_id == null) {
 			print("Delete User Error - user id NULL");
-			adminMenu();
+			return;
 		}
 
 		Boolean isDeleted = CREDENTIAL.DELETE_USER(user_id);
@@ -980,7 +979,7 @@ public class C206_CaseStudy {
 		} else {
 			print("Delete user Successful");
 		}
-		adminMenu();
+		return;
 	}
 
 	// DONE NEED TESTING)
@@ -995,11 +994,11 @@ public class C206_CaseStudy {
 		if (isSuccessful == null) {
 			print("Something went wrong when adding");
 		} else if (isSuccessful) {
-			print("Added Item to Menu Successful");
+			print("Added School Successful");
 		} else {
-			print("Item cant be added [Item already inside Menu]");
+			print("School cant be added [School already inside DB]");
 		}
-		adminMenu();
+		return;
 	}
 
 	// (DONE NEED TESTING)
@@ -1022,14 +1021,14 @@ public class C206_CaseStudy {
 
 		if (contains != true) {
 			print("\nWrong School ID entered - Returning back to [Admin Menu]\n");
-			adminMenu();
+			return;
 		}
 
 		String confirm = readString("Confirm Deletetion? (y/n): ");
 
 		if (confirm.equalsIgnoreCase("y") == false) {
 			print("Deletation Aborted");
-			adminMenu();
+			return;
 		}
 
 		Boolean isDeleted = CREDENTIAL.deleteSchool(school);
@@ -1041,7 +1040,7 @@ public class C206_CaseStudy {
 		} else {
 			print("\nDelete School Successful");
 		}
-		adminMenu();
+		return;
 	}
 
 	// DONE NEED TESTING)
@@ -1059,7 +1058,7 @@ public class C206_CaseStudy {
 		} else {
 			print("Paymnet Creation Successful");
 		}
-		adminMenu();
+		return;
 	}
 
 	// (DONE NEED TESTING)
@@ -1082,14 +1081,14 @@ public class C206_CaseStudy {
 
 		if (contains != true) {
 			print("\nWrong Payment ID entered - Returning back to [Admin Menu]\n");
-			adminMenu();
+			return;
 		}
 
 		String confirm = readString("Confirm Deletetion? (y/n): ");
 
 		if (confirm.equalsIgnoreCase("y") == false) {
 			print("Deletation Aborted");
-			adminMenu();
+			return;
 		}
 
 		Boolean isDeleted = CREDENTIAL.deleteSchool(payment);
@@ -1101,7 +1100,7 @@ public class C206_CaseStudy {
 		} else {
 			print("\nDelete Payment Successful");
 		}
-		adminMenu();
+		return;
 	}
 
 	// =============================
@@ -1165,7 +1164,7 @@ public class C206_CaseStudy {
 			print("             (2) Add new Menu");
 			print("             (3) Delete Menu");
 			print("             (4) Add new Item");
-			print("             (5) Delete Item");
+			print("             (5) Delete Food");
 			print("             (6) Link School to Vendor");
 			print("             (9) Exit");
 			line(40, "-");
