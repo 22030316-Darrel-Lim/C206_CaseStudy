@@ -141,7 +141,7 @@ public class C206_CaseStudy {
 				viewAllMenu();
 				break;
 			case 2:
-				// TODO Create a new order + payment
+				// Create a new order + payment
 				addOrder();
 				break;
 			case 3:
@@ -158,7 +158,6 @@ public class C206_CaseStudy {
 			default:
 				invalidChoice();
 			}
-			return;
 		}
 	}
 
@@ -288,21 +287,6 @@ public class C206_CaseStudy {
 
 	}
 
-	// (DONE) SQL to view User Child
-	private static void viewUserChild() {
-		line(40, "-");
-
-		String[][] table = CREDENTIAL.viewUserChild();
-
-		if (table.length == 1) {
-			print("\nSorry but currently there are no child added");
-			return;
-		}
-
-		print(TableFormatter.tableFormatter(table));
-
-	}
-
 	// (DONE) SQL to view User Menu
 	private static void viewUserMenu() {
 		line(40, "-");
@@ -379,6 +363,9 @@ public class C206_CaseStudy {
 		} else if (CREDENTIAL.getUserChildCount() == 0) {
 			print("\nSorry but currently there are no child available");
 			normalMenu();
+		} else if (CREDENTIAL.getSchoolCount() == 0) {
+			print("\nSorry but currently there are no school available");
+			normalMenu();
 		}
 
 		String[][] table = null;
@@ -414,16 +401,9 @@ public class C206_CaseStudy {
 		print(CREDENTIAL.getItemInfo(item_id));
 		print("Menu ID Choosen: " + menu_id);
 
-		String confirm = readString("\nConfirm Order? (Y/N): ");
-		if (confirm.equalsIgnoreCase("y") == false) {
-			print("Deletation Aborted");
-			normalMenu();
-		}
-
 		//
-		// Choose school by meun item ID - vendor
+		// Choose school by menu item ID - vendor
 		//
-
 		table = CREDENTIAL.viewVendorSchoolByMenuItem(String.valueOf(CHOICE));
 
 		print(TableFormatter.tableFormatter(table));
@@ -435,10 +415,18 @@ public class C206_CaseStudy {
 		}
 		SHV_IDList.remove(0);
 
+		String SHV_id = readString("Enter School Has Vendor ID option: ");
+
+		if (SHV_IDList.contains(SHV_id) == false) {
+			print("\nWrong ID entered - Returning back to [Normal MENU]\n");
+			normalMenu();
+		}
+
 		//
 		// Add Child
 		//
 		table = CREDENTIAL.viewUserChild();
+		print(CREDENTIAL.getUser_name());
 
 		print(TableFormatter.tableFormatter(table));
 
@@ -454,6 +442,8 @@ public class C206_CaseStudy {
 			print("\nWrong Child ID entered - Returning back to [Normal MENU]\n");
 			normalMenu();
 		}
+
+		String child_preference = readString("Enter Child preference: ");
 
 		//
 		// Add Payment
@@ -475,6 +465,28 @@ public class C206_CaseStudy {
 			normalMenu();
 		}
 
+		//
+		// Confirm Order
+		//
+		String confirm = readString("\nConfirm Order? (Y/N): ");
+		if (confirm.equalsIgnoreCase("y") == false) {
+			print("Deletation Aborted");
+			normalMenu();
+		}
+		
+		String order_status = "Paid";
+		
+		Boolean isOrdered = CREDENTIAL.addOrder(order_status, child_preference, child_id, SHV_id, menu_item_id, payment_id);
+		
+		if (isOrdered == false) {
+			print("Ordering Failed");
+		} else if (isOrdered == null) {
+			print("Wrong access type");
+		} else {
+			print("Ordering Item Successful");
+		}
+		
+		normalMenu();
 	}
 
 	// ==========================
@@ -541,7 +553,7 @@ public class C206_CaseStudy {
 
 		if (currentMenu == 0) {
 			print("\nSorry but currently there are no menu to add items in\n");
-			return;
+			vendorMenu();
 		}
 
 		// Looping for input
@@ -560,22 +572,19 @@ public class C206_CaseStudy {
 			case 1:
 
 				String[] vendorInfo = CREDENTIAL.getVendorInfo();
-
+				int countItem = CREDENTIAL.getItemCount();
+				
 				if (vendorInfo.length != 8) {
 					print("[Add exisitng food to menu] Cant be choosen as currently there is no menu to your account");
-					continue;
+					addFoodItem();
 				}
-
+				else if (countItem == 0) {
+					print("There are currently no items in the DB");
+					addFoodItem();
+				}
 				String[][] table = CREDENTIAL.viewAllFood();
 
 				print(TableFormatter.tableFormatter(table));
-
-				int countItem = CREDENTIAL.getItemCount();
-
-				if (countItem == 0) {
-					print("There are currently no items in the DB");
-					continue;
-				}
 
 				ArrayList<String> item_idList = new ArrayList<String>();
 
@@ -587,26 +596,13 @@ public class C206_CaseStudy {
 
 				if (item_idList.contains(CHOICE_itemID) == false) {
 					print("\nWrong item ID entered - Returning back to [ADD FOOD TO MENU]\n");
-					continue;
+					addFoodItem();
 				}
 
 				CHOICE = item_idList.indexOf(CHOICE_itemID) + 1;
-
+				
 				String item_id = table[CHOICE][0];
-				String item_name = table[CHOICE][1];
-				String item_qty = table[CHOICE][2];
-				String item_description = table[CHOICE][3];
-				String item_dietary = table[CHOICE][4];
-				String item_ingredients = table[CHOICE][5];
-				String item_price = table[CHOICE][6];
-
-				String row = "" + "\n======= Food =======\n" + "Item ID: %s\n" + "Item name: %s\n"
-						+ "Item quantity: %s\n" + "Item description: %s\n" + "Item dietary: %s\n"
-						+ "Item ingredients: %s\n" + "Item price: %s\n";
-
-				row = String.format(row, item_id, item_name, item_qty, item_description, item_dietary, item_ingredients,
-						item_price);
-				print(row);
+				CREDENTIAL.getItemInfo(item_id);
 
 				//
 				// Check for vendor available menu
@@ -617,7 +613,7 @@ public class C206_CaseStudy {
 
 				if (YESNO != 'y') {
 					print("Returning back to [ADD FOOD TO MENU]");
-					continue;
+					addFoodItem();
 				}
 
 				print("Adding Item to Menu...");
@@ -630,7 +626,7 @@ public class C206_CaseStudy {
 				} else {
 					print("Item cant be added [Item already inside Menu]");
 				}
-				continue;
+				addFoodItem();
 
 			case 2:
 				// Create new food and add it to SQL
@@ -641,14 +637,20 @@ public class C206_CaseStudy {
 				String ingredients = readString("Enter Food Ingredients: ");
 				Double price = readDouble("Enter Food Price: $");
 				int qty = readInt("Enter Food Quantity: ");
-
+				
+				while (price >= 0 && qty >= 0) {
+					print("Price and Qunatity must be more then 0");
+					price = readDouble("Enter Food Price: $");
+					qty = readInt("Enter Food Quantity: ");
+				}
+				
 				menuChoice = getVendorMenu();
 
 				YESNO = readChar("Add item to menu? (Y/N) ");
 
 				if (YESNO != 'y') {
 					print("Returning back to [ADD FOOD TO MENU]");
-					continue;
+					addFoodItem();
 				}
 
 				print("Adding new Item to Menu...");
@@ -665,7 +667,7 @@ public class C206_CaseStudy {
 				}
 
 				print("Added new Item to Menu Successful");
-				continue;
+				addFoodItem();
 
 			case 9:
 				// Exit from Menu Option
