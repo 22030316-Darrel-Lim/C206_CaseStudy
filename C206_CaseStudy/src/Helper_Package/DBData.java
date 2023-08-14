@@ -495,29 +495,30 @@ public class DBData {
 	}
 
 	// (DONE need testing)
-	public Boolean addOrder(String order_status, String preference, String child_id, String school_has_vendor_id,String menu_item_id, String payment_id) {
+	public Boolean addOrder(String order_status, String preference, String child_id, String school_has_vendor_id,
+			String menu_item_id, String payment_id) {
 		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
-
+		Boolean isAllChecked = false;
 		if (user_access.equals("normal") == false) {
 			return null;
 		}
-
-		order_status = SQLInjection("order_status");
-		preference = SQLInjection("preference");
-		child_id = SQLInjection("child_id");
-		school_has_vendor_id = SQLInjection("school_has_vendor_id");
-		menu_item_id = SQLInjection("menu_item_id");
-		payment_id = SQLInjection("payment_id");
+		order_status = SQLInjection(order_status);
+		preference = SQLInjection(preference);
+		child_id = SQLInjection(child_id);
+		school_has_vendor_id = SQLInjection(school_has_vendor_id);
+		menu_item_id = SQLInjection(menu_item_id);
+		payment_id = SQLInjection(payment_id);
 
 		InsertSQL = "INSERT INTO `has_order` ( `order_status`, `preference`, `child_id`, `school_has_vendor_id`, `menu_item_id`, `payment_id`, `normal_id`) VALUES ('%s','%s','%s','%s','%s','%s','%s');";
-		InsertSQL = String.format(InsertSQL, order_status, preference, child_id, school_has_vendor_id, menu_item_id, payment_id);
-		
+		InsertSQL = String.format(InsertSQL, order_status, preference, child_id, school_has_vendor_id, menu_item_id,
+				payment_id, user_id);
 		count = DBUtil.execSQL(InsertSQL);
 
 		if (count == 1) {
+
 			isAllChecked = true;
 		}
-		
+
 		return isAllChecked;
 	}
 
