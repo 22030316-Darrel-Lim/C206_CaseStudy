@@ -8,6 +8,7 @@ import Helper.TableFormatterTest;
 import Helper_Package.DBDataTest;
 import Helper_Package.DBDataTest_Stage_1;
 import Helper_Package.DBDataTest_Stage_2;
+import Helper_Package.TempTest;
 
 public class RunAllTest {
 
@@ -57,6 +58,19 @@ public class RunAllTest {
 
 		if (isSuccessful == false) {
 			System.out.println("DBData Initialization failed - All");
+			return isAllTested;
+		}
+		
+		CountCompletedRun += result.getFailureCount();
+		CountTotalRun += result.getRunCount();
+		
+		// TempTest test
+		result = JUnitCore.runClasses(TempTest.class);
+
+		isSuccessful = result.wasSuccessful();
+
+		if (isSuccessful == false) {
+			System.out.println("TempTest failed - All");
 			return isAllTested;
 		}
 		
