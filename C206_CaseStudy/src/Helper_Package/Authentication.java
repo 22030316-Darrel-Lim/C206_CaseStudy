@@ -11,7 +11,7 @@ public class Authentication {
 		if (CREDENTIAL == null || CREDENTIAL_id == null || CREDENTIAL_access == null || CREDENTIAL_id.isEmpty() || CREDENTIAL_access.isEmpty()) {
 			CREDENTIAL = null;
 		}
-		
+
 		return CREDENTIAL;
 	}
 	
@@ -25,7 +25,7 @@ public class Authentication {
 
 	private static DBData RegisterAccount(String name, String email, String password, String access, String[] otherInfo) {
 		DBData CREDENTIAL = new DBData(name, email, password, access, otherInfo);
-
+		
 		CREDENTIAL = checkCREDENTIAL(CREDENTIAL);
 
 	    return CREDENTIAL;

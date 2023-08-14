@@ -19,6 +19,10 @@ public class DBData {
 	protected static String DeleteSQL;
 	protected static String UpdateSQL;
 	protected static String SelectSQL;
+	protected static Boolean isAllChecked;
+	protected static boolean isChecked;
+
+	protected static int count;
 
 	protected static ResultSet rs;
 
@@ -28,7 +32,8 @@ public class DBData {
 	// NOTE: IF any error were to occur, user_access, user_id is to return null
 	// Register Account (DONE - TESTED)
 	public DBData(String name, String email, String password, String access, String[] OtherInfo) {
-
+		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
+		System.out.println("36");
 		// Check all Inputs
 		if (name == null || email == null || password == null || access == null || OtherInfo == null) {
 			return;
@@ -42,8 +47,8 @@ public class DBData {
 		access = access.toLowerCase();
 
 		// Check if email is in DB
-		Boolean isEmailDB = CheckEmailDB(email);
-		if (isEmailDB == null || isEmailDB == true) {
+		isAllChecked = CheckEmailDB(email);
+		if (isAllChecked == null || isAllChecked == true) {
 			return;
 		}
 
@@ -55,8 +60,7 @@ public class DBData {
 		//
 		// Start of Account Creation
 		//
-		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
-		
+
 		// Create and format SQL insert Statement
 		InsertSQL = "INSERT INTO user (user_name, user_email, user_password, ACCESS_TYPE, LAST_LOGIN) VALUES ('%s' , '%s', SHA1('%s'), '%s', NOW());";
 		InsertSQL = String.format(InsertSQL, name, email, password, access);
@@ -74,7 +78,7 @@ public class DBData {
 			DBUtil.close();
 			return;
 		}
-		
+
 		int RowAffectByAccess;
 		String phoneNo;
 		String address;
@@ -88,7 +92,7 @@ public class DBData {
 				DELETE_USER();
 				break;
 			}
-			
+
 			// Validate inside info
 			for (int i = 0; i < OtherInfo.length; i++) {
 				if (OtherInfo[i] == null) {
@@ -99,7 +103,7 @@ public class DBData {
 					}
 				}
 			}
-			
+
 			phoneNo = OtherInfo[0];
 			allegies = OtherInfo[1];
 			address = OtherInfo[2];
@@ -187,77 +191,112 @@ public class DBData {
 
 	// Login to account (DONE - TESTED)
 	public DBData(String email, String password) {
-		if (LOGIN(email, password) == false) {
-			user_access = null;
-			user_id = null;
-		}
-	}
-
-	// Delete user - Error in creating will delete user (DONE - TESTED)
-	protected boolean DELETE_USER() {
-		boolean isDeleted = false;
-
 		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
-
-		DeleteSQL = "DELETE FROM user WHERE user_id = '%s';";
-		DeleteSQL = String.format(DeleteSQL, user_id);
-
-		int rowsAffected = DBUtil.execSQL(DeleteSQL);
-
-		DBUtil.close();
-
-		if (rowsAffected == 1) {
-			isDeleted = true;
-		}
-
-		user_access = null;
-		user_id = null;
-
-		return isDeleted;
-	}
-
-	// Delete user - Error in creating will delete user (DONE - TESTED)
-	public boolean DELETE_USER(String user_id) {
-		boolean isDeleted = false;
-
-		if (user_access.equals("admin") == false) {
-			return isDeleted;
-		}
-
-		user_id = SQLInjection(user_id);
-
-		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
-
-		DeleteSQL = "DELETE FROM user WHERE user_id = '%s';";
-		DeleteSQL = String.format(DeleteSQL, user_id);
-
-		int rowsAffected = DBUtil.execSQL(DeleteSQL);
-
-		DBUtil.close();
-
-		if (rowsAffected == 1) {
-			isDeleted = true;
-		}
-
-		user_access = null;
-		user_id = null;
-
-		return isDeleted;
-	}
-
-	// Login (DONE - TESTED)
-	protected static boolean LOGIN(String email, String password) {
-		boolean isLogged = false;
+		
+		isChecked = false;
 
 		// Check all Inputs
 		if (email == null || password == null) {
-			return isLogged;
+			return;
 		}
 
 		email = SQLInjection(email);
 		password = SQLInjection(password);
 
+		SelectSQL = "SELECT ACCESS_TYPE, user_id FROM user WHERE user_email = '%s' AND user_password = SHA1('%s');";
+
+		SelectSQL = String.format(SelectSQL, email, password);
+
+		try {
+
+			rs = DBUtil.getTable(SelectSQL);
+			if (rs.next()) {
+				
+				user_access = rs.getString("ACCESS_TYPE");
+				user_id = String.valueOf(rs.getInt("user_id"));
+			}
+
+			// Update Last Login
+			if (LAST_LOGIN() == true) {
+				isChecked = true;
+			}
+
+		} catch (SQLException e) {
+			System.out.println("SQL Error (LOGIN): " + e.getMessage());
+		}
+		
+		if (isChecked != true) {
+			user_access = null;
+			user_id = null;
+		}
+		
+		DBUtil.close();
+	}
+
+	// Delete user - Error in creating will delete user (DONE - TESTED)
+	protected boolean DELETE_USER() {
 		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
+
+		isChecked = false;
+
+		DeleteSQL = "DELETE FROM user WHERE user_id = '%s';";
+		DeleteSQL = String.format(DeleteSQL, user_id);
+
+		int rowsAffected = DBUtil.execSQL(DeleteSQL);
+
+		if (rowsAffected == 1) {
+			isChecked = true;
+		}
+
+		user_access = null;
+		user_id = null;
+
+		DBUtil.close();
+		return isChecked;
+	}
+
+	// Delete user - Error in creating will delete user (DONE - TESTED)
+	public boolean DELETE_USER(String user_id) {
+		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
+
+		isChecked = false;
+
+		if (user_access.equals("admin") == false) {
+			return isChecked;
+		}
+
+		user_id = SQLInjection(user_id);
+
+		DeleteSQL = "DELETE FROM user WHERE user_id = '%s';";
+		DeleteSQL = String.format(DeleteSQL, user_id);
+
+		int rowsAffected = DBUtil.execSQL(DeleteSQL);
+
+		if (rowsAffected == 1) {
+			isChecked = true;
+		}
+
+		user_access = null;
+		user_id = null;
+
+		DBUtil.close();
+		return isChecked;
+	}
+
+	// Login (DONE - TESTED)
+	protected static boolean LOGIN(String email, String password) {
+
+		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
+
+		isChecked = false;
+
+		// Check all Inputs
+		if (email == null || password == null) {
+			return isChecked;
+		}
+
+		email = SQLInjection(email);
+		password = SQLInjection(password);
 
 		SelectSQL = "SELECT ACCESS_TYPE, user_id FROM user WHERE user_email = '%s' AND user_password = SHA1('%s');";
 
@@ -273,20 +312,22 @@ public class DBData {
 
 			// Update Last Login
 			if (LAST_LOGIN() == true) {
-				isLogged = true;
+				isChecked = true;
 			}
 
 		} catch (SQLException e) {
-			System.out.println("SQL Error: " + e.getMessage());
+			System.out.println("SQL Error (LOGIN): " + e.getMessage());
 		}
 
 		DBUtil.close();
-		return isLogged;
+		return isChecked;
 	}
 
 	// Check email in DB (DONE - TESTED)
 	public static Boolean CheckEmailDB(String email) {
-		Boolean check = false;
+		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
+
+		isAllChecked = false;
 
 		email = SQLInjection(email);
 
@@ -296,7 +337,6 @@ public class DBData {
 		}
 
 		try {
-			DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
 
 			SelectSQL = "SELECT user_email FROM user WHERE user_email = '%s';";
 			SelectSQL = String.format(SelectSQL, email);
@@ -306,22 +346,21 @@ public class DBData {
 			// Getting all the email from the SQL database and comparing it to the input
 			// if rs = null - no result
 			while (rs.next()) {
-				check = true;
+				isAllChecked = true;
 			}
-
-			DBUtil.close();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			System.out.println("SQL Error (CheckEmailDB): " + e.getMessage());
 		}
 
-		return check;
+		DBUtil.close();
+		return isAllChecked;
 	} // End of CheckEmailDB
 
 	// Updated last login (DONE - TESTED)
 	protected static boolean LAST_LOGIN() {
-		boolean isUpdated = false;
-
 		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
+
+		isChecked = false;
 
 		UpdateSQL = "UPDATE user SET LAST_LOGIN = NOW() WHERE user_id = '%s';";
 
@@ -332,12 +371,11 @@ public class DBData {
 		int rowsAffected = DBUtil.execSQL(UpdateSQL);
 
 		if (rowsAffected == 1) {
-			isUpdated = true;
+			isChecked = true;
 		}
 
 		DBUtil.close();
-
-		return isUpdated;
+		return isChecked;
 	}
 
 	// ======================================
@@ -354,6 +392,8 @@ public class DBData {
 
 	// (Done need tesing)
 	public String getUser_id(String email) {
+		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);System.out.println("\n\n\n\n\n\n\n\n");
+
 		String user_id = null;
 
 		if (user_access.equals("admin") == false) {
@@ -364,43 +404,43 @@ public class DBData {
 			return user_id;
 		}
 
+		SelectSQL = "SELECT user_id FROM user WHERE user_email = '%s';";
+		SelectSQL = String.format(SelectSQL, email);
+
 		try {
-			DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
-
-			SelectSQL = "SELECT user_id FROM user WHERE user_email = '%s';";
-			SelectSQL = String.format(SelectSQL, email);
-
 			rs = DBUtil.getTable(SelectSQL);
 
 			while (rs.next()) {
 				user_id = rs.getString("user_id");
 			}
 
-			DBUtil.close();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			System.out.println("SQL Error (getUser_id): " + e.getMessage());
 		}
 
+		DBUtil.close();
 		return user_id;
 	}
 
 	// (DONE - Tested)
 	public String getUser_name() {
-		String name = "";
+		String name = "";System.out.println("GETTING NAME");
 
 		name = getUserInfo()[0];
-
+		for (String x : getUserInfo()) {
+			System.out.println(x);
+		}
 		return name;
 	}
 
 	// (DONE - Tested)
 	protected String[] getUserInfo() {
+		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);System.out.println("\nUser Info: "+getUser_access());
+
 		String[] userInfo = new String[3];
 
 		SelectSQL = "SELECT `user_name`, `user_email`, `LAST_LOGIN` FROM `user` WHERE user_id = '%s';";
 		SelectSQL = String.format(SelectSQL, user_id);
-
-		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
 
 		rs = DBUtil.getTable(SelectSQL);
 
@@ -416,36 +456,35 @@ public class DBData {
 				userInfo[2] = last_login;
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			System.out.println("SQL Error (getUserInfo): " + e.getMessage());
 		}
 
 		DBUtil.close();
 		return userInfo;
 	}
-	
+
 	public String[][] viewAllOrder() {
+		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
 
 		if (user_access.equals("admin") == false) {
 			return null;
 		}
 
 		int column = getOrderCount() + 1;
-		String[] header = { "Order ID", "order Status", "Child ID", "School Has Vendor ID", "Payment Type", "Normal ID" };
+		String[] header = { "Order ID", "order Status", "Child ID", "School Has Vendor ID", "Payment Type",
+				"Normal ID" };
 		int row = header.length;
 
 		String table[][] = new String[column][row];
 
 		SelectSQL = "Select order_id,order_status,child_id,school_has_vendor_id,payment_name,normal_id FROM has_order INNER JOIN payment ON payment.payment_id = has_order.payment_id;";
-		//SelectSQL = String.format(SelectSQL, String.join(", ", header));
-
-		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
 
 		// Set first index of data to header
 		table[0] = header;
 
 		// Assigning values into data
 		rs = DBUtil.getTable(SelectSQL);
-		int count = 0;
+		count = 0;
 		try {
 			while (rs.next()) {
 				// Assign values based on header info
@@ -465,17 +504,18 @@ public class DBData {
 				count++;
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			System.out.println("SQL Error (viewAllOrder): " + e.getMessage());
 		}
-		DBUtil.close();
 
+		DBUtil.close();
 		return table;
 	}
-	
+
 	// (DOne need testing)
 	public Boolean deleteOrder(String order_id) {
-		
-		Boolean isDeleted = false;
+		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
+
+		isAllChecked = false;
 
 		order_id = SQLInjection(order_id);
 
@@ -485,14 +525,52 @@ public class DBData {
 		int rowsDeleted = DBUtil.execSQL(DeleteSQL);
 
 		if (rowsDeleted == 1) {
-			isDeleted = true;
+			isAllChecked = true;
 		}
 
-		return isDeleted;
+		DBUtil.close();
+		return isAllChecked;
 	}
-	
+
+	// (Done need testing)
+	public String getItemInfo(String item_id) {
+		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
+
+		String itemInfo = "" + "\n======= Food =======\n" + "Item ID: %s\n" + "Item name: %s\n" + "Item quantity: %s\n"
+				+ "Item description: %s\n" + "Item dietary: %s\n" + "Item ingredients: %s\n" + "Item price: $%.2f\n";
+
+		item_id = SQLInjection(item_id);
+
+		SelectSQL = "SELECT item_name, item_qty, item_description, item_dietary, item_ingredients, item_price FROM item WHERE item_id = '%s';";
+		SelectSQL = String.format(SelectSQL, item_id);
+
+		try {
+			rs = DBUtil.getTable(SelectSQL);
+
+			while (rs.next()) {
+
+				String item_name = rs.getString("item_name");
+				String item_qty = rs.getString("item_qty");
+				String item_description = rs.getString("item_description");
+				String item_dietary = rs.getString("item_dietary");
+				String item_ingredients = rs.getString("item_ingredients");
+				double item_price = rs.getDouble("item_price");
+
+				itemInfo = String.format(itemInfo, item_id, item_name, item_qty, item_description, item_dietary,
+						item_ingredients, item_price);
+			}
+
+		} catch (SQLException e) {
+			System.out.println("SQL Error (getUser_id): " + e.getMessage());
+		}
+
+		DBUtil.close();
+		return itemInfo;
+	}
+
 	// ------------ Admin ONLY
 	public String[][] viewAllUser() {
+		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
 
 		if (user_access.equals("admin") == false) {
 			return null;
@@ -505,16 +583,13 @@ public class DBData {
 		String table[][] = new String[column][row];
 
 		SelectSQL = "Select user_id,user_name,user_email,ACCESS_TYPE,LAST_LOGIN FROM user;";
-		//SelectSQL = String.format(SelectSQL, String.join(", ", header));
-
-		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
 
 		// Set first index of data to header
 		table[0] = header;
 
 		// Assigning values into data
 		rs = DBUtil.getTable(SelectSQL);
-		int count = 0;
+		count = 0;
 		try {
 			while (rs.next()) {
 				// Assign values based on header info
@@ -536,14 +611,15 @@ public class DBData {
 				count++;
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			System.out.println("SQL Error (viewAllUser): " + e.getMessage());
 		}
-		DBUtil.close();
 
+		DBUtil.close();
 		return table;
 	}
 
 	public String[][] viewAllSchool() {
+		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
 
 		if ((user_access.equals("admin") || user_access.equals("vendor")) == false) {
 			return null;
@@ -556,16 +632,13 @@ public class DBData {
 		String table[][] = new String[column][row];
 
 		SelectSQL = "Select school_id,school_name,school_address FROM school;";
-		//SelectSQL = String.format(SelectSQL, String.join(", ", header));
-
-		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
 
 		// Set first index of data to header
 		table[0] = header;
 
 		// Assigning values into data
 		rs = DBUtil.getTable(SelectSQL);
-		int count = 0;
+		count = 0;
 		try {
 			while (rs.next()) {
 				// Assign values based on header info
@@ -579,32 +652,30 @@ public class DBData {
 				count++;
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			System.out.println("SQL Error (viewAllSchool): " + e.getMessage());
 		}
-		DBUtil.close();
 
+		DBUtil.close();
 		return table;
 	}
 
 	public String[][] viewAllPayment() {
+		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
 
 		int column = getPaymentCount() + 1;
-		String[] header = { "Payment ID", "Payment Name"};
+		String[] header = { "Payment ID", "Payment Name" };
 		int row = header.length;
 
 		String table[][] = new String[column][row];
 
 		SelectSQL = "Select payment_id,payment_name FROM payment;";
-		//SelectSQL = String.format(SelectSQL, String.join(", ", header));
-
-		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
 
 		// Set first index of data to header
 		table[0] = header;
 
 		// Assigning values into data
 		rs = DBUtil.getTable(SelectSQL);
-		int count = 0;
+		count = 0;
 		try {
 			while (rs.next()) {
 				// Assign values based on header info
@@ -616,36 +687,35 @@ public class DBData {
 				count++;
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			System.out.println("SQL Error (viewAllPayment): " + e.getMessage());
 		}
-		DBUtil.close();
 
+		DBUtil.close();
 		return table;
 	}
-	
+
 	public String[][] viewUserOrder() {
+		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
 
 		if (user_access.equals("normal") == false) {
 			return null;
 		}
 
 		int column = getOrderCount() + 1;
-		String[] header = { "Order ID", "order Status", "Child ID", "School Has Vendor ID", "Payment Type", "Normal ID" };
+		String[] header = { "Order ID", "order Status", "Child ID", "School Has Vendor ID", "Payment Type",
+				"Normal ID" };
 		int row = header.length;
 
 		String table[][] = new String[column][row];
 
-		SelectSQL = "Select order_id,order_status,child_id,school_has_vendor_id,payment_name,normal_id FROM has_order INNER JOIN payment ON payment.payment_id = has_order.payment_id WHERE normal_id = '%s';";
-		//SelectSQL = String.format(SelectSQL, String.join(", ", header));
-
-		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
+		SelectSQL = "Select order_id, order_status, child_id, school_has_vendor_id, payment_name, normal_id FROM has_order INNER JOIN payment ON payment.payment_id = has_order.payment_id WHERE normal_id = '%s';";
 
 		// Set first index of data to header
 		table[0] = header;
 
 		// Assigning values into data
 		rs = DBUtil.getTable(SelectSQL);
-		int count = 0;
+		count = 0;
 		try {
 			while (rs.next()) {
 				// Assign values based on header info
@@ -665,14 +735,15 @@ public class DBData {
 				count++;
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			System.out.println("SQL Error (viewUserOrder): " + e.getMessage());
 		}
-		DBUtil.close();
 
+		DBUtil.close();
 		return table;
 	}
 
 	public String[][] viewAllMenu() {
+		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
 
 		int column = getMenuCount() + 1;
 		String[] header = { "Menu ID", "Item ID", "Item Name", "Quantity", "Description", "Price" };
@@ -681,16 +752,13 @@ public class DBData {
 		String table[][] = new String[column][row];
 
 		SelectSQL = "Select menu_id,menu_item.item_id,item_name,item_qty,item_description,item_price FROM menu_item INNER JOIN item ON item.item_id = menu_item.item_id;";
-		//SelectSQL = String.format(SelectSQL);
-
-		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
 
 		// Set first index of data to header
 		table[0] = header;
 
 		// Assigning values into data
 		rs = DBUtil.getTable(SelectSQL);
-		int count = 0;
+		count = 0;
 		try {
 			while (rs.next()) {
 				// Assign values based on header info
@@ -712,45 +780,45 @@ public class DBData {
 				count++;
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			System.out.println("SQL Error (viewAllMenu): " + e.getMessage());
 		}
-		DBUtil.close();
 
+		DBUtil.close();
 		return table;
 	}
 
 	// (DONE need testing)
 	public Boolean addSchool(String school_name, String school_id) {
+		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
 
 		if (user_access.equals("admin") == false) {
 			return null;
 		}
 
-		Boolean isAdded = false;
+		isAllChecked = false;
 
 		InsertSQL = "INSERT INTO `school` (`school_name`, `school_address`) VALUES ('%s','%s');";
 		InsertSQL = String.format(InsertSQL, school_name, school_id);
 
-		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
+		count = DBUtil.execSQL(InsertSQL);
 
-		int rowsAdded = DBUtil.execSQL(InsertSQL);
-
-		if (rowsAdded == 1) {
-			isAdded = true;
+		if (count == 1) {
+			isAllChecked = true;
 		}
 
 		DBUtil.close();
-		return isAdded;
+		return isAllChecked;
 	}
 
 	// (DOne need testing)
 	public Boolean deleteSchool(String school_id) {
+		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
 
 		if (user_access.equals("admin") == false) {
 			return null;
 		}
 
-		Boolean isDeleted = false;
+		isAllChecked = false;
 
 		school_id = SQLInjection(school_id);
 
@@ -760,46 +828,47 @@ public class DBData {
 		int rowsDeleted = DBUtil.execSQL(DeleteSQL);
 
 		if (rowsDeleted == 1) {
-			isDeleted = true;
+			isAllChecked = true;
 		}
 
-		return isDeleted;
+		DBUtil.close();
+		return isAllChecked;
 	}
-	
+
 	// (DOne need testing)
 	public Boolean addPayment(String payment_name) {
-		
+		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
+
+		isAllChecked = false;
+
 		if (user_access.equals("admin") == false) {
 			return null;
 		}
-		
+
 		payment_name = SQLInjection(payment_name);
-		
-		Boolean isAdded = false;
 
 		InsertSQL = "INSERT INTO `payment`( `payment_name`) VALUES ('%s');";
 		InsertSQL = String.format(InsertSQL, payment_name);
 
-		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
+		count = DBUtil.execSQL(InsertSQL);
 
-		int rowsAdded = DBUtil.execSQL(InsertSQL);
-
-		if (rowsAdded == 1) {
-			isAdded = true;
+		if (count == 1) {
+			isAllChecked = true;
 		}
 
 		DBUtil.close();
-		return isAdded;
+		return isAllChecked;
 	}
-	
+
 	// (DOne need testing)
 	public Boolean deletePayment(String payment_name) {
+		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
+
+		isAllChecked = false;
 
 		if (user_access.equals("admin") == false) {
 			return null;
 		}
-
-		Boolean isDeleted = false;
 
 		payment_name = SQLInjection(payment_name);
 
@@ -809,15 +878,18 @@ public class DBData {
 		int rowsDeleted = DBUtil.execSQL(DeleteSQL);
 
 		if (rowsDeleted == 1) {
-			isDeleted = true;
+			isAllChecked = true;
 		}
 
-		return isDeleted;
+		DBUtil.close();
+		return isAllChecked;
 	}
-	
+
 	// ---------- Vendor ONLY
 	// (DONE - Tested)
 	public String[] getVendorInfo() {
+		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
+
 		String[] vendorInfo = new String[5];
 
 		String[] userInfo = getUserInfo();
@@ -830,27 +902,23 @@ public class DBData {
 		SelectSQL = "SELECT `menu_id` FROM `menu` INNER JOIN vendor ON vendor.vendor_id = menu.vendor_id WHERE vendor.vendor_id = '%s';";
 		SelectSQL = String.format(SelectSQL, user_id);
 
-		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
-
 		rs = DBUtil.getTable(SelectSQL);
 
 		try {
 			while (rs.next()) {
 
 				String menu_id = rs.getString("menu_id");
-
 				menufoundList.add(menu_id);
 			}
 
 			// Convert ArrayList to Array
-
 			String menufound = String.join(",", menufoundList);
 
 			vendorInfo[4] = menufound;
 
 		} catch (SQLException e) {
 			vendorInfo = null;
-			e.printStackTrace();
+			System.out.println("SQL Error (getVendorInfo) Get Vendor Menu Info Failed: " + e.getMessage());
 		}
 
 		// Set menu to blank
@@ -863,8 +931,6 @@ public class DBData {
 		//
 		SelectSQL = "SELECT `vendor_phoneNumber`, `vendor_companyName`, `vendor_profile`, `vendor_address` FROM `vendor` WHERE vendor_id = '%s';";
 		SelectSQL = String.format(SelectSQL, user_id);
-
-		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
 
 		rs = DBUtil.getTable(SelectSQL);
 
@@ -887,7 +953,7 @@ public class DBData {
 
 		} catch (SQLException e) {
 			vendorInfo = null;
-			e.printStackTrace();
+			System.out.println("SQL Error (getVendorInfo) Get Vender Table info Failed: " + e.getMessage());
 		}
 
 		DBUtil.close();
@@ -895,6 +961,7 @@ public class DBData {
 	}
 
 	public String[][] viewAllFood() {
+		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
 
 		if (user_access.equals("vendor") == false) {
 			return null;
@@ -910,14 +977,12 @@ public class DBData {
 		SelectSQL = "Select item_id,item_name,item_qty,item_description,item_dietary,item_ingredients,item_price FROM item WHERE vendor_id = '%s';";
 		SelectSQL = String.format(SelectSQL, user_id);
 
-		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
-
 		// Set first index of data to header
 		table[0] = header;
 
 		// Assigning values into data
 		rs = DBUtil.getTable(SelectSQL);
-		int count = 0;
+		count = 0;
 		try {
 			while (rs.next()) {
 				// Assign values based on header info
@@ -941,31 +1006,30 @@ public class DBData {
 				count++;
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			System.out.println("SQL Error (viewAllFood): " + e.getMessage());
 		}
-		DBUtil.close();
 
+		DBUtil.close();
 		return table;
 	}
 
 	// (DONE - testing)
 	public Boolean addItemToMenu(int item_id, String menu_id) {
+		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
+
+		isAllChecked = false;
 
 		if (user_access.equals("vendor") == false) {
 			return null;
 		}
 		menu_id = SQLInjection(menu_id);
 
-		Boolean isAdded = false;
-
 		// Check if item_id inside menu_item
 		SelectSQL = "SELECT item_id FROM menu_item WHERE item_id = '%s'";
 		SelectSQL = String.format(SelectSQL, item_id);
 
-		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
-
 		rs = DBUtil.getTable(SelectSQL);
-		int count = 0;
+		count = 0;
 		try {
 			while (rs.next()) {
 				count++;
@@ -975,34 +1039,35 @@ public class DBData {
 		}
 
 		if (count != 0) {
-			return isAdded;
+			return isAllChecked;
 		}
 
 		InsertSQL = "INSERT INTO `menu_item` (`item_id`, `menu_id`) VALUES ('%d', '%s');";
 		InsertSQL = String.format(InsertSQL, item_id, menu_id);
 
-		int rowsAdded = DBUtil.execSQL(InsertSQL);
+		count = DBUtil.execSQL(InsertSQL);
 
-		if (rowsAdded == 1) {
-			isAdded = true;
+		if (count == 1) {
+			isAllChecked = true;
 		} else {
-			isAdded = null;
+			isAllChecked = null;
 		}
 
 		DBUtil.close();
-		return isAdded;
+		return isAllChecked;
 	}
 
 	// (DONE - testing)
 	public Boolean addItemToMenu(String[] item, String menu_id) {
+		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
+
+		isAllChecked = null;
 
 		if (user_access.equals("vendor") == false || item.length != 6) {
 			return null;
 		}
 		menu_id = SQLInjection(menu_id);
 		item = SQLInjection(item);
-
-		Boolean isAdded = null;
 
 		String item_name = item[0];
 		String item_qty = item[1];
@@ -1016,14 +1081,12 @@ public class DBData {
 		InsertSQL = String.format(InsertSQL, user_id, item_name, item_qty, item_description, item_dietary,
 				item_ingredients, item_price);
 
-		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
+		count = DBUtil.execSQL(InsertSQL);
 
-		int rowsAdded = DBUtil.execSQL(InsertSQL);
-
-		if (rowsAdded == 1) {
-			isAdded = true;
+		if (count == 1) {
+			isAllChecked = true;
 		} else {
-			return isAdded;
+			return isAllChecked;
 		}
 
 		//
@@ -1042,24 +1105,25 @@ public class DBData {
 				item_id = rs.getInt("item_id");
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
-			return isAdded;
+			System.out.println("SQL Error (addItemToMenu): " + e.getMessage());
+			return isAllChecked;
 		}
 
-		DBUtil.close();
+		isAllChecked = addItemToMenu(item_id, menu_id);
 
-		isAdded = addItemToMenu(item_id, menu_id);
-		return isAdded;
+		DBUtil.close();
+		return isAllChecked;
 	}
 
 	// (DONE - testing)
 	public Boolean deleteMenu(String menu_id) {
+		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
+
+		isAllChecked = false;
 
 		if (user_access.equals("vendor") == false) {
 			return null;
 		}
-
-		Boolean isDeleted = false;
 
 		menu_id = SQLInjection(menu_id);
 
@@ -1069,45 +1133,47 @@ public class DBData {
 		int rowsDeleted = DBUtil.execSQL(DeleteSQL);
 
 		if (rowsDeleted == 1) {
-			isDeleted = true;
+			isAllChecked = true;
 		}
 
-		return isDeleted;
+		DBUtil.close();
+		return isAllChecked;
 	}
 
 	// (DONE need testing)
 	public Boolean addNewMenu() {
+		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
+
+		isAllChecked = false;
 
 		if (user_access.equals("vendor") == false) {
 			return null;
 		}
 
-		Boolean isAdded = false;
-
-		InsertSQL = "INSERT INTO `menu` (`vendor_id`) VALUES ('%s')";
+		InsertSQL = "INSERT INTO `menu` (`vendor_id`) VALUES ('%s');";
 		InsertSQL = String.format(InsertSQL, user_id);
 
-		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
+		count = DBUtil.execSQL(InsertSQL);
 
-		int rowsAdded = DBUtil.execSQL(InsertSQL);
-
-		if (rowsAdded == 1) {
-			isAdded = true;
+		if (count == 1) {
+			isAllChecked = true;
 		}
 
 		DBUtil.close();
-		return isAdded;
+		return isAllChecked;
 	}
 
 	// (Done need testing)
 	public Boolean deleteItem(String item_id) {
+		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
+
+		isAllChecked = false;
 
 		if (user_access.equals("vendor") == false) {
 			return null;
 		}
 
 		item_id = SQLInjection(item_id);
-		Boolean isDeleted = false;
 
 		DeleteSQL = "DELETE FROM item WHERE `item`.`item_id` = '%s';";
 		DeleteSQL = String.format(DeleteSQL, item_id);
@@ -1115,14 +1181,16 @@ public class DBData {
 		int rowsDeleted = DBUtil.execSQL(DeleteSQL);
 
 		if (rowsDeleted == 1) {
-			isDeleted = true;
+			isAllChecked = true;
 		}
 
-		return isDeleted;
+		DBUtil.close();
+		return isAllChecked;
 	}
 
 	// (Done need tesing)
 	public String[][] viewSchoolHasVendor() {
+		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
 
 		if (user_access.equals("vendor") == false) {
 			return null;
@@ -1138,14 +1206,12 @@ public class DBData {
 		SelectSQL = "SELECT school.school_id,school_name,school_address FROM `school` INNER JOIN school_has_vendor ON school.school_id = school_has_vendor.school_id WHERE school_has_vendor.vendor_id = '%s';";
 		SelectSQL = String.format(SelectSQL, user_id);
 
-		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
-
 		// Set first index of data to header
 		table[0] = header;
 
 		// Assigning values into data
 		rs = DBUtil.getTable(SelectSQL);
-		int count = 0;
+		count = 0;
 		try {
 			while (rs.next()) {
 				// Assign values based on header info
@@ -1159,45 +1225,46 @@ public class DBData {
 				count++;
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			System.out.println("SQL Error (viewSchoolHasVendor): " + e.getMessage());
 		}
-		DBUtil.close();
 
+		DBUtil.close();
 		return table;
 	}
 
 	// (Done need tesing)
 	public Boolean addSchoolHasVendor(String school_id) {
-		
+		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
+
+		isAllChecked = false;
+
 		if (user_access.equals("vendor") == false) {
 			return null;
 		}
-		
+
 		school_id = SQLInjection(school_id);
-		Boolean isAdded = false;
 
 		InsertSQL = "INSERT INTO `school_has_vendor` (`vendor_id`, `school_id`) VALUES ('%s', '%s')";
 		InsertSQL = String.format(InsertSQL, user_id, school_id);
 
-		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
+		count = DBUtil.execSQL(InsertSQL);
 
-		int rowsAdded = DBUtil.execSQL(InsertSQL);
-
-		if (rowsAdded == 1) {
-			isAdded = true;
+		if (count == 1) {
+			isAllChecked = true;
 		}
 
 		DBUtil.close();
-		return isAdded;
+		return isAllChecked;
 	}
-	
+
 	// ======================================
 	// Extra methods
 	// ======================================
 
 	public int getMenuCount() {
-		int count = 0;
 		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
+
+		count = 0;
 		SelectSQL = "SELECT menu_id FROM menu_item;";
 
 		rs = DBUtil.getTable(SelectSQL);
@@ -1206,32 +1273,36 @@ public class DBData {
 				count++;
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			System.out.println("SQL Error (getMenuCount): " + e.getMessage());
 		}
+
 		DBUtil.close();
 		return count;
 	}
-	
+
 	public int getPaymentCount() {
-		int count = 0;
 		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
+
+		count = 0;
 		SelectSQL = "SELECT payment_id FROM payment;";
-		
+
 		rs = DBUtil.getTable(SelectSQL);
 		try {
 			while (rs.next()) {
 				count++;
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			System.out.println("SQL Error (getPaymentCount): " + e.getMessage());
 		}
+
 		DBUtil.close();
 		return count;
 	}
 
 	public int getSchoolCount() {
-		int count = 0;
 		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
+
+		count = 0;
 		SelectSQL = "SELECT school_id FROM school;";
 
 		rs = DBUtil.getTable(SelectSQL);
@@ -1240,20 +1311,22 @@ public class DBData {
 				count++;
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			System.out.println("SQL Error (getSchoolCount): " + e.getMessage());
 		}
+
 		DBUtil.close();
 		return count;
 	}
 
 	public int getVenderHasSchoolCount() {
-		int count = 0;
+		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
+
+		count = 0;
 
 		if (user_access.equals("vendor") == false) {
 			return count;
 		}
 
-		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
 		SelectSQL = "SELECT school_id FROM school_has_vendor WHERE vendor_id = '%s';";
 		SelectSQL = String.format(SelectSQL, user_id);
 
@@ -1263,15 +1336,17 @@ public class DBData {
 				count++;
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			System.out.println("SQL Error (getVenderHasSchoolCount): " + e.getMessage());
 		}
+
 		DBUtil.close();
 		return count;
 	}
 
 	public int getNormalCount() {
-		int count = 0;
 		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
+
+		count = 0;
 		SelectSQL = "SELECT normal_id FROM normal;";
 
 		rs = DBUtil.getTable(SelectSQL);
@@ -1280,15 +1355,18 @@ public class DBData {
 				count++;
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			System.out.println("SQL Error (getNormalCount): " + e.getMessage());
 		}
+
 		DBUtil.close();
 		return count;
 	}
 
 	public int getUserCount() {
-		int count = 0;
 		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
+
+		count = 0;
+
 		SelectSQL = "SELECT user_id FROM user;";
 
 		rs = DBUtil.getTable(SelectSQL);
@@ -1297,16 +1375,17 @@ public class DBData {
 				count++;
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			System.out.println("SQL Error (getUserCount): " + e.getMessage());
 		}
-		DBUtil.close();
 
+		DBUtil.close();
 		return count;
 	}
 
 	public int getVendorCount() {
-		int count = 0;
 		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
+
+		count = 0;
 		SelectSQL = "SELECT vendor_id FROM vendor;";
 
 		rs = DBUtil.getTable(SelectSQL);
@@ -1315,20 +1394,21 @@ public class DBData {
 				count++;
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			System.out.println("SQL Error (getVendorCount): " + e.getMessage());
 		}
+
 		DBUtil.close();
 		return count;
 	}
 
 	public int getItemCount() {
-		int count = 0;
+		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
 
+		count = 0;
 		if (user_access.equals("vendor") == false) {
 			return count;
 		}
 
-		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
 		SelectSQL = "SELECT item_id FROM item WHERE vendor_id = '%s';";
 		SelectSQL = String.format(SelectSQL, user_id);
 
@@ -1338,16 +1418,22 @@ public class DBData {
 				count++;
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			System.out.println("SQL Error (getItemCount): " + e.getMessage());
 		}
+
 		DBUtil.close();
 		return count;
 	}
 
 	public int getOrderCount() {
-		int count = 0;
 		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
-		SelectSQL = "SELECT order_id FROM has_order;";
+
+		count = 0;
+		if (user_access.equals("normal") == false) {
+			return count;
+		}
+		SelectSQL = "SELECT order_id FROM has_order WHERE normal_id = '%s';";
+		SelectSQL = String.format(SelectSQL, user_id);
 
 		rs = DBUtil.getTable(SelectSQL);
 		try {
@@ -1355,8 +1441,9 @@ public class DBData {
 				count++;
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			System.out.println("SQL Error (getOrderCount): " + e.getMessage());
 		}
+
 		DBUtil.close();
 		return count;
 	}
