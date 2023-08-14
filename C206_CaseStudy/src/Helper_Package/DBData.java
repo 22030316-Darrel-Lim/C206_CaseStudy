@@ -41,6 +41,7 @@ public class DBData {
 
 		name = SQLInjection(name);
 		email = SQLInjection(email);
+		access = SQLInjection(access);
 		password = SQLInjection(password);
 		OtherInfo = SQLInjection(OtherInfo);
 
@@ -249,7 +250,6 @@ public class DBData {
 
 	// Login (DONE - TESTED)
 	protected boolean LOGIN(String email, String password) {
-
 		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
 
 		isChecked = false;
@@ -270,8 +270,7 @@ public class DBData {
 
 			rs = DBUtil.getTable(SelectSQL);
 			if (rs.next()) {
-				setUser_access(rs.getString("ACCESS_TYPE"));
-				// user_access = rs.getString("ACCESS_TYPE");
+				user_access = rs.getString("ACCESS_TYPE");
 				user_id = String.valueOf(rs.getInt("user_id"));
 			}
 
@@ -353,14 +352,6 @@ public class DBData {
 
 	public String getUser_id() {
 		return user_id;
-	}
-
-	public void setUser_access(String user_access) {
-		this.user_access = user_access;
-	}
-
-	public void setUser_id(String user_id) {
-		this.user_id = user_id;
 	}
 
 	// (Done need tesing)
@@ -503,14 +494,41 @@ public class DBData {
 		return isAllChecked;
 	}
 
+	// (DONE need testing)
+	public Boolean addOrder(String order_status, String preference, String child_id, String school_has_vendor_id,String menu_item_id, String payment_id) {
+		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
+
+		if (user_access.equals("normal") == false) {
+			return null;
+		}
+
+		order_status = SQLInjection("order_status");
+		preference = SQLInjection("preference");
+		child_id = SQLInjection("child_id");
+		school_has_vendor_id = SQLInjection("school_has_vendor_id");
+		menu_item_id = SQLInjection("menu_item_id");
+		payment_id = SQLInjection("payment_id");
+
+		InsertSQL = "INSERT INTO `has_order` ( `order_status`, `preference`, `child_id`, `school_has_vendor_id`, `menu_item_id`, `payment_id`, `normal_id`) VALUES ('%s','%s','%s','%s','%s','%s','%s');";
+		InsertSQL = String.format(InsertSQL, order_status, preference, child_id, school_has_vendor_id, menu_item_id, payment_id);
+		
+		count = DBUtil.execSQL(InsertSQL);
+
+		if (count == 1) {
+			isAllChecked = true;
+		}
+		
+		return isAllChecked;
+	}
+
 	// (Done need testing)
 	public String getItemInfo(String item_id) {
 		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
 
+		item_id = SQLInjection(item_id);
+
 		String itemInfo = "" + "\n======= Food =======\n" + "Item ID: %s\n" + "Item name: %s\n" + "Item quantity: %s\n"
 				+ "Item description: %s\n" + "Item dietary: %s\n" + "Item ingredients: %s\n" + "Item price: $%.2f\n";
-
-		item_id = SQLInjection(item_id);
 
 		SelectSQL = "SELECT item_name, item_qty, item_description, item_dietary, item_ingredients, item_price FROM item WHERE item_id = '%s';";
 		SelectSQL = String.format(SelectSQL, item_id);
@@ -547,7 +565,8 @@ public class DBData {
 			return null;
 		}
 
-		int column = getUserChildCount() + 1;System.out.println(column);
+		int column = getUserChildCount() + 1;
+		System.out.println(column);
 		String[] header = { "Child ID", "Child Name", "Child Allegies" };
 		int row = header.length;
 
@@ -555,7 +574,7 @@ public class DBData {
 
 		SelectSQL = "SELECT `child_id`,`child_name`,`child_allegies` FROM `child` WHERE normal_id = '%s';";
 		SelectSQL = String.format(SelectSQL, user_id);
-		
+
 		// Set first index of data to header
 		table[0] = header;
 
@@ -593,15 +612,13 @@ public class DBData {
 		//
 		SelectSQL = "SELECT COUNT(school.school_name) AS COUNT FROM `school_has_vendor` "
 				+ "INNER JOIN school ON school.school_id = school_has_vendor.school_id "
-				+ "WHERE school_has_vendor.vendor_id IN ("
-				+ "SELECT DISTINCT menu.vendor_id FROM `menu_item` "
-				+ "INNER JOIN menu ON menu.menu_id = menu_item.menu_id WHERE menu_item_id = '%s'"
-				+ ");";
+				+ "WHERE school_has_vendor.vendor_id IN (" + "SELECT DISTINCT menu.vendor_id FROM `menu_item` "
+				+ "INNER JOIN menu ON menu.menu_id = menu_item.menu_id WHERE menu_item_id = '%s'" + ");";
 		SelectSQL = String.format(SelectSQL, menu_item_id);
-		
+
 		rs = DBUtil.getTable(SelectSQL);
 		int rowCount = 0;
-		
+
 		try {
 			while (rs.next()) {
 				rowCount = rs.getInt("COUNT");
@@ -609,26 +626,23 @@ public class DBData {
 		} catch (SQLException e) {
 			System.out.println("SQL Error (viewVendorSchoolByMenuItem) COUNT FAILED: " + e.getMessage());
 		}
-		
+
 		//
 		// Getting available table
 		//
-		
-		
+
 		int column = rowCount + 1;
 		String[] header = { "School Has Vendor ID", "School Name" };
 		int row = header.length;
-		
+
 		String table[][] = new String[column][row];
-		
+
 		SelectSQL = "SELECT `school_has_vendor_id` AS SHV_ID, school.school_name AS SN FROM `school_has_vendor` "
 				+ "INNER JOIN school ON school.school_id = school_has_vendor.school_id "
-				+ "WHERE school_has_vendor.vendor_id IN ("
-				+ "SELECT DISTINCT menu.vendor_id FROM `menu_item` "
-				+ "INNER JOIN menu ON menu.menu_id = menu_item.menu_id WHERE menu_item_id = '%s'"
-				+ ");";
+				+ "WHERE school_has_vendor.vendor_id IN (" + "SELECT DISTINCT menu.vendor_id FROM `menu_item` "
+				+ "INNER JOIN menu ON menu.menu_id = menu_item.menu_id WHERE menu_item_id = '%s'" + ");";
 		SelectSQL = String.format(SelectSQL, menu_item_id);
-		
+
 		// Set first index of data to header
 		table[0] = header;
 
@@ -873,17 +887,20 @@ public class DBData {
 	}
 
 	// (DONE need testing)
-	public Boolean addSchool(String school_name, String school_id) {
+	public Boolean addSchool(String school_name, String school_address) {
 		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
 
 		if (user_access.equals("admin") == false) {
 			return null;
 		}
 
+		school_name = SQLInjection(school_name);
+		school_address = SQLInjection(school_address);
+
 		isAllChecked = false;
 
 		InsertSQL = "INSERT INTO `school` (`school_name`, `school_address`) VALUES ('%s','%s');";
-		InsertSQL = String.format(InsertSQL, school_name, school_id);
+		InsertSQL = String.format(InsertSQL, school_name, school_address);
 
 		count = DBUtil.execSQL(InsertSQL);
 
@@ -1107,11 +1124,12 @@ public class DBData {
 		if (user_access.equals("vendor") == false) {
 			return null;
 		}
+
 		menu_id = SQLInjection(menu_id);
 
 		// Check if item_id inside menu_item
 		SelectSQL = "SELECT item_id FROM menu_item WHERE item_id = '%s'";
-		SelectSQL = String.format(SelectSQL, item_id);
+		SelectSQL = String.format(SelectSQL, SQLInjection(String.valueOf(item_id)));
 
 		rs = DBUtil.getTable(SelectSQL);
 		count = 0;
@@ -1151,6 +1169,7 @@ public class DBData {
 		if (user_access.equals("vendor") == false || item.length != 6) {
 			return null;
 		}
+
 		menu_id = SQLInjection(menu_id);
 		item = SQLInjection(item);
 
@@ -1277,7 +1296,7 @@ public class DBData {
 	public String[][] viewSchoolHasVendor() {
 		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
 
-		if (user_access.equals("vendor") == false ) {
+		if (user_access.equals("vendor") == false) {
 			return null;
 		}
 

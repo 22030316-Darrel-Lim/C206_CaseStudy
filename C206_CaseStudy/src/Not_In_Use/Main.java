@@ -108,7 +108,6 @@ public class Main {
 			//
 			// Choose school by menu item ID - vendor
 			//
-			
 			table = CREDENTIAL.viewVendorSchoolByMenuItem(String.valueOf(CHOICE));
 			
 			print(TableFormatter.tableFormatter(table));
