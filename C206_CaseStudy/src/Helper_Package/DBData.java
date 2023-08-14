@@ -869,17 +869,20 @@ public class DBData {
 	}
 
 	// (DONE need testing)
-	public Boolean addSchool(String school_name, String school_id) {
+	public Boolean addSchool(String school_name, String school_address) {
 		DBUtil.init(JDBCURL, DBUSERNAME, DBPASSWORD);
 
 		if (user_access.equals("admin") == false) {
 			return null;
 		}
-
+		
+		school_name = SQLInjection(school_name);
+		school_address = SQLInjection(school_address);
+		
 		isAllChecked = false;
 
 		InsertSQL = "INSERT INTO `school` (`school_name`, `school_address`) VALUES ('%s','%s');";
-		InsertSQL = String.format(InsertSQL, school_name, school_id);
+		InsertSQL = String.format(InsertSQL, school_name, school_address);
 
 		count = DBUtil.execSQL(InsertSQL);
 
