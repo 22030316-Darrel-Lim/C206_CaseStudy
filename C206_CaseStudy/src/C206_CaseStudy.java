@@ -1,6 +1,6 @@
 import Helper_Package.Authentication;
 import Helper_Package.DBData;
-import Temp_Holding.RunAllTest;
+import RunTesty.RunAllTest;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -902,7 +902,7 @@ public class C206_CaseStudy {
 		String password = "";
 		String access = "";
 		String[] otherInfo = {};
-
+		
 		while (true) {
 			email = readString("Enter Email: ");
 			name = readString("Enter Name: ");
@@ -949,7 +949,7 @@ public class C206_CaseStudy {
 		} else {
 			print("\nUser creation failed.\n");
 		}
-
+		
 		return; // Bring user back to admin menu
 	}
 
@@ -1091,7 +1091,7 @@ public class C206_CaseStudy {
 			return;
 		}
 
-		Boolean isDeleted = CREDENTIAL.deleteSchool(payment);
+		Boolean isDeleted = CREDENTIAL.deletePayment(payment);
 
 		if (isDeleted == false) {
 			print("\nDelete Payment Failed");

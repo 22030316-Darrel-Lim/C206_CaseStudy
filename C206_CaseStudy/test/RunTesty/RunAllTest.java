@@ -1,4 +1,4 @@
-package Temp_Holding;
+package RunTesty;
 
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
