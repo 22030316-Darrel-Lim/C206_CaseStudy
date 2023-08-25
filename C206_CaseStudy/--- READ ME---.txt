@@ -2,7 +2,7 @@
 
 The Data for this Java code is in the SQL. Local Host and run it else the program will not start. (We used XAMPP - Learnt in C209) 
 Data table name needs to be " c206_ga " when hosting the SQL
-
+Password is the same as the username: admin1, user1, vendor1, admin2 etc
 
 Main programe is runned in the default Package - C206_CaseStudy.java
 
